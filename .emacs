@@ -24,8 +24,12 @@
 ;; ---------------------------------------------------------
 ;; Custom keybindings
 ;; ---------------------------------------------------------
-(global-set-key "\C-x\C-m" 'execute-extended-command) ;; = meta
-(global-set-key "\C-c\C-m" 'execute-extended-command) ;; = meta
+(global-set-key (kbd "C-x C-m") 'execute-extended-command) ;; = meta
+(global-set-key (kbd "C-c C-m") 'execute-extended-command) ;; = meta
+(global-set-key (kbd "M-s") 'isearch-forward-regexp)
+(global-set-key (kbd "M-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-x C-b") 'bs-show)
+
 (global-set-key [f1]  'goto-line)
 (global-set-key [f2]  'save-buffer)
 (global-set-key [f3]  'kill-buffer)
@@ -38,10 +42,6 @@
 (global-set-key [f10] 'split-window-horizontally)
 (global-set-key [f11] 'delete-window)
 (global-set-key [f12] 'delete-other-windows)
-
-(global-set-key [(meta s)] 'isearch-forward-regexp)
-(global-set-key [(meta r)] 'isearch-backward-regexp)
-
 
 ;; ---------------------------------------------------------
 ;; Backups in ~/.backups
