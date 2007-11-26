@@ -10,7 +10,7 @@
 (setq visible-bell t)               ;; no beeping!
 (setq next-line-add-newlines nil)   ;; don't add newlines just by scrolling
 (fset 'yes-or-no-p 'y-or-n-p)       ;; query with y or n always
-
+(setq inhibit-splash-screen t)
 
 ;; ---------------------------------------------------------
 ;; Load utility libs
