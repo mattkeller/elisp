@@ -113,11 +113,11 @@
 (load-file "~/elisp/cedet-1.0pre3/common/cedet.el")
 (add-to-list 'load-path "~/local/share/emacs/site-lisp/elib")
 (add-to-list 'load-path "~/elisp/ecb-2.32")
-;;(require 'ecb) 
-
 (add-to-list 'load-path "~/elisp/jde-2.3.5.1/lisp")
 
-(if t ; t => defer loading jde
+(setq defer-loading-jde t)
+
+(if defer-loading-jde 
     (progn
       (autoload 'jde-mode "jde" "JDE mode." t)
       (setq auto-mode-alist
@@ -133,7 +133,6 @@
 (add-hook 'jde-mode-hook 'my-jde-mode-hook)
 
 (add-hook 'java-mode-hook '(lambda () (setq c-basic-offset 4)))
-
 
 
 ;; ----------------------------------------------------------
