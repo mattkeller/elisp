@@ -11,6 +11,10 @@
 (setq next-line-add-newlines nil)   ;; don't add newlines just by scrolling
 (fset 'yes-or-no-p 'y-or-n-p)       ;; query with y or n always
 (setq inhibit-splash-screen t)
+(setq scroll-preserve-screen-position t) ;; cursor stays in same place during page up/down
+(setq scroll-margin 2)              ;; start scrolling when 2 rows from top/bottom
+(setq scroll-conservatively 1)      ;; smooth scrolling
+(blink-cursor-mode nil)             ;; no blinking!
 
 ;; ---------------------------------------------------------
 ;; Load utility libs
