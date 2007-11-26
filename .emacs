@@ -16,11 +16,7 @@
 ;; Load utility libs
 ;; ---------------------------------------------------------
 (add-to-list 'load-path "~/elisp")
-;;(require 'psvn)
-;;(require 'find-recursive)
-;;(require 'light-symbol)
-;;(require 'linum)
-;;(require 'htmlize)
+
 
 ;; ---------------------------------------------------------
 ;; Custom keybindings
