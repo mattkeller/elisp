@@ -20,6 +20,7 @@
 (autoload 'linum "linum" "" t)
 (autoload 'light-symbol-mode "light-symbol" "" t)
 (autoload 'htmlize-buffer "htmlize" "" t)
+(autoload 'blank-mode "blank-mode" "Toggle blank visualisation" t)
 
 ;; ---------------------------------------------------------
 ;; Custom keybindings
@@ -132,7 +133,10 @@
 
 (add-hook 'jde-mode-hook 'my-jde-mode-hook)
 
-(add-hook 'java-mode-hook '(lambda () (setq c-basic-offset 4)))
+(add-hook 'java-mode-hook '(lambda ()
+                             (c-set-style "k&r")
+                             (setq c-basic-offset 3)
+                             (setq-default indent-tabs-mode nil)))
 
 
 ;; ----------------------------------------------------------
