@@ -16,7 +16,10 @@
 ;; Load utility libs
 ;; ---------------------------------------------------------
 (add-to-list 'load-path "~/elisp")
-
+(autoload 'find-file-recursively "find-recursive" "" t)
+(autoload 'linum "linum" "" t)
+(autoload 'light-symbol-mode "light-symbol" "" t)
+(autoload 'htmlize-buffer "htmlize" "" t)
 
 ;; ---------------------------------------------------------
 ;; Custom keybindings
