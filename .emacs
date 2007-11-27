@@ -15,6 +15,7 @@
 (setq scroll-margin 2)              ;; start scrolling when 2 rows from top/bottom
 (setq scroll-conservatively 1)      ;; smooth scrolling
 (blink-cursor-mode nil)             ;; no blinking!
+(auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
 
 ;; ---------------------------------------------------------
 ;; Load utility libs
