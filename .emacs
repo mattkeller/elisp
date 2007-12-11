@@ -163,6 +163,15 @@
 (require 'git)
 (autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t)
 
+;; ---------------------------------------------------------
+;; org-mode
+;; ---------------------------------------------------------
+(add-to-list 'load-path "~/elisp/org-mode")
+(require 'org-install)
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+
 ;; ----------------------------------------------------------
 ;; my elisp functions
 ;; ----------------------------------------------------------
