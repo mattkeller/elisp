@@ -144,6 +144,18 @@
                              (setq-default indent-tabs-mode nil)))
 
 ;; ----------------------------------------------------------
+;; Tramp (remote editing)
+;; ----------------------------------------------------------
+(setq tramp-default-method "scp")
+(setq tramp-default-user-alist
+               '(("scp" ".*\\.littleredbat\\.net\\" "mk")
+                 ("scp" "lrb" "mk")
+                 ("scp" ".*\\.nortel\\.com\\" "matthewk")
+                 ("scp" "znc0y0n8.*" "matthewk")
+                 ("scp" "deb" "matthewk")
+                 (nil nil "matthewk")))
+
+;; ----------------------------------------------------------
 ;; Git VC backend setup
 ;; ----------------------------------------------------------
 (require 'vc-git)
