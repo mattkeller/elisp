@@ -287,11 +287,12 @@ call additional functions registered with the timer calls."
     (unwind-protect
         (semantic-safe "idle error: %S"
           ;; Disable the auto parse timer while re-parsing
-          (semantic-idle-scheduler-kill-timer)
+          ;; KELLER (semantic-idle-scheduler-kill-timer)
           ;; Handle re-parsing and other scheduled services
           (save-match-data (semantic-idle-core-handler)))
       ;; Enable again the auto parse timer
-      (semantic-idle-scheduler-setup-timer))))
+      ;; KELLER (semantic-idle-scheduler-setup-timer)
+      )))
 
 ;;; REPARSING
 ;;
