@@ -90,7 +90,7 @@
 (add-hook 'ruby-mode-hook
           '(lambda ()
              (inf-ruby-keys)
-             (global-set-key [f5] 'ruby-lint)))
+             (local-set-key [f5] 'ruby-lint)))
 
 ;; ---------------------------------------------------------
 ;; SLIME Setup for hendrix
