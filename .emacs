@@ -75,20 +75,22 @@
 ;; ---------------------------------------------------------
 ;; Ruby setup
 ;; ---------------------------------------------------------
-(autoload 'ruby-mode "ruby-mode"
-  "Mode for editing ruby source files")
+(autoload 'ruby-mode "ruby-mode" "Mode for editing ruby source files")
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
 (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
-(autoload 'run-ruby "inf-ruby"
-  "Run an inferior Ruby process")
-(autoload 'inf-ruby-keys "inf-ruby"
-  "Set local key defs for inf-ruby in ruby-mode")
-(add-hook 'ruby-mode-hook
-          '(lambda ()
-             (inf-ruby-keys)))
-(autoload 'rubydb "rubydb2x" "Ruby debugger" t)
+(autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
+(autoload 'inf-ruby-keys "inf-ruby" "key defs for inf-ruby in ruby-mode")
 (add-hook 'ruby-mode-hook 'turn-on-font-lock)
 
+(defun ruby-lint ()
+  "Performs a Ruby compile check on the current file."
+  (interactive)
+  (shell-command (concat "ruby -c " (buffer-file-name))))
+
+(add-hook 'ruby-mode-hook
+          '(lambda ()
+             (inf-ruby-keys)
+             (global-set-key [f5] 'ruby-lint)))
 
 ;; ---------------------------------------------------------
 ;; SLIME Setup for hendrix

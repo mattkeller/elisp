@@ -6,69 +6,69 @@
 ;;;  created at: Fri Feb  4 14:49:13 JST 1994
 ;;;
 
-(defconst ruby-mode-revision "$Revision$")
+(defconst ruby-mode-revision "99.99.99") ;; keller
 
 (defconst ruby-mode-version
-  (progn
-   (string-match "[0-9.]+" ruby-mode-revision)
-   (substring ruby-mode-revision (match-beginning 0) (match-end 0))))
+(progn
+(string-match "[0-9.]+" ruby-mode-revision)
+(substring ruby-mode-revision (match-beginning 0) (match-end 0))))
 
 (defconst ruby-block-beg-re
-  "class\\|module\\|def\\|if\\|unless\\|case\\|while\\|until\\|for\\|begin\\|do"
-  )
+"class\\|module\\|def\\|if\\|unless\\|case\\|while\\|until\\|for\\|begin\\|do"
+)
 
 (defconst ruby-non-block-do-re
-  "\\(while\\|until\\|for\\|rescue\\)\\>[^_]"
-  )
+"\\(while\\|until\\|for\\|rescue\\)\\>[^_]"
+)
 
 (defconst ruby-indent-beg-re
-  "\\(\\s *\\(class\\|module\\|def\\)\\)\\|if\\|unless\\|case\\|while\\|until\\|for\\|begin"
-    )
+"\\(\\s *\\(class\\|module\\|def\\)\\)\\|if\\|unless\\|case\\|while\\|until\\|for\\|begin"
+)
 
 (defconst ruby-modifier-beg-re
-  "if\\|unless\\|while\\|until"
-  )
+"if\\|unless\\|while\\|until"
+)
 
 (defconst ruby-modifier-re
-  (concat ruby-modifier-beg-re "\\|rescue")
-  )
+(concat ruby-modifier-beg-re "\\|rescue")
+)
 
 (defconst ruby-block-mid-re
-  "then\\|else\\|elsif\\|when\\|rescue\\|ensure"
-  )
+"then\\|else\\|elsif\\|when\\|rescue\\|ensure"
+)
 
 (defconst ruby-block-op-re
-  "and\\|or\\|not"
-  )
+"and\\|or\\|not"
+)
 
 (defconst ruby-block-hanging-re
-  (concat ruby-modifier-beg-re "\\|" ruby-block-op-re)
-  )
+(concat ruby-modifier-beg-re "\\|" ruby-block-op-re)
+)
 
 (defconst ruby-block-end-re "\\<end\\>")
 
 (defconst ruby-here-doc-beg-re
-  "<<\\(-\\)?\\(\\([a-zA-Z0-9_]+\\)\\|[\"]\\([^\"]+\\)[\"]\\|[']\\([^']+\\)[']\\)")
+"<<\\(-\\)?\\(\\([a-zA-Z0-9_]+\\)\\|[\"]\\([^\"]+\\)[\"]\\|[']\\([^']+\\)[']\\)")
 
 (defun ruby-here-doc-end-match ()
-  (concat "^"
-	  (if (match-string 1) "[ \t]*" nil)
-	  (regexp-quote
-	   (or (match-string 3)
-	       (match-string 4)
-	       (match-string 5)))))
+(concat "^"
+  (if (match-string 1) "[ \t]*" nil)
+  (regexp-quote
+   (or (match-string 3)
+       (match-string 4)
+       (match-string 5)))))
 
 (defconst ruby-delimiter
-  (concat "[?$/%(){}#\"'`.:]\\|<<\\|\\[\\|\\]\\|\\<\\("
-	  ruby-block-beg-re
-	  "\\)\\>\\|" ruby-block-end-re
-	  "\\|^=begin\\|" ruby-here-doc-beg-re)
-  )
+(concat "[?$/%(){}#\"'`.:]\\|<<\\|\\[\\|\\]\\|\\<\\("
+  ruby-block-beg-re
+  "\\)\\>\\|" ruby-block-end-re
+  "\\|^=begin\\|" ruby-here-doc-beg-re)
+)
 
 (defconst ruby-negative
-  (concat "^[ \t]*\\(\\(" ruby-block-mid-re "\\)\\>\\|"
-	    ruby-block-end-re "\\|}\\|\\]\\)")
-  )
+(concat "^[ \t]*\\(\\(" ruby-block-mid-re "\\)\\>\\|"
+    ruby-block-end-re "\\|}\\|\\]\\)")
+)
 
 (defconst ruby-operator-chars "-,.+*/%&|^~=<>:")
 (defconst ruby-operator-re (concat "[" ruby-operator-chars "]"))
@@ -77,185 +77,185 @@
 (defconst ruby-symbol-re (concat "[" ruby-symbol-chars "]"))
 
 (defvar ruby-mode-abbrev-table nil
-  "Abbrev table in use in ruby-mode buffers.")
+"Abbrev table in use in ruby-mode buffers.")
 
 (define-abbrev-table 'ruby-mode-abbrev-table ())
 
 (defvar ruby-mode-map nil "Keymap used in ruby mode.")
 
 (if ruby-mode-map
-    nil
-  (setq ruby-mode-map (make-sparse-keymap))
-  (define-key ruby-mode-map "{" 'ruby-electric-brace)
-  (define-key ruby-mode-map "}" 'ruby-electric-brace)
-  (define-key ruby-mode-map "\e\C-a" 'ruby-beginning-of-defun)
-  (define-key ruby-mode-map "\e\C-e" 'ruby-end-of-defun)
-  (define-key ruby-mode-map "\e\C-b" 'ruby-backward-sexp)
-  (define-key ruby-mode-map "\e\C-f" 'ruby-forward-sexp)
-  (define-key ruby-mode-map "\e\C-p" 'ruby-beginning-of-block)
-  (define-key ruby-mode-map "\e\C-n" 'ruby-end-of-block)
-  (define-key ruby-mode-map "\e\C-h" 'ruby-mark-defun)
-  (define-key ruby-mode-map "\e\C-q" 'ruby-indent-exp)
-  (define-key ruby-mode-map "\t" 'ruby-indent-command)
-  (define-key ruby-mode-map "\C-c\C-e" 'ruby-insert-end)
-  (define-key ruby-mode-map "\C-j" 'ruby-reindent-then-newline-and-indent)
-  (define-key ruby-mode-map "\C-m" 'newline))
+nil
+(setq ruby-mode-map (make-sparse-keymap))
+(define-key ruby-mode-map "{" 'ruby-electric-brace)
+(define-key ruby-mode-map "}" 'ruby-electric-brace)
+(define-key ruby-mode-map "\e\C-a" 'ruby-beginning-of-defun)
+(define-key ruby-mode-map "\e\C-e" 'ruby-end-of-defun)
+(define-key ruby-mode-map "\e\C-b" 'ruby-backward-sexp)
+(define-key ruby-mode-map "\e\C-f" 'ruby-forward-sexp)
+(define-key ruby-mode-map "\e\C-p" 'ruby-beginning-of-block)
+(define-key ruby-mode-map "\e\C-n" 'ruby-end-of-block)
+(define-key ruby-mode-map "\e\C-h" 'ruby-mark-defun)
+(define-key ruby-mode-map "\e\C-q" 'ruby-indent-exp)
+(define-key ruby-mode-map "\t" 'ruby-indent-command)
+(define-key ruby-mode-map "\C-c\C-e" 'ruby-insert-end)
+(define-key ruby-mode-map "\C-j" 'ruby-reindent-then-newline-and-indent)
+(define-key ruby-mode-map "\C-m" 'newline))
 
 (defvar ruby-mode-syntax-table nil
-  "Syntax table in use in ruby-mode buffers.")
+"Syntax table in use in ruby-mode buffers.")
 
 (if ruby-mode-syntax-table
-    ()
-  (setq ruby-mode-syntax-table (make-syntax-table))
-  (modify-syntax-entry ?\' "\"" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\" "\"" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\` "\"" ruby-mode-syntax-table)
-  (modify-syntax-entry ?# "<" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\n ">" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\\ "\\" ruby-mode-syntax-table)
-  (modify-syntax-entry ?$ "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?? "_" ruby-mode-syntax-table)
-  (modify-syntax-entry ?_ "_" ruby-mode-syntax-table)
-  (modify-syntax-entry ?< "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?> "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?& "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?| "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?% "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?= "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?/ "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?+ "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?* "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?- "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?\; "." ruby-mode-syntax-table)
-  (modify-syntax-entry ?\( "()" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\) ")(" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\{ "(}" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\} "){" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\[ "(]" ruby-mode-syntax-table)
-  (modify-syntax-entry ?\] ")[" ruby-mode-syntax-table)
-  )
+()
+(setq ruby-mode-syntax-table (make-syntax-table))
+(modify-syntax-entry ?\' "\"" ruby-mode-syntax-table)
+(modify-syntax-entry ?\" "\"" ruby-mode-syntax-table)
+(modify-syntax-entry ?\` "\"" ruby-mode-syntax-table)
+(modify-syntax-entry ?# "<" ruby-mode-syntax-table)
+(modify-syntax-entry ?\n ">" ruby-mode-syntax-table)
+(modify-syntax-entry ?\\ "\\" ruby-mode-syntax-table)
+(modify-syntax-entry ?$ "." ruby-mode-syntax-table)
+(modify-syntax-entry ?? "_" ruby-mode-syntax-table)
+(modify-syntax-entry ?_ "_" ruby-mode-syntax-table)
+(modify-syntax-entry ?< "." ruby-mode-syntax-table)
+(modify-syntax-entry ?> "." ruby-mode-syntax-table)
+(modify-syntax-entry ?& "." ruby-mode-syntax-table)
+(modify-syntax-entry ?| "." ruby-mode-syntax-table)
+(modify-syntax-entry ?% "." ruby-mode-syntax-table)
+(modify-syntax-entry ?= "." ruby-mode-syntax-table)
+(modify-syntax-entry ?/ "." ruby-mode-syntax-table)
+(modify-syntax-entry ?+ "." ruby-mode-syntax-table)
+(modify-syntax-entry ?* "." ruby-mode-syntax-table)
+(modify-syntax-entry ?- "." ruby-mode-syntax-table)
+(modify-syntax-entry ?\; "." ruby-mode-syntax-table)
+(modify-syntax-entry ?\( "()" ruby-mode-syntax-table)
+(modify-syntax-entry ?\) ")(" ruby-mode-syntax-table)
+(modify-syntax-entry ?\{ "(}" ruby-mode-syntax-table)
+(modify-syntax-entry ?\} "){" ruby-mode-syntax-table)
+(modify-syntax-entry ?\[ "(]" ruby-mode-syntax-table)
+(modify-syntax-entry ?\] ")[" ruby-mode-syntax-table)
+)
 
 (defcustom ruby-indent-tabs-mode nil
-  "*Indentation can insert tabs in ruby mode if this is non-nil."
-  :type 'boolean :group 'ruby)
+"*Indentation can insert tabs in ruby mode if this is non-nil."
+:type 'boolean :group 'ruby)
 
 (defcustom ruby-indent-level 2
-  "*Indentation of ruby statements."
-  :type 'integer :group 'ruby)
+"*Indentation of ruby statements."
+:type 'integer :group 'ruby)
 
 (defcustom ruby-comment-column 32
-  "*Indentation column of comments."
-  :type 'integer :group 'ruby)
+"*Indentation column of comments."
+:type 'integer :group 'ruby)
 
 (defcustom ruby-deep-arglist t
-  "*Deep indent lists in parenthesis when non-nil.
+"*Deep indent lists in parenthesis when non-nil.
 Also ignores spaces after parenthesis when 'space."
-  :group 'ruby)
+:group 'ruby)
 
 (defcustom ruby-deep-indent-paren '(?\( ?\[ ?\] t)
-  "*Deep indent lists in parenthesis when non-nil. t means continuous line.
+"*Deep indent lists in parenthesis when non-nil. t means continuous line.
 Also ignores spaces after parenthesis when 'space."
-  :group 'ruby)
+:group 'ruby)
 
 (defcustom ruby-deep-indent-paren-style 'space
-  "Default deep indent style."
-  :options '(t nil space) :group 'ruby)
+"Default deep indent style."
+:options '(t nil space) :group 'ruby)
 
 (eval-when-compile (require 'cl))
 (defun ruby-imenu-create-index-in-block (prefix beg end)
-  (let ((index-alist '()) (case-fold-search nil)
-	name next pos decl sing)
-    (goto-char beg)
-    (while (re-search-forward "^\\s *\\(\\(class\\>\\(\\s *<<\\)?\\|module\\>\\)\\s *\\([^\(<\n ]+\\)\\|\\(def\\|alias\\)\\>\\s *\\([^\(\n ]+\\)\\)" end t)
-      (setq sing (match-beginning 3))
-      (setq decl (match-string 5))
-      (setq next (match-end 0))
-      (setq name (or (match-string 4) (match-string 6)))
-      (setq pos (match-beginning 0))
-      (cond
-       ((string= "alias" decl)
-	(if prefix (setq name (concat prefix name)))
-	(push (cons name pos) index-alist))
-       ((string= "def" decl)
-	(if prefix
-	    (setq name
-		  (cond
-		   ((string-match "^self\." name)
-		    (concat (substring prefix 0 -1) (substring name 4)))
-		  (t (concat prefix name)))))
-	(push (cons name pos) index-alist)
-	(ruby-accurate-end-of-block end))
-       (t
-	(if (string= "self" name)
-	    (if prefix (setq name (substring prefix 0 -1)))
-	  (if prefix (setq name (concat (substring prefix 0 -1) "::" name)))
-	  (push (cons name pos) index-alist))
-	(ruby-accurate-end-of-block end)
-	(setq beg (point))
-	(setq index-alist
-	      (nconc (ruby-imenu-create-index-in-block
-		      (concat name (if sing "." "#"))
-		      next beg) index-alist))
-	(goto-char beg))))
-    index-alist))
+(let ((index-alist '()) (case-fold-search nil)
+name next pos decl sing)
+(goto-char beg)
+(while (re-search-forward "^\\s *\\(\\(class\\>\\(\\s *<<\\)?\\|module\\>\\)\\s *\\([^\(<\n ]+\\)\\|\\(def\\|alias\\)\\>\\s *\\([^\(\n ]+\\)\\)" end t)
+(setq sing (match-beginning 3))
+(setq decl (match-string 5))
+(setq next (match-end 0))
+(setq name (or (match-string 4) (match-string 6)))
+(setq pos (match-beginning 0))
+(cond
+((string= "alias" decl)
+(if prefix (setq name (concat prefix name)))
+(push (cons name pos) index-alist))
+((string= "def" decl)
+(if prefix
+    (setq name
+	  (cond
+	   ((string-match "^self\." name)
+	    (concat (substring prefix 0 -1) (substring name 4)))
+	  (t (concat prefix name)))))
+(push (cons name pos) index-alist)
+(ruby-accurate-end-of-block end))
+(t
+(if (string= "self" name)
+    (if prefix (setq name (substring prefix 0 -1)))
+  (if prefix (setq name (concat (substring prefix 0 -1) "::" name)))
+  (push (cons name pos) index-alist))
+(ruby-accurate-end-of-block end)
+(setq beg (point))
+(setq index-alist
+      (nconc (ruby-imenu-create-index-in-block
+	      (concat name (if sing "." "#"))
+	      next beg) index-alist))
+(goto-char beg))))
+index-alist))
 
 (defun ruby-imenu-create-index ()
-  (nreverse (ruby-imenu-create-index-in-block nil (point-min) nil)))
+(nreverse (ruby-imenu-create-index-in-block nil (point-min) nil)))
 
 (defun ruby-accurate-end-of-block (&optional end)
-  (let (state)
-    (or end (setq end (point-max)))
-    (while (and (setq state (apply 'ruby-parse-partial end state))
-		(>= (nth 2 state) 0) (< (point) end)))))
+(let (state)
+(or end (setq end (point-max)))
+(while (and (setq state (apply 'ruby-parse-partial end state))
+	(>= (nth 2 state) 0) (< (point) end)))))
 
 (defun ruby-mode-variables ()
-  (set-syntax-table ruby-mode-syntax-table)
-  (setq local-abbrev-table ruby-mode-abbrev-table)
-  (make-local-variable 'indent-line-function)
-  (setq indent-line-function 'ruby-indent-line)
-  (make-local-variable 'require-final-newline)
-  (setq require-final-newline t)
-  (make-variable-buffer-local 'comment-start)
-  (setq comment-start "# ")
-  (make-variable-buffer-local 'comment-end)
-  (setq comment-end "")
-  (make-variable-buffer-local 'comment-column)
-  (setq comment-column ruby-comment-column)
-  (make-variable-buffer-local 'comment-start-skip)
-  (setq comment-start-skip "#+ *")
-  (setq indent-tabs-mode ruby-indent-tabs-mode)
-  (make-local-variable 'parse-sexp-ignore-comments)
-  (setq parse-sexp-ignore-comments t)
-  (make-local-variable 'paragraph-start)
-  (setq paragraph-start (concat "$\\|" page-delimiter))
-  (make-local-variable 'paragraph-separate)
-  (setq paragraph-separate paragraph-start)
-  (make-local-variable 'paragraph-ignore-fill-prefix)
-  (setq paragraph-ignore-fill-prefix t))
+(set-syntax-table ruby-mode-syntax-table)
+(setq local-abbrev-table ruby-mode-abbrev-table)
+(make-local-variable 'indent-line-function)
+(setq indent-line-function 'ruby-indent-line)
+(make-local-variable 'require-final-newline)
+(setq require-final-newline t)
+(make-variable-buffer-local 'comment-start)
+(setq comment-start "# ")
+(make-variable-buffer-local 'comment-end)
+(setq comment-end "")
+(make-variable-buffer-local 'comment-column)
+(setq comment-column ruby-comment-column)
+(make-variable-buffer-local 'comment-start-skip)
+(setq comment-start-skip "#+ *")
+(setq indent-tabs-mode ruby-indent-tabs-mode)
+(make-local-variable 'parse-sexp-ignore-comments)
+(setq parse-sexp-ignore-comments t)
+(make-local-variable 'paragraph-start)
+(setq paragraph-start (concat "$\\|" page-delimiter))
+(make-local-variable 'paragraph-separate)
+(setq paragraph-separate paragraph-start)
+(make-local-variable 'paragraph-ignore-fill-prefix)
+(setq paragraph-ignore-fill-prefix t))
 
 ;;;###autoload
 (defun ruby-mode ()
-  "Major mode for editing ruby scripts.
+"Major mode for editing ruby scripts.
 \\[ruby-indent-command] properly indents subexpressions of multi-line
 class, module, def, if, while, for, do, and case statements, taking
 nesting into account.
 
 The variable ruby-indent-level controls the amount of indentation.
 \\{ruby-mode-map}"
-  (interactive)
-  (kill-all-local-variables)
-  (use-local-map ruby-mode-map)
-  (setq mode-name "Ruby")
-  (setq major-mode 'ruby-mode)
-  (ruby-mode-variables)
+(interactive)
+(kill-all-local-variables)
+(use-local-map ruby-mode-map)
+(setq mode-name "Ruby")
+(setq major-mode 'ruby-mode)
+(ruby-mode-variables)
 
-  (make-local-variable 'imenu-create-index-function)
-  (setq imenu-create-index-function 'ruby-imenu-create-index)
+(make-local-variable 'imenu-create-index-function)
+(setq imenu-create-index-function 'ruby-imenu-create-index)
 
-  (make-local-variable 'add-log-current-defun-function)
-  (setq add-log-current-defun-function 'ruby-add-log-current-method)
+(make-local-variable 'add-log-current-defun-function)
+(setq add-log-current-defun-function 'ruby-add-log-current-method)
 
-  (run-hooks 'ruby-mode-hook))
+(run-hooks 'ruby-mode-hook))
 
 (defun ruby-current-indentation ()
   (save-excursion
