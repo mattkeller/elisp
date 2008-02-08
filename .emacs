@@ -141,7 +141,7 @@
 (add-hook 'jde-mode-hook 'my-jde-mode-hook)
 
 (add-hook 'java-mode-hook '(lambda ()
-                             (c-set-style "k&r")
+                             (c-set-style "java")
                              (setq c-basic-offset 3)
                              (setq-default indent-tabs-mode nil)))
 
@@ -219,4 +219,41 @@
 (global-set-key [(control O)] 'vi-open-prev-line)
 
 
-
+(defun mcp-set-proj (proj)
+  (interactive "sProject name: ")
+  (let* ((mcp-dir "/mcp/")
+         (git-dir "/localdisk/data/matthewk/code/mcp.git/mcp/")
+         (src-dir mcp-dir)
+         (wrk-dir (concat "/localdisk/data/matthewk/workdir/" proj))
+         (cls-dir (concat wrk-dir "/classes")))
+    (when (y-or-n-p "Git project?")
+      (setq src-dir git-dir))
+    (if (file-directory-p src-dir)
+        (progn
+          (setq jde-compile-option-directory wrk-dir)
+          (setq jde-compile-option-sourcepath (list (concat src-dir "mcp_core_root/src")
+                                                    (concat src-dir "mcp_core_root/src")
+                                                    (concat src-dir "mcp_core_ims/ims")))
+          (let* ((jars '("mcp_3rdParty/java/database/oracle/oracle.zip"
+                         "mcp_3rdParty/java/management/jdmk/jawall.jar"
+                         "mcp_3rdParty/java/megaco/megaco.jar"
+                         "mcp_3rdParty/java/parsing/jdom/jdom.jar" 
+                         "mcp_3rdParty/java/uas/uasemClient.jar"
+                         "mcp_3rdParty/java/tools/sun/tools.jar"
+                         "mcp_3rdParty/java/axis/axis.jar"
+                         "mcp_3rdParty/java/axis/OPIClient.jar"
+                         "mcp_3rdParty/java/tomcat/tomcat.jar"
+                         "mcp_3rdParty/java/httpclient/commons-httpclient-2.0-rc2.jar"
+                         "mcp_3rdParty/java/management/jdmk/jsnmpapi.jar"
+                         "mcp_3rdParty/java/management/jdmk/jdmkrt.jar"
+                         "mcp_3rdParty/java/security/bcprov-jdk14-124.jar"
+                         "mcp_3rdParty/java/masSoapServices/masservice.jar"
+                         "mcp_3rdParty/java/jazzlib/jazzlib.jar"))
+                 (classpath (mapcar '(lambda (j) (concat src-dir j)) jars)))
+            (setq jde-global-classpath (push cls-dir classpath)))
+          (setq jde-jdk-registry '(("1.5.0_07" . "/localdisk/jdk1.5.0_07")))
+          (message "Change JDE paths for proj %s" proj)
+          t)
+      (progn 
+        (message "Can't read dir %s" src-dir)
+        nil))))
