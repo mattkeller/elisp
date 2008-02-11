@@ -17,6 +17,8 @@
 (blink-cursor-mode nil)             ;; no blinking!
 (auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
 
+(setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
+
 ;; ---------------------------------------------------------
 ;; Load utility libs
 ;; ---------------------------------------------------------
@@ -38,7 +40,7 @@
 (global-set-key (kbd "C-x C-b") 'bs-show)
 
 (global-set-key [f1]  'goto-line)
-(global-set-key [f2]  'save-buffer)
+(global-set-key [f2]  'bm-next)
 (global-set-key [f3]  'kill-buffer)
 (global-set-key [f4]  'shell)
 (global-set-key [f5]  'compile)
@@ -146,6 +148,8 @@
                              (setq c-basic-offset 3)
                              (setq-default indent-tabs-mode nil)))
 
+(setq ecb-layout-name "left10")
+
 ;; ----------------------------------------------------------
 ;; Tramp (remote editing)
 ;; ----------------------------------------------------------
@@ -174,6 +178,14 @@
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
+
+;; ---------------------------------------------------------
+;; file-local bookmarks from bm.el
+;; ---------------------------------------------------------
+(require 'bm)
+(global-set-key (kbd "<M-f2>") 'bm-toggle)
+(global-set-key (kbd "<f2>")   'bm-next)
+(global-set-key (kbd "<S-f2>") 'bm-previous)
 
 ;; ----------------------------------------------------------
 ;; my elisp functions
