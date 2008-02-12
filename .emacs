@@ -63,7 +63,6 @@
       delete-old-versions t            ; Ask to delete excess backup versions?
       backup-by-copying-when-linked t) ; Copy linked files, don't rename.
 
-
 ;; ---------------------------------------------------------
 ;; Programming Style
 ;;   Java and C++ pick up c-mode-hook
@@ -73,7 +72,6 @@
              (c-set-style "K&R")
              (setq c-basic-offset 4)
              (setq indent-tabs-mode nil)))
-
 
 ;; ---------------------------------------------------------
 ;; Ruby setup
@@ -113,7 +111,6 @@
 (setq auto-mode-alist
       (cons '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\)\\'" . nxml-mode)
 	    auto-mode-alist))
-
 
 ;; ---------------------------------------------------------
 ;; Java Setup
@@ -243,7 +240,7 @@
       (setq src-dir git-dir))
     (if (file-directory-p src-dir)
         (progn
-          (setq jde-compile-option-directory wrk-dir)
+          (setq jde-compile-option-directory cls-dir)
           (setq jde-compile-option-sourcepath (list (concat src-dir "mcp_core_root/src")
                                                     (concat src-dir "mcp_core_root/src")
                                                     (concat src-dir "mcp_core_ims/ims")))
