@@ -32,7 +32,7 @@
 (autoload 'light-symbol-mode "light-symbol" "" t)
 (autoload 'htmlize-buffer "htmlize" "" t)
 (autoload 'blank-mode "blank-mode" "Toggle blank visualisation" t)
-(autoload 'typing-of-emacs "The Typing-Of-Emacs, a game" t)
+(autoload 'typing-of-emacs "typing" "The Typing-Of-Emacs, a game" t)
 
 ;; ---------------------------------------------------------
 ;; Custom keybindings
