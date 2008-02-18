@@ -18,6 +18,10 @@
 (auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
+(set-background-color "gray97")
+
+(setq frame-title-format "emacs [%b]")
+(setq icon-title-format "emacs [%b]")
 
 ;; ---------------------------------------------------------
 ;; Load utility libs
@@ -51,6 +55,11 @@
 (global-set-key [f10] 'split-window-horizontally)
 (global-set-key [f11] 'delete-window)
 (global-set-key [f12] 'delete-other-windows)
+
+(global-set-key (kbd "C-x <down>")  'windmove-down)
+(global-set-key (kbd "C-x <up>")    'windmove-up)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+(global-set-key (kbd "C-x <left>")  'windmove-left)
 
 ;; ---------------------------------------------------------
 ;; Backups in ~/.backups
