@@ -161,7 +161,7 @@
 ;; ----------------------------------------------------------
 (require 'etags-select)
 (setq etags-select-no-select-for-one-match nil)
-(global-set-key "\M-." 'etags-select-find-tag-at-point)
+(global-set-key "\M-." 'etags-select-find-tag)
 (global-set-key [f7] 'etags-select-find-tag)
 
 ;; ----------------------------------------------------------
@@ -284,3 +284,12 @@
       (progn 
         (message "Can't read dir %s" src-dir)
         nil))))
+
+(defun occur-at-point()
+  "invokes occur with the thing-at-point"
+  (interactive)
+  (if (thing-at-point 'symbol)
+      (occur (thing-at-point 'symbol))
+    (call-interactively 'other-window)))
+
+(global-set-key "\C-cg" 'occur-at-point)
