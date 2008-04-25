@@ -22,6 +22,7 @@
 
 (setq frame-title-format "emacs [%b]")
 (setq icon-title-format "emacs [%b]")
+(which-func-mode)
 
 ;; ---------------------------------------------------------
 ;; Load utility libs
