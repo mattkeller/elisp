@@ -16,6 +16,7 @@
 (setq scroll-conservatively 1)      ;; smooth scrolling
 (blink-cursor-mode nil)             ;; no blinking!
 (auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
+(transient-mark-mode)
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
 (set-background-color "gray97")
@@ -97,6 +98,7 @@
 (autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
 (autoload 'inf-ruby-keys "inf-ruby" "key defs for inf-ruby in ruby-mode")
 (add-hook 'ruby-mode-hook 'turn-on-font-lock)
+(autoload 'rubydb "rubydb2x" "Ruby debugger" t)
 
 (defun ruby-lint ()
   "Performs a Ruby compile check on the current file."
@@ -109,15 +111,34 @@
              (local-set-key [f5] 'ruby-lint)))
 
 ;; ---------------------------------------------------------
-;; SLIME Setup for hendrix
+;; SLIME Setup
 ;; ---------------------------------------------------------
-(when (string-equal system-name "hendrix")
-  (setq inferior-lisp-program "/usr/bin/sbcl --noinform")
-  (add-to-list 'load-path "/home/mk/lisp/slime-2.0")
+(show-paren-mode)
+
+(when (string-equal system-name "mktop")
+  (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
+  (add-to-list 'load-path "/home/mk/elisp/slime")
   (autoload 'slime "slime" "Start and connect to the inferior lisp image" t)
   (autoload 'slime-mode "slime" "Start slime-mode for this buffer" t)
-  (eval-after-load "slime" '(slime-setup)))
+  (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
 
+  (eval-after-load "slime"
+    '(progn
+       (setq slime-complete-symbol*-fancy t
+             slime-complete-symbol-function 'slime-fuzzy-complete-symbol
+             slime-when-complete-filename-expand t
+             slime-truncate-lines nil
+             slime-autodoc-use-multiline-p t)
+       
+       (slime-setup '(slime-fancy slime-asdf))
+       
+       (define-key slime-repl-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
+       (define-key slime-repl-mode-map (kbd "C-c M-;") 'slime-remove-balanced-comments)
+       (define-key slime-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
+       (define-key slime-mode-map (kbd "C-c M-;") 'slime-remove-balanced-comments)
+       (define-key slime-mode-map (kbd "RET") 'newline-and-indent)
+       (define-key slime-mode-map (kbd "") 'newline-and-indent)
+       (define-key slime-mode-map (kbd "C-j") 'newline))))
 
 ;; ---------------------------------------------------------
 ;; NXML Setup
@@ -130,6 +151,7 @@
 ;; ---------------------------------------------------------
 ;; Java Setup
 ;; ---------------------------------------------------------
+(setq auto-mode-alist (cons '("\\.java$" . java-mode) auto-mode-alist))
 (setq semantic-load-turn-useful-things-on t)
 (setq semanticdb-default-save-directory "~/.semantic.cache")
 (setq semanticdb-persistent-path nil)
