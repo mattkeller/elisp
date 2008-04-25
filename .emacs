@@ -44,7 +44,7 @@
 (global-set-key (kbd "M-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-x C-b") 'bs-show)
 
-(global-set-key [f1]  'goto-line)
+(global-set-key [f1]  'bs-show)
 (global-set-key [f2]  'bm-next)
 (global-set-key [f3]  'kill-buffer)
 (global-set-key [f4]  'shell)
@@ -61,6 +61,9 @@
 (global-set-key (kbd "C-x <up>")    'windmove-up)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 (global-set-key (kbd "C-x <left>")  'windmove-left)
+
+(global-set-key (kbd "M-_") 'shrink-window)
+(global-set-key (kbd "M-+") 'enlarge-window)
 
 ;; ---------------------------------------------------------
 ;; Backups in ~/.backups
@@ -160,7 +163,7 @@
 ;; ----------------------------------------------------------
 ;; etags-select
 ;; ----------------------------------------------------------
-(require 'etags-select)
+(autoload 'etags-select-find-tag "etags-select" "for etags-select method" t)
 (setq etags-select-no-select-for-one-match nil)
 (global-set-key "\M-." 'etags-select-find-tag)
 (global-set-key [f7] 'etags-select-find-tag)
