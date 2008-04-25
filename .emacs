@@ -117,28 +117,46 @@
 
 (when (string-equal system-name "mktop")
   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
-  (add-to-list 'load-path "/home/mk/elisp/slime")
+  (add-to-list 'load-path "/home/mk/.sbcl/site/slime")
+  (add-to-list 'load-path "/home/mk/.sbcl/site/slime/contrib")
   (autoload 'slime "slime" "Start and connect to the inferior lisp image" t)
   (autoload 'slime-mode "slime" "Start slime-mode for this buffer" t)
   (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+  (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
 
   (eval-after-load "slime"
     '(progn
+       (slime-setup '(slime-fancy slime-asdf slime-banner slime-highlight-edits))
+
        (setq slime-complete-symbol*-fancy t
              slime-complete-symbol-function 'slime-fuzzy-complete-symbol
              slime-when-complete-filename-expand t
              slime-truncate-lines nil
-             slime-autodoc-use-multiline-p t)
+             slime-autodoc-use-multiline-p t
+             slime-startup-animation nil)
        
-       (slime-setup '(slime-fancy slime-asdf))
-       
-       (define-key slime-repl-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
+       (define-key slime-mode-map      (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
+       (define-key slime-repl-mode-map (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
+       (define-key slime-mode-map      (kbd "TAB")     'slime-indent-and-complete-symbol)
+       (define-key slime-mode-map      (kbd "C-c ;")   'slime-insert-balanced-comments)
+       (define-key slime-repl-mode-map (kbd "C-c ;")   'slime-insert-balanced-comments)
+       (define-key slime-mode-map      (kbd "C-c M-;") 'slime-remove-balanced-comments)
        (define-key slime-repl-mode-map (kbd "C-c M-;") 'slime-remove-balanced-comments)
-       (define-key slime-mode-map (kbd "C-c ;") 'slime-insert-balanced-comments)
-       (define-key slime-mode-map (kbd "C-c M-;") 'slime-remove-balanced-comments)
-       (define-key slime-mode-map (kbd "RET") 'newline-and-indent)
-       (define-key slime-mode-map (kbd "") 'newline-and-indent)
-       (define-key slime-mode-map (kbd "C-j") 'newline))))
+       (define-key slime-mode-map      (kbd "RET")     'newline-and-indent)
+       (define-key slime-mode-map      (kbd "")        'newline-and-indent)
+       (define-key slime-mode-map      (kbd "C-j")     'newline)
+       (define-key slime-mode-map      (kbd "<f5>")    'slime-selector)
+       (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
+       (define-key slime-mode-map      (kbd "C-c r")   'goto-repl)
+       
+       (paredit-mode +1))))
+
+;; do slime mode for all lisp files
+(add-hook 'lisp-mode-hook (lambda ()
+                            (cond ((not (featurep 'slime))
+                                   (require 'slime)
+                                   (normal-mode)))
+			    (modify-syntax-entry ?- "w")))
 
 ;; ---------------------------------------------------------
 ;; NXML Setup
@@ -183,6 +201,15 @@
                              (setq-default indent-tabs-mode nil)))
 
 (setq ecb-layout-name "left10")
+
+
+;; ----------------------------------------------------------
+;; Javascript 
+;; ----------------------------------------------------------
+(autoload 'js2-mode "js2" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(setq js2-basic-offset 2)
+(setq js2-use-font-lock-faces t)
 
 ;; ----------------------------------------------------------
 ;; etags-select
@@ -321,3 +348,9 @@
     (call-interactively 'other-window)))
 
 (global-set-key "\C-cg" 'occur-at-point)
+
+(defun goto-repl ()
+  "Open the slime REPL buffer in the current window"
+  (interactive)
+  (when (get-buffer "*slime-repl sbcl*")
+    (switch-to-buffer "*slime-repl sbcl*")))
