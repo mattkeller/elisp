@@ -23,6 +23,7 @@
 (setq frame-title-format "emacs [%b]")
 (setq icon-title-format "emacs [%b]")
 (which-func-mode)
+(setq mouse-yank-at-point t)        ;; paste at cursor, not mouse location
 
 ;; ---------------------------------------------------------
 ;; Load utility libs
@@ -43,6 +44,7 @@
 (global-set-key (kbd "M-s") 'isearch-forward-regexp)
 (global-set-key (kbd "M-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-x C-b") 'bs-show)
+(global-set-key (kbd "M-g") 'goto-line)
 
 (global-set-key [f1]  'bs-show)
 (global-set-key [f2]  'bm-next)
