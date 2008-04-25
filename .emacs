@@ -157,6 +157,14 @@
 (setq ecb-layout-name "left10")
 
 ;; ----------------------------------------------------------
+;; etags-select
+;; ----------------------------------------------------------
+(require 'etags-select)
+(setq etags-select-no-select-for-one-match nil)
+(global-set-key "\M-." 'etags-select-find-tag-at-point)
+(global-set-key [f7] 'etags-select-find-tag)
+
+;; ----------------------------------------------------------
 ;; Tramp (remote editing)
 ;; ----------------------------------------------------------
 (setq tramp-default-method "scp")
