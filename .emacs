@@ -26,6 +26,9 @@
 (which-func-mode)
 (setq mouse-yank-at-point t)        ;; paste at cursor, not mouse location
 
+(when (fboundp 'ffap-bindings)      ;; find-file-at-point
+  (ffap-bindings))
+
 ;; ---------------------------------------------------------
 ;; Load utility libs
 ;; ---------------------------------------------------------
