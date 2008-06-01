@@ -8,12 +8,8 @@
 (tool-bar-mode 0)
 (setq-default indent-tabs-mode nil) ;; by default, insert spaces, not a full tab
 (setq visible-bell t)               ;; no beeping!
-(setq next-line-add-newlines nil)   ;; don't add newlines just by scrolling
 (fset 'yes-or-no-p 'y-or-n-p)       ;; query with y or n always
 (setq inhibit-splash-screen t)
-(setq scroll-preserve-screen-position t) ;; cursor stays in same place during page up/down
-(setq scroll-margin 2)              ;; start scrolling when 2 rows from top/bottom
-(setq scroll-conservatively 1)      ;; smooth scrolling
 (blink-cursor-mode nil)             ;; no blinking!
 (auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
 (transient-mark-mode)
@@ -28,6 +24,26 @@
 
 (when (fboundp 'ffap-bindings)      ;; find-file-at-point
   (ffap-bindings))
+
+;;; Scroll settings
+(setq scroll-preserve-screen-position nil) ;; cursor stays in same place during page up/down
+(setq scroll-margin 2)                     ;; start scrolling when 2 rows from top/bottom
+(setq scroll-conservatively 1)             ;; smooth scrolling
+(setq next-line-add-newlines nil)          ;; don't add newlines just by scrolling
+
+(defadvice scroll-up (around ewd-scroll-up first act)
+  "Keep cursor in the same column."
+  (let ((col (current-column)))
+    ad-do-it
+    (move-to-column col)))
+
+(defadvice scroll-down (around ewd-scroll-down first act)
+  "Keep cursor in the same column."
+  (let ((col (current-column)))
+    ad-do-it
+    (move-to-column col)))
+
+
 
 ;; ---------------------------------------------------------
 ;; Load utility libs
@@ -74,7 +90,7 @@
 ;; ---------------------------------------------------------
 ;; Backups in ~/.backups
 ;; ---------------------------------------------------------
-(defconst use-backup-dir t)   
+(defconst use-backup-dir t)
 (setq backup-directory-alist (quote ((".*" . "~/.backup")))
       version-control t                ; Use version numbers for backups
       kept-new-versions 16             ; Number of newest versions to keep
@@ -137,7 +153,7 @@
              slime-truncate-lines nil
              slime-autodoc-use-multiline-p t
              slime-startup-animation nil)
-       
+
        (define-key slime-mode-map      (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
        (define-key slime-repl-mode-map (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
        (define-key slime-mode-map      (kbd "TAB")     'slime-indent-and-complete-symbol)
@@ -151,7 +167,7 @@
        (define-key slime-mode-map      (kbd "<f5>")    'slime-selector)
        (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
        (define-key slime-mode-map      (kbd "C-c r")   'goto-repl)
-       
+
        (paredit-mode +1))))
 
 ;; do slime mode for all lisp files
@@ -183,13 +199,13 @@
 
 (setq defer-loading-jde t)
 
-(if defer-loading-jde 
+(if defer-loading-jde
     (progn
       (autoload 'jde-mode "jde" "JDE mode." t)
       (setq auto-mode-alist
             (append
              '(("\\.java\\'" . jde-mode))
-             auto-mode-alist))) 
+             auto-mode-alist)))
   (require 'jde))
 
 (defun my-jde-mode-hook ()
@@ -207,7 +223,7 @@
 
 
 ;; ----------------------------------------------------------
-;; Javascript 
+;; Javascript
 ;; ----------------------------------------------------------
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
@@ -269,7 +285,7 @@
   (indent-region (point-min) (point-max) nil)
   (untabify (point-min) (point-max)))
 
-(defun tag-region (element) 
+(defun tag-region (element)
   "Reads element name from minibuffer and inserts start and end tags."
   (interactive "sTag region with element: ")
   (save-excursion
@@ -278,7 +294,7 @@
         (setq element (replace-match "" nil nil element))) ;; trim whitespace
       (when (string-match "^[ \t]*" element)
         (setq element (replace-match "" nil nil element))) ;; trim whitespace
-      (goto-char (region-end)) 
+      (goto-char (region-end))
       (insert "</" element ">")
       (goto-char (region-beginning))
       (insert "<" element ">"))))
@@ -322,7 +338,7 @@
           (let* ((jars '("mcp_3rdParty/java/database/oracle/oracle.zip"
                          "mcp_3rdParty/java/management/jdmk/jawall.jar"
                          "mcp_3rdParty/java/megaco/megaco.jar"
-                         "mcp_3rdParty/java/parsing/jdom/jdom.jar" 
+                         "mcp_3rdParty/java/parsing/jdom/jdom.jar"
                          "mcp_3rdParty/java/uas/uasemClient.jar"
                          "mcp_3rdParty/java/tools/sun/tools.jar"
                          "mcp_3rdParty/java/axis/axis.jar"
@@ -339,7 +355,7 @@
           (setq jde-jdk-registry '(("1.5.0_07" . "/localdisk/jdk1.5.0_07")))
           (message "Change JDE paths for proj %s" proj)
           t)
-      (progn 
+      (progn
         (message "Can't read dir %s" src-dir)
         nil))))
 
