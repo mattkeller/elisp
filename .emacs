@@ -55,6 +55,8 @@
 (autoload 'htmlize-buffer "htmlize" "" t)
 (autoload 'blank-mode "blank-mode" "Toggle blank visualisation" t)
 (autoload 'typing-of-emacs "typing" "The Typing-Of-Emacs, a game" t)
+(autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
+(add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 
 ;; ---------------------------------------------------------
 ;; Custom keybindings
