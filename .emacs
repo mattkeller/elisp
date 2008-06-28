@@ -170,7 +170,8 @@
        (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
        (define-key slime-mode-map      (kbd "C-c r")   'goto-repl)
 
-       (paredit-mode +1))))
+       (paredit-mode +1)
+       (require 'ecb))))
 
 ;; do slime mode for all lisp files
 (add-hook 'lisp-mode-hook (lambda ()
