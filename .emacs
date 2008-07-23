@@ -43,8 +43,6 @@
     ad-do-it
     (move-to-column col)))
 
-
-
 ;; ---------------------------------------------------------
 ;; Load utility libs
 ;; ---------------------------------------------------------
@@ -99,6 +97,13 @@
       kept-old-versions 2              ; Number of oldest versions to keep
       delete-old-versions t            ; Ask to delete excess backup versions?
       backup-by-copying-when-linked t) ; Copy linked files, don't rename.
+
+;; ---------------------------------------------------------
+;; Emacs Code Browser
+;; ---------------------------------------------------------
+(add-to-list 'load-path "~/elisp/ecb-2.32")
+(require 'ecb-autoloads)
+(setq ecb-layout-name "left10")
 
 ;; ---------------------------------------------------------
 ;; Programming Style
@@ -170,8 +175,7 @@
        (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
        (define-key slime-mode-map      (kbd "C-c r")   'goto-repl)
 
-       (paredit-mode +1)
-       (require 'ecb))))
+       (paredit-mode +1))))
 
 ;; do slime mode for all lisp files
 (add-hook 'lisp-mode-hook (lambda ()
@@ -197,7 +201,6 @@
 (setq semanticdb-persistent-path nil)
 (load-file "~/elisp/cedet-1.0pre3/common/cedet.el")
 (add-to-list 'load-path "~/local/share/emacs/site-lisp/elib")
-(add-to-list 'load-path "~/elisp/ecb-2.32")
 (add-to-list 'load-path "~/elisp/jde-2.3.5.1/lisp")
 
 (setq defer-loading-jde t)
@@ -212,8 +215,7 @@
   (require 'jde))
 
 (defun my-jde-mode-hook ()
-  (global-set-key [f5] 'jde-compile)
-  (require 'ecb))
+  (global-set-key [f5] 'jde-compile))
 
 (add-hook 'jde-mode-hook 'my-jde-mode-hook)
 
@@ -221,9 +223,6 @@
                              (c-set-style "java")
                              (setq c-basic-offset 3)
                              (setq-default indent-tabs-mode nil)))
-
-(setq ecb-layout-name "left10")
-
 
 ;; ----------------------------------------------------------
 ;; Javascript
