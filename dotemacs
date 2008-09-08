@@ -31,6 +31,9 @@
 (setq scroll-conservatively 1)             ;; smooth scrolling
 (setq next-line-add-newlines nil)          ;; don't add newlines just by scrolling
 
+(setq compilation-read-command t)       ;; always ask for compile command
+(setq compilation-scroll-output t)      ;; scroll compilation window
+
 (defadvice scroll-up (around ewd-scroll-up first act)
   "Keep cursor in the same column."
   (let ((col (current-column)))
