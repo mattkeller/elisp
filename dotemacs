@@ -273,10 +273,10 @@
 ;; ---------------------------------------------------------
 ;; file-local bookmarks from bm.el
 ;; ---------------------------------------------------------
-(require 'bm)
-(global-set-key (kbd "<M-f2>") 'bm-toggle)
-(global-set-key (kbd "<f2>")   'bm-next)
-(global-set-key (kbd "<S-f2>") 'bm-previous)
+;; (require 'bm)
+;; (global-set-key (kbd "<M-f2>") 'bm-toggle)
+;; (global-set-key (kbd "<f2>")   'bm-next)
+;; (global-set-key (kbd "<S-f2>") 'bm-previous)
 
 ;; ----------------------------------------------------------
 ;; my elisp functions
