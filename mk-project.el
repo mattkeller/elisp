@@ -165,7 +165,7 @@ Compare with `if'."
 (defun project-compile (opts)
   (interactive "sCompile options: ")
   (cd mk-proj-basedir)
-  (compile (concat mk-proj-compile-cmd opts))) 
+  (compile (concat mk-proj-compile-cmd " " opts))) 
 
 ;; ---------------------------------------------------------------------
 ;; Run me!
