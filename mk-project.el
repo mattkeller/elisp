@@ -13,7 +13,6 @@
 ;;;;   Complile file in project
 ;;;;   VC operations?
 ;;;;   Provide hooks for further per-project setup
-;;;;
 
 ;; ---------------------------------------------------------------------
 ;; Projects: defined ${project-name}-config vars for each project
@@ -136,6 +135,10 @@ Compare with `if'."
 ;; Operational fns
 ;; ---------------------------------------------------------------------
 
+(defun etags-refresh-callback (process event)
+  (message "Etags process %s received event %s" process event)
+  (visit-tags-table mk-proj-tags-file))
+
 (defun project-tags-build ()
   (interactive)
   (if mk-proj-tags-file
@@ -144,8 +147,10 @@ Compare with `if'."
       (message "Refreshing TAGS file %s (in the background)" mk-proj-tags-file)
       (let ((etags-cmd (concat "etags `find " mk-proj-basedir 
                                " -type f" (find-cmd-src-patterns mk-proj-src-patterns) "` "
-                               "-o " mk-proj-tags-file)))
-        (start-process-shell-command "etags-process" "*etags*" etags-cmd)))
+                               "-o " mk-proj-tags-file))
+            (proc-name "etags-process"))
+        (start-process-shell-command proc-name "*etags*" etags-cmd)
+        (set-process-sentinel (get-process proc-name) 'etags-refresh-callback)))
     (message "mk-proj-tags-file is not set")))
 
 (defun find-cmd-src-patterns (src-patterns)
