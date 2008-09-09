@@ -145,9 +145,8 @@ Compare with `if'."
     (progn
       (cd mk-proj-basedir)
       (message "Refreshing TAGS file %s (in the background)" mk-proj-tags-file)
-      (let ((etags-cmd (concat "etags `find " mk-proj-basedir 
-                               " -type f" (find-cmd-src-patterns mk-proj-src-patterns) "` "
-                               "-o " mk-proj-tags-file))
+      (let ((etags-cmd (concat "find " mk-proj-basedir " -type f " (find-cmd-src-patterns mk-proj-src-patterns) 
+                               " | etags -o " mk-proj-tags-file " - "))
             (proc-name "etags-process"))
         (start-process-shell-command proc-name "*etags*" etags-cmd)
         (set-process-sentinel (get-process proc-name) 'etags-refresh-callback)))
