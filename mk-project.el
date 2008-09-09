@@ -43,6 +43,16 @@
                           (startup-hook nil)
                           (shutdown-hook nil)))
 
+(defvar 12dyn-config '((name "12dyn")
+                       (basedir "/mcp/")
+                       (src-patterns ("*.java" "*.jsp"))
+                       (ignore-patterns ("*.class" "*.wsdl"))
+                       (tags-file "/home/matthewk/.TAGS12")
+                       (git-p nil)
+                       (compile-cmd "mcpant 12dyn")
+                       (startup-hook nil)
+                       (shutdown-hook nil)))
+
 ;; ---------------------------------------------------------------------
 ;; Utils
 ;; ---------------------------------------------------------------------
