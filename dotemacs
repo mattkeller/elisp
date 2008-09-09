@@ -47,6 +47,8 @@
     ad-do-it
     (move-to-column col)))
 
+(load-file "~/elisp/mk-project.el") 
+
 ;; ---------------------------------------------------------
 ;; Load utility libs
 ;; ---------------------------------------------------------
@@ -285,6 +287,7 @@
 ;; ----------------------------------------------------------
 ;; my elisp functions
 ;; ----------------------------------------------------------
+
 (defun iwb ()
   "indent whole buffer"
   (interactive)
@@ -325,86 +328,6 @@
 
 (global-set-key [(control o)] 'vi-open-next-line)
 (global-set-key [(control O)] 'vi-open-prev-line)
-
-(defun project-none ()
-  (interactive)
-  (setq mk-proj-name nil
-        mk-proj-basedir (getenv "HOME")
-        mk-proj-src-patterns nil
-        mk-proj-ignore-patterns nil
-        mk-proj-git-p nil
-        mk-proj-tags-file nil
-        mk-proj-compile-cmd "make -k")
-  ;; TODO: clear tags?
-  ;; key bindings
-  (global-set-key [f5] 'compile)
-  (global-set-key [f6] 'grep-find)
-  (global-unset-key (kbd "C-c t")))
-
-(project-none) ; default
-
-(defun project-qrev ()
-  (interactive)
-  (setq mk-proj-last-proj mk-proj-name
-        mk-proj-name "qrev"
-        mk-proj-basedir "/home/mk/code/lisp/qrev/"
-        mk-proj-src-patterns "*.lisp"
-        mk-proj-ignore-patterns "*.fasl"
-        mk-proj-git-p t
-        mk-proj-compile-cmd "make -k")
-  ;; for shell?
-  (cd mk-proj-basedir)
-  (project-tags-init)
-  ;; key bindings
-  (global-set-key [f5] 'project-compile)
-  (global-set-key [f6] 'project-grep)
-  (global-set-key (kbd "C-c t") 'project-tags-refresh))
-
-(defun project-tags-init ()
-  (interactive)
-  (let ((found-tags-file nil))
-    (dolist (tag-file (list (concat mk-proj-basedir "TAGS") (concat (getenv "HOME") ".TAGS" mk-proj-name)))
-      (when (file-exists-p tag-file)
-        (progn
-          (setq mk-proj-tags-file tag-file)
-          (visit-tags-table mk-proj-tags-file)
-          (setq found-tags-file t)
-          (message "Found TAGS for %s at %s" mk-proj-name mk-proj-tags-file))))
-    (unless found-tags-file
-      (message "Failed to find a tags file for project %s" mk-proj-name)
-      ;; TODO: ask if they want to create a tags file
-      )))
-
-(defun project-tags-refresh ()
-  (interactive)
-  (if (and mk-proj-tags-file (file-exists-p mk-proj-tags-file))
-    (progn
-      (cd mk-proj-basedir)
-      (message "Refreshing tags file...")
-      (call-process-shell-command (concat "etags `find " mk-proj-basedir " -type f` -o " mk-proj-tags-file))
-      (message "Done refreshing tags file %s" mk-proj-tags-file)
-      (visit-tags-table mk-proj-tags-file))
-    (project-tags-init)))
-  
-(defun project-grep (s)
-  (interactive "sSearch project for: ")
-  (cd mk-proj-basedir)
-  (let ((find-cmd (concat "find . -type f"))
-        (grep-cmd (concat "grep -n \"" s "\"")))
-    (when mk-proj-src-patterns
-      (setq find-cmd (concat find-cmd " -name \"" mk-proj-src-patterns "\"")))
-    (when mk-proj-tags-file
-      (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
-    (when mk-proj-git-p 
-      (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
-    ;; TODO: if git, exclude .git, etc
-    ;; TODO: exclude ignore-patterns
-    (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd))))
-
-(defun project-compile (opts)
-  (interactive "sCompile options: ")
-  (cd mk-proj-basedir)
-  (compile (concat mk-proj-compile-cmd opts))) 
 
 (defun mcp-set-proj (proj)
   (interactive "sProject name: ")
@@ -459,4 +382,5 @@
   (interactive)
   (when (get-buffer "*slime-repl sbcl*")
     (switch-to-buffer "*slime-repl sbcl*")))
+
 
