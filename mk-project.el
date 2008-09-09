@@ -131,13 +131,11 @@ Compare with `if'."
   (if mk-proj-tags-file
     (progn
       (cd mk-proj-basedir)
-      (message "Refreshing TAGS file %s..." mk-proj-tags-file)
+      (message "Refreshing TAGS file %s (in the background)" mk-proj-tags-file)
       (let ((etags-cmd (concat "etags `find " mk-proj-basedir 
                                " -type f" (find-cmd-src-patterns mk-proj-src-patterns) "` "
                                "-o " mk-proj-tags-file)))
-        (call-process-shell-command etags-cmd))
-      (message "Done refreshing TAGS file %s." mk-proj-tags-file)
-      (visit-tags-table mk-proj-tags-file))
+        (start-process-shell-command "etags-process" "*etags*" etags-cmd)))
     (message "mk-proj-tags-file is not set")))
 
 (defun find-cmd-src-patterns (src-patterns)
