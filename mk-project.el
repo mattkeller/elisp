@@ -14,7 +14,6 @@
 ;;;;   VC operations?
 ;;;;   Provide hooks for further per-project setup
 ;;;;
-;;;; TODO: allow multiple patterns in find cmd (find . -name <pat1> -o -name <pat2>
 
 ;; ---------------------------------------------------------------------
 ;; Projects: defined ${project-name}-config vars for each project
@@ -22,8 +21,8 @@
 
 (defvar qrev-config '((name "qrev")
                       (basedir "/home/mk/code/lisp/qrev/")
-                      (src-patterns "*.lisp")
-                      (ignore-patterns "*.fasl")
+                      (src-patterns ("*.lisp"))
+                      (ignore-patterns ("*.fasl"))
                       (tags-file "/home/mk/code/lisp/qrev/TAGS")
                       (git-p t)
                       (compile-cmd "make -k")
@@ -36,8 +35,8 @@
 
 (defvar 12static-config '((name "12static")
                           (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
-                          (src-patterns "*.java")
-                          (ignore-patterns "*.class")
+                          (src-patterns ("*.java" "*.jsp"))
+                          (ignore-patterns ("*.class" "*.wsdl"))
                           (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
                           (git-p t)
                           (compile-cmd "mcpant 12static")
@@ -133,10 +132,22 @@ Compare with `if'."
     (progn
       (cd mk-proj-basedir)
       (message "Refreshing TAGS file %s..." mk-proj-tags-file)
-      (call-process-shell-command (concat "etags `find " mk-proj-basedir " -type f` -o " mk-proj-tags-file))
+      (let ((etags-cmd (concat "etags `find " mk-proj-basedir 
+                               " -type f" (find-cmd-src-patterns mk-proj-src-patterns) "` "
+                               "-o " mk-proj-tags-file)))
+        (call-process-shell-command etags-cmd))
       (message "Done refreshing TAGS file %s." mk-proj-tags-file)
       (visit-tags-table mk-proj-tags-file))
     (message "mk-proj-tags-file is not set")))
+
+(defun find-cmd-src-patterns (src-patterns)
+  "Generate the \( -name <pat1> -o -name <pat2> ... \) pattern for find cmd"
+  (let ((name-expr " \\("))
+    (dolist (pat src-patterns)
+      (setq name-expr (concat name-expr " -name \"" pat "\" -o "))) 
+    (when (string= (substring name-expr (- (length name-expr) 3)) "-o ")
+      (setq name-expr (substring name-expr 0 (- (length name-expr) 3))))
+    (concat name-expr "\\) ")))
   
 (defun project-grep (s)
   (interactive "sGrep project for: ")
@@ -144,7 +155,7 @@ Compare with `if'."
   (let ((find-cmd (concat "find . -type f"))
         (grep-cmd (concat "grep -i -n \"" s "\"")))
     (when mk-proj-src-patterns
-      (setq find-cmd (concat find-cmd " -name \"" mk-proj-src-patterns "\"")))
+      (setq find-cmd (concat find-cmd (find-cmd-src-patterns mk-proj-src-patterns))))
     (when mk-proj-tags-file
       (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
     (when mk-proj-git-p 
