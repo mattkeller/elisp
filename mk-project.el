@@ -1,18 +1,18 @@
-;;;; mk-project.el --  Lightweight 'project's
+;;;; mk-project.el --  Lightweight project handling
 
 ;;;; Define new wrapper fns (grep, tags, etc) that use new vars to customize
-;;;; their operations. Don't touch std emacs vars or fns. On project init, 
+;;;; their operations. Don't touch std emacs vars or fns. On project init,
 ;;;; set vars, set keybindings.
 ;;;;
-;;;; Operations: 
-;;;;   Set tags file
-;;;;   Rebuild tags file
-;;;;   Grep the project properly
-;;;;   Open shell in project base dir
-;;;;   Build project
-;;;;   Complile file in project
-;;;;   VC operations?
-;;;;   Provide hooks for further per-project setup
+;;;; Operations:
+;;;;   * Rebuild tags file: project-tags-build
+;;;;   * Grep the project:  project-grep
+;;;;   * Build project:     project-compile
+;;;;
+;;;; Admin:
+;;;;   * Load project:   project-load
+;;;;   * Quit project:   project-unload
+;;;;   * Project status: project-status
 
 ;; ---------------------------------------------------------------------
 ;; Projects: defined ${project-name}-config vars for each project
@@ -82,6 +82,7 @@ Compare with `if'."
 ;; ---------------------------------------------------------------------
 
 (defun project-defaults ()
+  "Set all default values for vars and keybindings"
   (setq mk-proj-name nil
         mk-proj-basedir (getenv "HOME")
         mk-proj-src-patterns nil
@@ -97,11 +98,13 @@ Compare with `if'."
   (global-unset-key (kbd "C-c t")))
 
 (defun config-val (key config-alist)
+  "Get a config value from a config alist, nil if doesn't exist"
   (if (assoc key config-alist)
     (car (cdr (assoc key config-alist)))
     nil))
 
 (defun project-load-vars (proj-alist)
+  "Set vars from config alist"
   (project-defaults)
   ;; required vars
   (setq mk-proj-name (config-val 'name proj-alist))
@@ -115,7 +118,8 @@ Compare with `if'."
   (aif (config-val 'startup-hook proj-alist) (setq mk-proj-startup-hooks (list it)))
   (aif (config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hooks (list it))))
 
-(defun project-start (name)
+(defun project-load (name)
+  "Load a project <name>'s settings. An alist called <name>-config must be defined."
   (interactive "sProject Alist Name: ")
   (project-load-vars (symbol-value (intern-soft (concat name "-config")))) ; TODO: improve error handling!
   (cd mk-proj-basedir)
@@ -126,7 +130,8 @@ Compare with `if'."
   (when mk-proj-startup-hooks
     (run-hooks 'mk-proj-startup-hooks)))
 
-(defun project-quit ()
+(defun project-unload ()
+  "Revert to default project settings."
   (interactive)
   (when mk-proj-shutdown-hooks
     (run-hooks 'mk-proj-shutdown-hooks))
@@ -134,9 +139,10 @@ Compare with `if'."
   (message "Project settings have been cleared"))
 
 (defun project-status ()
+  "View project's variables."
   (interactive)
   (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; Git-p=%s; Tags=%s; Compile=%s; Startup=%s; Shutdown=%s"
-           mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-git-p 
+           mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-git-p
            mk-proj-tags-file mk-proj-compile-cmd mk-proj-startup-hooks mk-proj-shutdown-hooks))
 
 ;; ---------------------------------------------------------------------
@@ -144,16 +150,18 @@ Compare with `if'."
 ;; ---------------------------------------------------------------------
 
 (defun etags-refresh-callback (process event)
+  "Visit tags table when the etags process finishes."
   (message "Etags process %s received event %s" process event)
-  (visit-tags-table mk-proj-tags-file))
+  (visit-tags-table mk-proj-tags-file)) ;; TODO: only visit tags when process completes sucessfully
 
 (defun project-tags-build ()
+  "Regenerate the projects TAG file. Runs in the background."
   (interactive)
   (if mk-proj-tags-file
     (progn
       (cd mk-proj-basedir)
       (message "Refreshing TAGS file %s (in the background)" mk-proj-tags-file)
-      (let ((etags-cmd (concat "find " mk-proj-basedir " -type f " (find-cmd-src-patterns mk-proj-src-patterns) 
+      (let ((etags-cmd (concat "find " mk-proj-basedir " -type f " (find-cmd-src-patterns mk-proj-src-patterns)
                                " | etags -o " mk-proj-tags-file " - "))
             (proc-name "etags-process"))
         (start-process-shell-command proc-name "*etags*" etags-cmd)
@@ -164,10 +172,11 @@ Compare with `if'."
   "Generate the ( -name <pat1> -o -name <pat2> ...) pattern for find cmd"
   (let ((name-expr " \\("))
     (dolist (pat src-patterns)
-      (setq name-expr (concat name-expr " -name \"" pat "\" -o "))) 
+      (setq name-expr (concat name-expr " -name \"" pat "\" -o ")))
     (concat (trim-from-end name-expr "-o ") "\\) ")))
-  
+
 (defun project-grep (s)
+  "Run find-grep using this project's settings for basedir and src files."
   (interactive "sGrep project for: ")
   (cd mk-proj-basedir)
   (let ((find-cmd (concat "find . -type f"))
@@ -176,14 +185,15 @@ Compare with `if'."
       (setq find-cmd (concat find-cmd (find-cmd-src-patterns mk-proj-src-patterns))))
     (when mk-proj-tags-file
       (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
-    (when mk-proj-git-p 
+    (when mk-proj-git-p
       (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
     (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd))))
 
 (defun project-compile (opts)
+  "Run the compile command for this project."
   (interactive "sCompile options: ")
   (cd mk-proj-basedir)
-  (compile (concat mk-proj-compile-cmd " " opts))) 
+  (compile (concat mk-proj-compile-cmd " " opts)))
 
 ;; ---------------------------------------------------------------------
 ;; Run me!
