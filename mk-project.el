@@ -13,6 +13,8 @@
 ;;;;   Complile file in project
 ;;;;   VC operations?
 ;;;;   Provide hooks for further per-project setup
+;;;;
+;;;; TODO: allow multiple patterns in find cmd (find . -name <pat1> -o -name <pat2>
 
 ;; ---------------------------------------------------------------------
 ;; Projects: defined ${project-name}-config vars for each project
@@ -31,6 +33,16 @@
 (defun qrev-startup-hook () (message "Qrev it up, baby!"))
 
 (defun qrev-shutdown-hook () (message "Adios, qrev"))
+
+(defvar 12static-config '((name "12static")
+                          (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
+                          (src-patterns "*.java")
+                          (ignore-patterns "*.class")
+                          (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
+                          (git-p t)
+                          (compile-cmd "mcpant 12static")
+                          (startup-hook nil)
+                          (shutdown-hook nil)))
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -130,7 +142,7 @@ Compare with `if'."
   (interactive "sGrep project for: ")
   (cd mk-proj-basedir)
   (let ((find-cmd (concat "find . -type f"))
-        (grep-cmd (concat "grep -n \"" s "\"")))
+        (grep-cmd (concat "grep -i -n \"" s "\"")))
     (when mk-proj-src-patterns
       (setq find-cmd (concat find-cmd " -name \"" mk-proj-src-patterns "\"")))
     (when mk-proj-tags-file
