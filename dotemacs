@@ -13,6 +13,7 @@
 (blink-cursor-mode nil)             ;; no blinking!
 (auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
 (transient-mark-mode)
+(put 'narrow-to-region 'disabled nil)
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
 (set-background-color "gray97")
@@ -458,3 +459,4 @@
   (interactive)
   (when (get-buffer "*slime-repl sbcl*")
     (switch-to-buffer "*slime-repl sbcl*")))
+
