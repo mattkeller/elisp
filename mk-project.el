@@ -69,6 +69,14 @@ Compare with `if'."
 	 (progn
 	   ,@false-body)))))
 
+(defun trim-from-end (str tail)
+  "Remove tail from the end of str"
+  (let ((tail-len (length tail))
+        (str-len (length str)))
+    (if (string= (substring str (- str-len tail-len)) tail)
+        (substring str 0 (- str-len tail-len))
+      str)))
+
 ;; ---------------------------------------------------------------------
 ;; Setup fns
 ;; ---------------------------------------------------------------------
@@ -153,13 +161,11 @@ Compare with `if'."
     (message "mk-proj-tags-file is not set")))
 
 (defun find-cmd-src-patterns (src-patterns)
-  "Generate the \( -name <pat1> -o -name <pat2> ... \) pattern for find cmd"
+  "Generate the ( -name <pat1> -o -name <pat2> ...) pattern for find cmd"
   (let ((name-expr " \\("))
     (dolist (pat src-patterns)
       (setq name-expr (concat name-expr " -name \"" pat "\" -o "))) 
-    (when (string= (substring name-expr (- (length name-expr) 3)) "-o ")
-      (setq name-expr (substring name-expr 0 (- (length name-expr) 3))))
-    (concat name-expr "\\) ")))
+    (concat (trim-from-end name-expr "-o ") "\\) ")))
   
 (defun project-grep (s)
   (interactive "sGrep project for: ")
