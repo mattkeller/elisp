@@ -129,24 +129,25 @@ Compare with `if'."
   (aif (config-val 'startup-hook proj-alist) (setq mk-proj-startup-hooks (list it)))
   (aif (config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hooks (list it))))
 
-(defun project-load (name)
-  "Load a project <name>'s settings."
-  (interactive "sProject Alist Name: ")
+(defun project-load ()
+  "Load a project's settings."
+  (interactive)
   (catch 'project-load
-    (aif (find-proj-config name)
-         (project-load-vars it)
-         (message "Project %s does not exist!" name)
-         (throw 'project-load t))
-    (when (not (file-directory-p mk-proj-basedir))
-      (message "Base directory %s does not exist!" mk-proj-basedir)
-      (throw 'project-load t))
-    (cd mk-proj-basedir)
-    (when mk-proj-tags-file (visit-tags-table mk-proj-tags-file))
-    (global-set-key [f5] 'project-compile)
-    (global-set-key [f6] 'project-grep)
-    (global-set-key (kbd "C-c t") 'project-tags-build)
-    (when mk-proj-startup-hooks
-      (run-hooks 'mk-proj-startup-hooks))))
+    (let ((name (completing-read "Project Name: " mk-proj-list)))
+      (aif (find-proj-config name)
+           (project-load-vars it)
+           (message "Project %s does not exist!" name)
+           (throw 'project-load t))
+      (when (not (file-directory-p mk-proj-basedir))
+        (message "Base directory %s does not exist!" mk-proj-basedir)
+        (throw 'project-load t))
+      (cd mk-proj-basedir)
+      (when mk-proj-tags-file (visit-tags-table mk-proj-tags-file))
+      (global-set-key [f5] 'project-compile)
+      (global-set-key [f6] 'project-grep)
+      (global-set-key (kbd "C-c t") 'project-tags-build)
+      (when mk-proj-startup-hooks
+        (run-hooks 'mk-proj-startup-hooks)))))
 
 (defun project-unload ()
   "Revert to default project settings."
