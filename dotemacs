@@ -1,6 +1,8 @@
 (setq custom-file "~/.emacs-custom.el")
 (load custom-file 'noerror)
 
+(require 'cl)
+
 (iswitchb-mode 1)                   ;; more informative buffer switching
 (line-number-mode 1)
 (column-number-mode 1)              ;; lines and columns, duh
