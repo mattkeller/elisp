@@ -47,8 +47,6 @@
     ad-do-it
     (move-to-column col)))
 
-(load-file "~/elisp/mk-project.el") 
-
 ;; ---------------------------------------------------------
 ;; Load utility libs
 ;; ---------------------------------------------------------
@@ -283,6 +281,48 @@
 ;; (global-set-key (kbd "<M-f2>") 'bm-toggle)
 ;; (global-set-key (kbd "<f2>")   'bm-next)
 ;; (global-set-key (kbd "<S-f2>") 'bm-previous)
+
+;; ----------------------------------------------------------
+;; Projects
+;; ----------------------------------------------------------
+(load-file "~/elisp/mk-project.el") 
+
+(add-proj-config "qrev" 
+                 '((name "qrev")
+                   (basedir "/home/mk/code/lisp/qrev/")
+                   (src-patterns ("*.lisp"))
+                   (ignore-patterns ("*.fasl"))
+                   (tags-file "/home/mk/code/lisp/qrev/TAGS")
+                   (git-p t)
+                   (compile-cmd "make -k")
+                   (startup-hook qrev-startup-hook)
+                   (shutdown-hook qrev-shutdown-hook)))
+
+(defun qrev-startup-hook () (message "Qrev it up, baby!"))
+
+(defun qrev-shutdown-hook () (message "Adios, qrev"))
+
+(add-proj-config "12static" 
+                 '((name "12static")
+                   (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
+                   (src-patterns ("*.java" "*.jsp"))
+                   (ignore-patterns ("*.class" "*.wsdl"))
+                   (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
+                   (git-p t)
+                   (compile-cmd "mcpant 12static")
+                   (startup-hook nil)
+                   (shutdown-hook nil)))
+
+(add-proj-config "12dyn" 
+                 '((name "12dyn")
+                   (basedir "/mcp/")
+                   (src-patterns ("*.java" "*.jsp"))
+                   (ignore-patterns ("*.class" "*.wsdl"))
+                   (tags-file "/home/matthewk/.TAGS12")
+                   (git-p nil)
+                   (compile-cmd "mcpant 12dyn")
+                   (startup-hook nil)
+                   (shutdown-hook nil)))
 
 ;; ----------------------------------------------------------
 ;; my elisp functions

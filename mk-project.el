@@ -1,21 +1,20 @@
 ;;;; mk-project.el --  Lightweight project handling
-
-;;;; Define new wrapper fns (grep, tags, etc) that use new vars to customize
-;;;; their operations. Don't touch std emacs vars or fns. On project init,
-;;;; set vars, set keybindings.
 ;;;;
-;;;; Operations:
-;;;;   * Rebuild tags file: project-tags-build
-;;;;   * Grep the project:  project-grep
-;;;;   * Build project:     project-compile
+;;;; Perform per-project operations: grep, TAGS, compile
 ;;;;
 ;;;; Admin:
 ;;;;   * Load project:   project-load
 ;;;;   * Quit project:   project-unload
 ;;;;   * Project status: project-status
+;;;;
+;;;; Operations:
+;;;;   * Rebuild tags file: project-tags-build <C-c t>
+;;;;   * Grep the project:  project-grep       <f6>
+;;;;   * Build project:     project-compile    <f5>
+;;;;
 
 ;; ---------------------------------------------------------------------
-;; Projects
+;; Project list 
 ;; ---------------------------------------------------------------------
 
 (defvar mk-proj-list (make-hash-table :test 'equal))
@@ -25,43 +24,6 @@
 
 (defun add-proj-config (proj-name config-alist)
   (puthash proj-name config-alist mk-proj-list))
-
-(add-proj-config "qrev" 
-                 '((name "qrev")
-                   (basedir "/home/mk/code/lisp/qrev/")
-                   (src-patterns ("*.lisp"))
-                   (ignore-patterns ("*.fasl"))
-                   (tags-file "/home/mk/code/lisp/qrev/TAGS")
-                   (git-p t)
-                   (compile-cmd "make -k")
-                   (startup-hook qrev-startup-hook)
-                   (shutdown-hook qrev-shutdown-hook)))
-
-(defun qrev-startup-hook () (message "Qrev it up, baby!"))
-
-(defun qrev-shutdown-hook () (message "Adios, qrev"))
-
-(add-proj-config "12static" 
-                 '((name "12static")
-                   (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
-                   (src-patterns ("*.java" "*.jsp"))
-                   (ignore-patterns ("*.class" "*.wsdl"))
-                   (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
-                   (git-p t)
-                   (compile-cmd "mcpant 12static")
-                   (startup-hook nil)
-                   (shutdown-hook nil)))
-
-(add-proj-config "12dyn" 
-                 '((name "12dyn")
-                   (basedir "/mcp/")
-                   (src-patterns ("*.java" "*.jsp"))
-                   (ignore-patterns ("*.class" "*.wsdl"))
-                   (tags-file "/home/matthewk/.TAGS12")
-                   (git-p nil)
-                   (compile-cmd "mcpant 12dyn")
-                   (startup-hook nil)
-                   (shutdown-hook nil)))
 
 ;; ---------------------------------------------------------------------
 ;; Utils
