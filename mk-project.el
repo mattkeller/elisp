@@ -42,13 +42,10 @@ Compare with `if'."
 	 (progn
 	   ,@false-body)))))
 
-(defun trim-from-end (str tail)
-  "Remove tail from the end of str"
-  (let ((tail-len (length tail))
-        (str-len (length str)))
-    (if (string= (substring str (- str-len tail-len)) tail)
-        (substring str 0 (- str-len tail-len))
-      str)))
+(defun replace-tail (str tail-str replacement)
+  (if (string-match (concat tail-str "$")  str)
+    (replace-match replacement t t str)
+    str))
 
 ;; ---------------------------------------------------------------------
 ;; Setup fns
@@ -155,7 +152,7 @@ Compare with `if'."
   (let ((name-expr " \\("))
     (dolist (pat src-patterns)
       (setq name-expr (concat name-expr " -name \"" pat "\" -o ")))
-    (concat (trim-from-end name-expr "-o ") "\\) ")))
+    (concat (replace-tail name-expr "-o " "") "\\) ")))
 
 (defun project-grep (s)
   "Run find-grep using this project's settings for basedir and src files."
