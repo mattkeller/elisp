@@ -15,42 +15,53 @@
 ;;;;   * Project status: project-status
 
 ;; ---------------------------------------------------------------------
-;; Projects: defined ${project-name}-config vars for each project
+;; Projects
 ;; ---------------------------------------------------------------------
 
-(defvar qrev-config '((name "qrev")
-                      (basedir "/home/mk/code/lisp/qrev/")
-                      (src-patterns ("*.lisp"))
-                      (ignore-patterns ("*.fasl"))
-                      (tags-file "/home/mk/code/lisp/qrev/TAGS")
-                      (git-p t)
-                      (compile-cmd "make -k")
-                      (startup-hook qrev-startup-hook)
-                      (shutdown-hook qrev-shutdown-hook)))
+(defvar mk-proj-list (make-hash-table :test 'equal))
+
+(defun find-proj-config (proj-name)
+  (gethash proj-name mk-proj-list))
+
+(defun add-proj-config (proj-name config-alist)
+  (puthash proj-name config-alist mk-proj-list))
+
+(add-proj-config "qrev" 
+                 '((name "qrev")
+                   (basedir "/home/mk/code/lisp/qrev/")
+                   (src-patterns ("*.lisp"))
+                   (ignore-patterns ("*.fasl"))
+                   (tags-file "/home/mk/code/lisp/qrev/TAGS")
+                   (git-p t)
+                   (compile-cmd "make -k")
+                   (startup-hook qrev-startup-hook)
+                   (shutdown-hook qrev-shutdown-hook)))
 
 (defun qrev-startup-hook () (message "Qrev it up, baby!"))
 
 (defun qrev-shutdown-hook () (message "Adios, qrev"))
 
-(defvar 12static-config '((name "12static")
-                          (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
-                          (src-patterns ("*.java" "*.jsp"))
-                          (ignore-patterns ("*.class" "*.wsdl"))
-                          (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
-                          (git-p t)
-                          (compile-cmd "mcpant 12static")
-                          (startup-hook nil)
-                          (shutdown-hook nil)))
+(add-proj-config "12static" 
+                 '((name "12static")
+                   (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
+                   (src-patterns ("*.java" "*.jsp"))
+                   (ignore-patterns ("*.class" "*.wsdl"))
+                   (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
+                   (git-p t)
+                   (compile-cmd "mcpant 12static")
+                   (startup-hook nil)
+                   (shutdown-hook nil)))
 
-(defvar 12dyn-config '((name "12dyn")
-                       (basedir "/mcp/")
-                       (src-patterns ("*.java" "*.jsp"))
-                       (ignore-patterns ("*.class" "*.wsdl"))
-                       (tags-file "/home/matthewk/.TAGS12")
-                       (git-p nil)
-                       (compile-cmd "mcpant 12dyn")
-                       (startup-hook nil)
-                       (shutdown-hook nil)))
+(add-proj-config "12dyn" 
+                 '((name "12dyn")
+                   (basedir "/mcp/")
+                   (src-patterns ("*.java" "*.jsp"))
+                   (ignore-patterns ("*.class" "*.wsdl"))
+                   (tags-file "/home/matthewk/.TAGS12")
+                   (git-p nil)
+                   (compile-cmd "mcpant 12dyn")
+                   (startup-hook nil)
+                   (shutdown-hook nil)))
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -119,16 +130,23 @@ Compare with `if'."
   (aif (config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hooks (list it))))
 
 (defun project-load (name)
-  "Load a project <name>'s settings. An alist called <name>-config must be defined."
+  "Load a project <name>'s settings."
   (interactive "sProject Alist Name: ")
-  (project-load-vars (symbol-value (intern-soft (concat name "-config")))) ; TODO: improve error handling!
-  (cd mk-proj-basedir)
-  (when mk-proj-tags-file (visit-tags-table mk-proj-tags-file))
-  (global-set-key [f5] 'project-compile)
-  (global-set-key [f6] 'project-grep)
-  (global-set-key (kbd "C-c t") 'project-tags-build)
-  (when mk-proj-startup-hooks
-    (run-hooks 'mk-proj-startup-hooks)))
+  (catch 'project-load
+    (aif (find-proj-config name)
+         (project-load-vars it)
+         (message "Project %s does not exist!" name)
+         (throw 'project-load t))
+    (when (not (file-directory-p mk-proj-basedir))
+      (message "Base directory %s does not exist!" mk-proj-basedir)
+      (throw 'project-load t))
+    (cd mk-proj-basedir)
+    (when mk-proj-tags-file (visit-tags-table mk-proj-tags-file))
+    (global-set-key [f5] 'project-compile)
+    (global-set-key [f6] 'project-grep)
+    (global-set-key (kbd "C-c t") 'project-tags-build)
+    (when mk-proj-startup-hooks
+      (run-hooks 'mk-proj-startup-hooks))))
 
 (defun project-unload ()
   "Revert to default project settings."
