@@ -170,7 +170,8 @@ Compare with `if'."
 (defun etags-refresh-callback (process event)
   "Visit tags table when the etags process finishes."
   (message "Etags process %s received event %s" process event)
-  (visit-tags-table mk-proj-tags-file)) ;; TODO: only visit tags when process completes sucessfully
+  (when (string= event "finished\n")
+    (visit-tags-table mk-proj-tags-file)))
 
 (defun project-tags-build ()
   "Regenerate the projects TAG file. Runs in the background."
