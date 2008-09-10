@@ -298,7 +298,11 @@
                    (startup-hook qrev-startup-hook)
                    (shutdown-hook qrev-shutdown-hook)))
 
-(defun qrev-startup-hook () (message "Qrev it up, baby!"))
+(defun qrev-startup-hook ()
+  (slime)
+  (dolist (file (directory-files mk-proj-basedir t "\.lisp$" t))
+    (find-file file))
+  (message "Qrev it up, baby!"))
 
 (defun qrev-shutdown-hook () (message "Adios, qrev"))
 
