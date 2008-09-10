@@ -285,6 +285,13 @@
 ;; (global-set-key (kbd "<S-f2>") 'bm-previous)
 
 ;; ----------------------------------------------------------
+;; Yet Another Snippet extension
+;; ----------------------------------------------------------
+(require 'yasnippet)
+(yas/initialize)
+(yas/load-directory "~/elisp/snippets")
+
+;; ----------------------------------------------------------
 ;; Projects
 ;; ----------------------------------------------------------
 (load "mk-project")
