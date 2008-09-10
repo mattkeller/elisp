@@ -294,18 +294,18 @@
 ;; ----------------------------------------------------------
 ;; Projects
 ;; ----------------------------------------------------------
-(load "mk-project")
+(require 'mk-project)
 
-(add-proj-config "qrev"
-                 '((name "qrev")
-                   (basedir "/home/mk/code/lisp/qrev/")
-                   (src-patterns ("*.lisp"))
-                   (ignore-patterns ("*.fasl"))
-                   (tags-file "/home/mk/code/lisp/qrev/TAGS")
-                   (git-p t)
-                   (compile-cmd "make -k")
-                   (startup-hook qrev-startup-hook)
-                   (shutdown-hook qrev-shutdown-hook)))
+(project-add "qrev"
+             '((name "qrev")
+               (basedir "/home/mk/code/lisp/qrev/")
+               (src-patterns ("*.lisp"))
+               (ignore-patterns ("*.fasl"))
+               (tags-file "/home/mk/code/lisp/qrev/TAGS")
+               (git-p t)
+               (compile-cmd "make -k")
+               (startup-hook qrev-startup-hook)
+               (shutdown-hook qrev-shutdown-hook)))
 
 (defun qrev-startup-hook ()
   (slime)
@@ -407,16 +407,16 @@
     (setq jde-jdk-registry mcp-jdk-reg)
     (setq jde-jdk (list jdk))))
 
-(add-proj-config "12static"
-                 '((name "12static")
-                   (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
-                   (src-patterns ("*.java" "*.jsp"))
-                   (ignore-patterns ("*.class" "*.wsdl"))
-                   (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
-                   (git-p t)
-                   (compile-cmd "mcpant 12static")
-                   (startup-hook mcp-12static-startup-hook)
-                   (shutdown-hook nil)))
+(project-add "12static"
+             '((name "12static")
+               (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
+               (git-p t)
+               (compile-cmd "mcpant 12static")
+               (startup-hook mcp-12static-startup-hook)
+               (shutdown-hook nil)))
 
 (defun mcp-12static-startup-hook ()
   (mcp-jde-setup "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3_static/mcp"
@@ -424,16 +424,16 @@
                  mcp12-jars
                  "1.6.0_05"))
 
-(add-proj-config "12dyn"
-                 '((name "12dyn")
-                   (basedir "/mcp/")
-                   (src-patterns ("*.java" "*.jsp"))
-                   (ignore-patterns ("*.class" "*.wsdl"))
-                   (tags-file "/home/matthewk/.TAGS12")
-                   (git-p nil)
-                   (compile-cmd "mcpant 12dyn")
-                   (startup-hook mcp-12dyn-startup-hook)
-                   (shutdown-hook nil)))
+(project-add "12dyn"
+             '((name "12dyn")
+               (basedir "/mcp/")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/home/matthewk/.TAGS12")
+               (git-p nil)
+               (compile-cmd "mcpant 12dyn")
+               (startup-hook mcp-12dyn-startup-hook)
+               (shutdown-hook nil)))
 
 (defun mcp-12dyn-startup-hook ()
   (mcp-jde-setup "/mcp"

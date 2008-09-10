@@ -22,7 +22,8 @@
 (defun find-proj-config (proj-name)
   (gethash proj-name mk-proj-list))
 
-(defun add-proj-config (proj-name config-alist)
+(defun project-add (proj-name config-alist)
+  "Assciate the settings in the alist <config-alist> with project <proj-name>"
   (puthash proj-name config-alist mk-proj-list))
 
 ;; ---------------------------------------------------------------------
@@ -179,3 +180,5 @@ Compare with `if'."
 ;; ---------------------------------------------------------------------
 
 (project-defaults)
+
+(provide 'mk-project)
