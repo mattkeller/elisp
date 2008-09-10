@@ -192,7 +192,7 @@
 ;; ---------------------------------------------------------
 ;; NXML Setup
 ;; ---------------------------------------------------------
-(load "~/elisp/nxml-mode/rng-auto.el")
+(load "~/elisp/nxml-mode/rng-auto")
 (setq auto-mode-alist
       (cons '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\)\\'" . nxml-mode)
 	    auto-mode-alist))
@@ -204,7 +204,7 @@
 (setq semantic-load-turn-useful-things-on t)
 (setq semanticdb-default-save-directory "~/.semantic.cache")
 (setq semanticdb-persistent-path nil)
-(load-file "~/elisp/cedet-1.0pre3/common/cedet.el")
+(load "~/elisp/cedet-1.0pre3/common/cedet")
 (add-to-list 'load-path "~/local/share/emacs/site-lisp/elib")
 (add-to-list 'load-path "~/elisp/jde-2.3.5.1/lisp")
 
@@ -285,7 +285,7 @@
 ;; ----------------------------------------------------------
 ;; Projects
 ;; ----------------------------------------------------------
-(load-file "~/elisp/mk-project.el")
+(load "mk-project")
 
 (add-proj-config "qrev"
                  '((name "qrev")
