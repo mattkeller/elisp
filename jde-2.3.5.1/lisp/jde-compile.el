@@ -974,6 +974,23 @@ buffer."
   ;; Set compiler version.
   (oset this version "1.5"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                            ;;
+;; J2SDK 1.6 Compiler                                                         ;;
+;;                                                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+(defclass jde-compile-javac-16 (jde-compile-javac-15)
+  ()
+  "Class of J2SDK 1.6 javac compilers.")
+
+(defmethod initialize-instance ((this jde-compile-javac-16) &rest fields)
+ ;; Call parent initializer.
+
+  (call-next-method)
+
+  ;; Set compiler version.
+  (oset this version "1.6"))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1056,7 +1073,8 @@ buffer."
    (jde-compile-javac-12 "javac 1.2.x")
    (jde-compile-javac-13 "javac 1.3.x")
    (jde-compile-javac-14 "javac 1.4.x")
-   (jde-compile-javac-15 "javac 1.5.x"))
+   (jde-compile-javac-15 "javac 1.5.x")
+   (jde-compile-javac-16 "javac 1.6.x"))
   "List of supported javac compilers.")
 
 (defun jde-compile-get-javac ()
