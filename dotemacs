@@ -38,13 +38,13 @@
 (setq compilation-read-command t)       ;; always ask for compile command
 (setq compilation-scroll-output t)      ;; scroll compilation window
 
-(defadvice scroll-up (around ewd-scroll-up first act)
+(defadvice scroll-up (around scroll-up first act)
   "Keep cursor in the same column."
   (let ((col (current-column)))
     ad-do-it
     (move-to-column col)))
 
-(defadvice scroll-down (around ewd-scroll-down first act)
+(defadvice scroll-down (around scroll-down first act)
   "Keep cursor in the same column."
   (let ((col (current-column)))
     ad-do-it
