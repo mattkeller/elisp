@@ -12,19 +12,6 @@
 ;;;;   * Grep the project:  project-grep       <f6>
 ;;;;   * Build project:     project-compile    <f5>
 ;;;;
-;;;; TODO:
-;;;;   * project-find-file: find files matching given re in basedir (ala grep)
-;;;;      - on project load, use find to populate a read-only proj-index-buffer (pib) 
-;;;;        with all the files in mk-basedir
-;;;;        - pib is handy to have around (read-only) and we'll grep it later
-;;;;          - poor mans method: search pib buffer maually, use ffap
-;;;;        - can take awhile to run find - do it in background
-;;;;        - provide var to control auto creation of pib on project-load
-;;;;        - respect skip patterns when running find
-;;;;      - have cmd to refresh pib
-;;;;      - 'grep' pib by regex
-;;;;        - if match, open-file
-;;;;        - otherwise, show matches in 'grep' buffer, eg, click-to-open
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -223,22 +210,57 @@ Compare with `if'."
 (defun fib-callback (process event)
   "Handle failure to complete fib building"
   (if (string= event "finished\n")
-      (message "The file-index has been succesfully rebuilt")
+      (progn
+        (buffer-enable-undo mk-proj-fib-name)
+        (message "The %s buffer has been succesfully rebuilt" mk-proj-fib-name))
     (fib-clear)
-    (message "Failed to generate file-index!")))
+    (message "Failed to generate the %s buffer!" mk-proj-fib-name)))
 
 (defun project-index ()
-  "Regenerate the file-index buffer that is used for project-find-file"
+  "Regenerate the *file-index* buffer that is used for project-find-file"
   (interactive)
-  (message "Refreshing file-index buffer (in the background)")
+  (message "Refreshing %s buffer (in the background)" mk-proj-fib-name)
   (fib-clear)
   (let ((find-cmd (concat "find " mk-proj-basedir " -type f " 
                           (find-cmd-ignore-patterns mk-proj-ignore-patterns)))
         (proc-name "index-process"))
     (when mk-proj-git-p
       (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
-    (start-process-shell-command proc-name mk-proj-fib-name find-cmd)
+    (aif (get-buffer mk-proj-fib-name)
+         (buffer-disable-undo)) ;; this is a large change we don't need to undo
+    (start-process-shell-command proc-name mk-proj-fib-name find-cmd) 
     (set-process-sentinel (get-process proc-name) 'fib-callback)))
+
+(defun* project-find-file (regex)
+  "Find file in the current project matching the given regex.
+
+The file list in buffer *file-index* is scanned for regex matches. If only
+one match is found, the file is opened automatically. If more than one match
+is found, this prompts for completion. See also: project-index."
+  (interactive "sFind file in project matching: ")
+  (unless (get-buffer mk-proj-fib-name)
+    (when (yes-or-no-p "No file index exists for this project. Generate one? ")
+      (project-index))
+    (message "Cancelling project-find-file")
+    (return-from "project-find-file" nil))
+  (with-current-buffer mk-proj-fib-name
+    (let ((matches nil))
+      (goto-char (point-min))
+      (dotimes (i (count-lines (point-min) (point-max)))
+        (let ((bufline (buffer-substring (line-beginning-position) (line-end-position))))
+          (when (string-match regex bufline)
+            (push bufline matches))
+          (forward-line)))
+      (let ((match-cnt (length matches)))
+        (cond
+         ((= 0 match-cnt)
+          (message "No matches for \"%s\" in this project" regex))
+         ((= 1 match-cnt )
+          (find-file (car matches)))
+         (t
+          (let ((file (completing-read "Multiple matches, pick one: " matches)))
+            (when file
+              (find-file file)))))))))
 
 ;; ---------------------------------------------------------------------
 ;; Run me!
