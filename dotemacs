@@ -297,7 +297,7 @@
 ;; ----------------------------------------------------------
 (require 'mk-project)
 
-(project-add "mk-project"
+(project-def "mk-project"
              `((name "mk-project")
                (basedir ,(concat (getenv "HOME") "/elisp/"))
                (src-patterns ("*.el"))
@@ -310,7 +310,7 @@
   (find-file (concat mk-proj-basedir "dotemacs"))
   (find-file (concat mk-proj-basedir "mk-project.el")))
 
-(project-add "qrev"
+(project-def "qrev"
              '((name "qrev")
                (basedir "/home/mk/code/lisp/qrev/")
                (src-patterns ("*.lisp"))
@@ -421,7 +421,7 @@
     (setq jde-jdk-registry mcp-jdk-reg)
     (setq jde-jdk (list jdk))))
 
-(project-add "12static"
+(project-def "12static"
              '((name "12static")
                (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
                (src-patterns ("*.java" "*.jsp"))
@@ -438,7 +438,7 @@
                  mcp12-jars
                  "1.6.0_05"))
 
-(project-add "12dyn"
+(project-def "12dyn"
              '((name "12dyn")
                (basedir "/mcp/")
                (src-patterns ("*.java" "*.jsp"))

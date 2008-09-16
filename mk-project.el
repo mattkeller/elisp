@@ -3,19 +3,22 @@
 ;;;; Perform per-project operations: grep, TAGS, compile
 ;;;;
 ;;;; Admin:
-;;;;   * Load project:   project-load
-;;;;   * Quit project:   project-unload
-;;;;   * Project status: project-status
+;;;;   * Load project     "C-c p l"  project-load
+;;;;   * Unload project   "C-c p u"  project-unload
+;;;;   * Project Status:  "C-c p s"  project-status
 ;;;;
 ;;;; Operations:
-;;;;   * Rebuild tags file: project-tags-build <C-c t>
-;;;;   * Grep the project:  project-grep       <f6>
-;;;;   * Build project:     project-compile    <f5>
-;;;;
+;;;;   * Compile project: "C-c p c"  project-compile
+;;;;   * Grep project:    "C-c p g"  project-grep
+;;;;   * Find file:       "C-c p f"  project-find-file
+;;;;   * Index files:     "C-c p i"  project-index
+;;;;   * Cd proj home:    "C-c p h"  project-home
+;;;;   * Rebuild tags:    "C-c p t"  project-tags
 ;;;;
 ;;;; TODO:
 ;;;;  * disabling undo in project-find-file not working...
 ;;;;  * use a keymap instead of global set key?
+;;;;  * remove projname from config-alist
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -34,7 +37,7 @@ Compare with `if'."
 	 (progn
 	   ,@false-body)))))
 
-(defun replace-tail (str tail-str replacement)
+(defun mk-proj-replace-tail (str tail-str replacement)
   (if (string-match (concat tail-str "$")  str)
     (replace-match replacement t t str)
     str))
@@ -45,10 +48,10 @@ Compare with `if'."
 
 (defvar mk-proj-list (make-hash-table :test 'equal))
 
-(defun find-proj-config (proj-name)
+(defun mk-proj-find-config (proj-name)
   (gethash proj-name mk-proj-list))
 
-(defun project-add (proj-name config-alist)
+(defun project-def (proj-name config-alist)
   "Assciate the settings in the alist <config-alist> with project <proj-name>"
   (puthash proj-name config-alist mk-proj-list))
 
@@ -56,7 +59,7 @@ Compare with `if'."
 ;; Setup 
 ;; ---------------------------------------------------------------------
 
-(defun project-defaults ()
+(defun mk-project-defaults ()
   "Set all default values for vars and keybindings"
   (setq mk-proj-name nil
         mk-proj-basedir (getenv "HOME")
@@ -69,7 +72,7 @@ Compare with `if'."
         mk-proj-shutdown-hooks nil)
   (cd mk-proj-basedir))
 
-(defun project-keybindings ()
+(defun mk-project-keybindings ()
   (global-set-key (kbd "C-c p c") 'project-compile)
   (global-set-key (kbd "C-c p g") 'project-grep)
   (global-set-key (kbd "C-c p l") 'project-load)
@@ -78,36 +81,36 @@ Compare with `if'."
   (global-set-key (kbd "C-c p i") 'project-index)
   (global-set-key (kbd "C-c p s") 'project-status)
   (global-set-key (kbd "C-c p h") 'project-home)
-  (global-set-key (kbd "C-c p t") 'project-tags-build))
+  (global-set-key (kbd "C-c p t") 'project-tags))
 
-(defun config-val (key config-alist)
+(defun mk-proj-config-val (key config-alist)
   "Get a config value from a config alist, nil if doesn't exist"
   (if (assoc key config-alist)
     (car (cdr (assoc key config-alist)))
     nil))
 
-(defun project-load-vars (proj-alist)
+(defun mk-proj-load-vars (proj-alist)
   "Set vars from config alist"
-  (project-defaults)
+  (mk-project-defaults)
   ;; required vars
-  (setq mk-proj-name (config-val 'name proj-alist))
-  (setq mk-proj-basedir (config-val 'basedir proj-alist))
+  (setq mk-proj-name (mk-proj-config-val 'name proj-alist))
+  (setq mk-proj-basedir (mk-proj-config-val 'basedir proj-alist))
   ;; optional vars
-  (aif (config-val 'src-patterns proj-alist) (setq mk-proj-src-patterns it))
-  (aif (config-val 'ignore-patterns proj-alist) (setq mk-proj-ignore-patterns it))
-  (aif (config-val 'git-p proj-alist) (setq mk-proj-git-p it))
-  (aif (config-val 'tags-file proj-alist) (setq mk-proj-tags-file it))
-  (aif (config-val 'compile-cmd proj-alist) (setq mk-proj-compile-cmd it))
-  (aif (config-val 'startup-hook proj-alist) (setq mk-proj-startup-hooks (list it)))
-  (aif (config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hooks (list it))))
+  (aif (mk-proj-config-val 'src-patterns proj-alist) (setq mk-proj-src-patterns it))
+  (aif (mk-proj-config-val 'ignore-patterns proj-alist) (setq mk-proj-ignore-patterns it))
+  (aif (mk-proj-config-val 'git-p proj-alist) (setq mk-proj-git-p it))
+  (aif (mk-proj-config-val 'tags-file proj-alist) (setq mk-proj-tags-file it))
+  (aif (mk-proj-config-val 'compile-cmd proj-alist) (setq mk-proj-compile-cmd it))
+  (aif (mk-proj-config-val 'startup-hook proj-alist) (setq mk-proj-startup-hooks (list it)))
+  (aif (mk-proj-config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hooks (list it))))
 
 (defun project-load ()
   "Load a project's settings."
   (interactive)
   (catch 'project-load
     (let ((name (completing-read "Project Name: " mk-proj-list)))
-      (aif (find-proj-config name)
-           (project-load-vars it)
+      (aif (mk-proj-find-config name)
+           (mk-proj-load-vars it)
            (message "Project %s does not exist!" name)
            (throw 'project-load t))
       (when (not (file-directory-p mk-proj-basedir))
@@ -124,7 +127,7 @@ Compare with `if'."
   (interactive)
   (when mk-proj-shutdown-hooks
     (run-hooks 'mk-proj-shutdown-hooks))
-  (project-defaults)
+  (mk-project-defaults)
   (message "Project settings have been cleared"))
 
 (defun project-status ()
@@ -138,36 +141,37 @@ Compare with `if'."
 ;; Etags
 ;; ---------------------------------------------------------------------
 
-(defun etags-refresh-callback (process event)
+(defun mk-proj-etags-cb (process event)
   "Visit tags table when the etags process finishes."
   (message "Etags process %s received event %s" process event)
   (when (string= event "finished\n")
     (visit-tags-table mk-proj-tags-file)))
 
-(defun project-tags-build ()
+(defun project-tags ()
   "Regenerate the projects TAG file. Runs in the background."
   (interactive)
   (if mk-proj-tags-file
     (progn
       (cd mk-proj-basedir)
       (message "Refreshing TAGS file %s (in the background)" mk-proj-tags-file)
-      (let ((etags-cmd (concat "find " mk-proj-basedir " -type f " (find-cmd-src-patterns mk-proj-src-patterns)
+      (let ((etags-cmd (concat "find " mk-proj-basedir " -type f " 
+                               (mk-proj-find-cmd-src-args mk-proj-src-patterns)
                                " | etags -o " mk-proj-tags-file " - "))
             (proc-name "etags-process"))
         (start-process-shell-command proc-name "*etags*" etags-cmd)
-        (set-process-sentinel (get-process proc-name) 'etags-refresh-callback)))
+        (set-process-sentinel (get-process proc-name) 'mk-proj-etags-cb)))
     (message "mk-proj-tags-file is not set")))
 
-(defun find-cmd-src-patterns (src-patterns)
+(defun mk-proj-find-cmd-src-args (src-patterns)
   "Generate the ( -name <pat1> -o -name <pat2> ...) pattern for find cmd"
   (let ((name-expr " \\("))
     (dolist (pat src-patterns)
       (setq name-expr (concat name-expr " -name \"" pat "\" -o ")))
-    (concat (replace-tail name-expr "-o " "") "\\) ")))
+    (concat (mk-proj-replace-tail name-expr "-o " "") "\\) ")))
 
-(defun find-cmd-ignore-patterns (ignore-patterns)
+(defun mk-proj-find-cmd-ignore-args (ignore-patterns)
   "Generate the -not ( -name <pat1> -o -name <pat2> ...) pattern for find cmd"
-  (concat " -not " (find-cmd-src-patterns ignore-patterns)))
+  (concat " -not " (mk-proj-find-cmd-src-args ignore-patterns)))
 
 ;; ---------------------------------------------------------------------
 ;; Grep 
@@ -180,7 +184,7 @@ Compare with `if'."
   (let ((find-cmd (concat "find . -type f"))
         (grep-cmd (concat "grep -i -n \"" s "\"")))
     (when mk-proj-src-patterns
-      (setq find-cmd (concat find-cmd (find-cmd-src-patterns mk-proj-src-patterns))))
+      (setq find-cmd (concat find-cmd (mk-proj-find-cmd-src-args mk-proj-src-patterns))))
     (when mk-proj-tags-file
       (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
     (when mk-proj-git-p
@@ -208,7 +212,7 @@ Compare with `if'."
 
 (defconst mk-proj-fib-name "*file-index*")
 
-(defun fib-clear ()
+(defun mk-proj-fib-clear ()
   "Clear the contents of the fib buffer"
   (aif (get-buffer mk-proj-fib-name)
     (with-current-buffer it
@@ -216,29 +220,29 @@ Compare with `if'."
       t)
     nil))
 
-(defun fib-callback (process event)
+(defun mk-proj-fib-cb (process event)
   "Handle failure to complete fib building"
   (if (string= event "finished\n")
       (progn
         (buffer-enable-undo mk-proj-fib-name)
         (message "The %s buffer has been succesfully rebuilt" mk-proj-fib-name))
-    (fib-clear)
+    (mk-proj-fib-clear)
     (message "Failed to generate the %s buffer!" mk-proj-fib-name)))
 
 (defun project-index ()
   "Regenerate the *file-index* buffer that is used for project-find-file"
   (interactive)
   (message "Refreshing %s buffer (in the background)" mk-proj-fib-name)
-  (fib-clear)
+  (mk-proj-fib-clear)
   (let ((find-cmd (concat "find " mk-proj-basedir " -type f " 
-                          (find-cmd-ignore-patterns mk-proj-ignore-patterns)))
+                          (mk-proj-find-cmd-ignore-args mk-proj-ignore-patterns)))
         (proc-name "index-process"))
     (when mk-proj-git-p
       (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
     (aif (get-buffer mk-proj-fib-name)
          (buffer-disable-undo)) ;; this is a large change we don't need to undo
     (start-process-shell-command proc-name mk-proj-fib-name find-cmd) 
-    (set-process-sentinel (get-process proc-name) 'fib-callback)))
+    (set-process-sentinel (get-process proc-name) 'mk-proj-fib-cb)))
 
 (defun* project-find-file (regex)
   "Find file in the current project matching the given regex.
@@ -275,7 +279,7 @@ is found, this prompts for completion. See also: project-index."
 ;; Run me!
 ;; ---------------------------------------------------------------------
 
-(project-keybindings)
-(project-defaults)
+(mk-project-keybindings)
+(mk-project-defaults)
 
 (provide 'mk-project)
