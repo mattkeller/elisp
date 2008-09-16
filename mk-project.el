@@ -12,6 +12,10 @@
 ;;;;   * Grep the project:  project-grep       <f6>
 ;;;;   * Build project:     project-compile    <f5>
 ;;;;
+;;;;
+;;;; TODO:
+;;;;  * disabling undo in project-find-file not working...
+;;;;  * use a keymap instead of global set key?
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -63,10 +67,18 @@ Compare with `if'."
         mk-proj-compile-cmd "make -k"
         mk-proj-startup-hooks nil
         mk-proj-shutdown-hooks nil)
-  (cd mk-proj-basedir)
-  (global-set-key [f5] 'compile)
-  (global-set-key [f6] 'grep-find)
-  (global-unset-key (kbd "C-c t")))
+  (cd mk-proj-basedir))
+
+(defun project-keybindings ()
+  (global-set-key (kbd "C-c p c") 'project-compile)
+  (global-set-key (kbd "C-c p g") 'project-grep)
+  (global-set-key (kbd "C-c p l") 'project-load)
+  (global-set-key (kbd "C-c p u") 'project-unload)
+  (global-set-key (kbd "C-c p f") 'project-find-file)
+  (global-set-key (kbd "C-c p i") 'project-index)
+  (global-set-key (kbd "C-c p s") 'project-status)
+  (global-set-key (kbd "C-c p h") 'project-home)
+  (global-set-key (kbd "C-c p t") 'project-tags-build))
 
 (defun config-val (key config-alist)
   "Get a config value from a config alist, nil if doesn't exist"
@@ -103,9 +115,6 @@ Compare with `if'."
         (throw 'project-load t))
       (cd mk-proj-basedir)
       (when mk-proj-tags-file (visit-tags-table mk-proj-tags-file))
-      (global-set-key [f5] 'project-compile)
-      (global-set-key [f6] 'project-grep)
-      (global-set-key (kbd "C-c t") 'project-tags-build)
       (project-index)
       (when mk-proj-startup-hooks
         (run-hooks 'mk-proj-startup-hooks)))))
@@ -266,6 +275,7 @@ is found, this prompts for completion. See also: project-index."
 ;; Run me!
 ;; ---------------------------------------------------------------------
 
+(project-keybindings)
 (project-defaults)
 
 (provide 'mk-project)
