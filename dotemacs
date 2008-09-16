@@ -297,6 +297,19 @@
 ;; ----------------------------------------------------------
 (require 'mk-project)
 
+(project-add "mk-project"
+             `((name "mk-project")
+               (basedir ,(concat (getenv "HOME") "/elisp/"))
+               (src-patterns ("*.el"))
+               (ignore-patterns ("*.elc"))
+               (tags-file ,(concat (getenv "HOME") "/elisp/" "TAGS"))
+               (git-p t)
+               (startup-hook mk-project-startup-hook)))
+
+(defun mk-project-startup-hook ()
+  (find-file (concat mk-proj-basedir "dotemacs"))
+  (find-file (concat mk-proj-basedir "mk-project.el")))
+
 (project-add "qrev"
              '((name "qrev")
                (basedir "/home/mk/code/lisp/qrev/")
@@ -543,3 +556,5 @@
     (switch-to-buffer "*slime-repl sbcl*")))
 
 
+
+(put 'erase-buffer 'disabled nil)
