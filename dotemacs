@@ -17,6 +17,7 @@
 (auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
 (transient-mark-mode nil)           ;; don't highlight region, unless Ctrl-Space x 2
 (put 'narrow-to-region 'disabled nil)
+(put 'erase-buffer 'disabled nil)
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
 (set-background-color "gray97")
@@ -553,4 +554,3 @@
 
 
 
-(put 'erase-buffer 'disabled nil)
