@@ -13,20 +13,18 @@
 ;;;;   * Build project:     project-compile    <f5>
 ;;;;
 ;;;; TODO:
-;;;;   * project-resource: find files matching given re in basedir (ala grep)
-
-;; ---------------------------------------------------------------------
-;; Project list 
-;; ---------------------------------------------------------------------
-
-(defvar mk-proj-list (make-hash-table :test 'equal))
-
-(defun find-proj-config (proj-name)
-  (gethash proj-name mk-proj-list))
-
-(defun project-add (proj-name config-alist)
-  "Assciate the settings in the alist <config-alist> with project <proj-name>"
-  (puthash proj-name config-alist mk-proj-list))
+;;;;   * project-find-file: find files matching given re in basedir (ala grep)
+;;;;      - on project load, use find to populate a read-only proj-index-buffer (pib) 
+;;;;        with all the files in mk-basedir
+;;;;        - pib is handy to have around (read-only) and we'll grep it later
+;;;;          - poor mans method: search pib buffer maually, use ffap
+;;;;        - can take awhile to run find - do it in background
+;;;;        - provide var to control auto creation of pib on project-load
+;;;;        - respect skip patterns when running find
+;;;;      - have cmd to refresh pib
+;;;;      - 'grep' pib by regex
+;;;;        - if match, open-file
+;;;;        - otherwise, show matches in 'grep' buffer, eg, click-to-open
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -51,7 +49,20 @@ Compare with `if'."
     str))
 
 ;; ---------------------------------------------------------------------
-;; Setup fns
+;; Project list 
+;; ---------------------------------------------------------------------
+
+(defvar mk-proj-list (make-hash-table :test 'equal))
+
+(defun find-proj-config (proj-name)
+  (gethash proj-name mk-proj-list))
+
+(defun project-add (proj-name config-alist)
+  "Assciate the settings in the alist <config-alist> with project <proj-name>"
+  (puthash proj-name config-alist mk-proj-list))
+
+;; ---------------------------------------------------------------------
+;; Setup 
 ;; ---------------------------------------------------------------------
 
 (defun project-defaults ()
@@ -108,6 +119,7 @@ Compare with `if'."
       (global-set-key [f5] 'project-compile)
       (global-set-key [f6] 'project-grep)
       (global-set-key (kbd "C-c t") 'project-tags-build)
+      (project-index)
       (when mk-proj-startup-hooks
         (run-hooks 'mk-proj-startup-hooks)))))
 
@@ -127,7 +139,7 @@ Compare with `if'."
            mk-proj-tags-file mk-proj-compile-cmd mk-proj-startup-hooks mk-proj-shutdown-hooks))
 
 ;; ---------------------------------------------------------------------
-;; Operational fns
+;; Etags
 ;; ---------------------------------------------------------------------
 
 (defun etags-refresh-callback (process event)
@@ -157,6 +169,14 @@ Compare with `if'."
       (setq name-expr (concat name-expr " -name \"" pat "\" -o ")))
     (concat (replace-tail name-expr "-o " "") "\\) ")))
 
+(defun find-cmd-ignore-patterns (ignore-patterns)
+  "Generate the -not ( -name <pat1> -o -name <pat2> ...) pattern for find cmd"
+  (concat " -not " (find-cmd-src-patterns ignore-patterns)))
+
+;; ---------------------------------------------------------------------
+;; Grep 
+;; ---------------------------------------------------------------------
+
 (defun project-grep (s)
   "Run find-grep using this project's settings for basedir and src files."
   (interactive "sGrep project for: ")
@@ -171,15 +191,54 @@ Compare with `if'."
       (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
     (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd))))
 
+;; ---------------------------------------------------------------------
+;; Compile 
+;; ---------------------------------------------------------------------
+
 (defun project-compile (opts)
   "Run the compile command for this project."
   (interactive "sCompile options: ")
-  (cd mk-proj-basedir)
+  (project-home)
   (compile (concat mk-proj-compile-cmd " " opts)))
 
 (defun project-home ()
+  "cd to the basedir of the current project"
   (interactive)
   (cd mk-proj-basedir))
+
+;; ---------------------------------------------------------------------
+;; Find-file 
+;; ---------------------------------------------------------------------
+
+(defconst mk-proj-fib-name "*file-index*")
+
+(defun fib-clear ()
+  "Clear the contents of the fib buffer"
+  (aif (get-buffer mk-proj-fib-name)
+    (with-current-buffer it
+      (kill-region (point-min) (point-max))
+      t)
+    nil))
+
+(defun fib-callback (process event)
+  "Handle failure to complete fib building"
+  (if (string= event "finished\n")
+      (message "The file-index has been succesfully rebuilt")
+    (fib-clear)
+    (message "Failed to generate file-index!")))
+
+(defun project-index ()
+  "Regenerate the file-index buffer that is used for project-find-file"
+  (interactive)
+  (message "Refreshing file-index buffer (in the background)")
+  (fib-clear)
+  (let ((find-cmd (concat "find " mk-proj-basedir " -type f " 
+                          (find-cmd-ignore-patterns mk-proj-ignore-patterns)))
+        (proc-name "index-process"))
+    (when mk-proj-git-p
+      (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
+    (start-process-shell-command proc-name mk-proj-fib-name find-cmd)
+    (set-process-sentinel (get-process proc-name) 'fib-callback)))
 
 ;; ---------------------------------------------------------------------
 ;; Run me!
