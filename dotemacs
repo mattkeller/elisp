@@ -298,8 +298,7 @@
 (require 'mk-project)
 
 (project-def "mk-project"
-             `((name "mk-project")
-               (basedir ,(concat (getenv "HOME") "/elisp/"))
+             `((basedir ,(concat (getenv "HOME") "/elisp/"))
                (src-patterns ("*.el"))
                (ignore-patterns ("*.elc"))
                (tags-file ,(concat (getenv "HOME") "/elisp/" "TAGS"))
@@ -311,8 +310,7 @@
   (find-file (concat mk-proj-basedir "mk-project.el")))
 
 (project-def "qrev"
-             '((name "qrev")
-               (basedir "/home/mk/code/lisp/qrev/")
+             '((basedir "/home/mk/code/lisp/qrev/")
                (src-patterns ("*.lisp"))
                (ignore-patterns ("*.fasl"))
                (tags-file "/home/mk/code/lisp/qrev/TAGS")
@@ -422,8 +420,7 @@
     (setq jde-jdk (list jdk))))
 
 (project-def "12static"
-             '((name "12static")
-               (basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
+             '((basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
                (src-patterns ("*.java" "*.jsp"))
                (ignore-patterns ("*.class" "*.wsdl"))
                (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
@@ -439,8 +436,7 @@
                  "1.6.0_05"))
 
 (project-def "12dyn"
-             '((name "12dyn")
-               (basedir "/mcp/")
+             '((basedir "/mcp/")
                (src-patterns ("*.java" "*.jsp"))
                (ignore-patterns ("*.class" "*.wsdl"))
                (tags-file "/home/matthewk/.TAGS12")

@@ -89,11 +89,11 @@ Compare with `if'."
     (car (cdr (assoc key config-alist)))
     nil))
 
-(defun mk-proj-load-vars (proj-alist)
+(defun mk-proj-load-vars (proj-name proj-alist)
   "Set vars from config alist"
   (mk-project-defaults)
   ;; required vars
-  (setq mk-proj-name (mk-proj-config-val 'name proj-alist))
+  (setq mk-proj-name proj-name)
   (setq mk-proj-basedir (mk-proj-config-val 'basedir proj-alist))
   ;; optional vars
   (aif (mk-proj-config-val 'src-patterns proj-alist) (setq mk-proj-src-patterns it))
@@ -110,7 +110,7 @@ Compare with `if'."
   (catch 'project-load
     (let ((name (completing-read "Project Name: " mk-proj-list)))
       (aif (mk-proj-find-config name)
-           (mk-proj-load-vars it)
+           (mk-proj-load-vars name it)
            (message "Project %s does not exist!" name)
            (throw 'project-load t))
       (when (not (file-directory-p mk-proj-basedir))
