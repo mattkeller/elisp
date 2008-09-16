@@ -12,6 +12,8 @@
 ;;;;   * Grep the project:  project-grep       <f6>
 ;;;;   * Build project:     project-compile    <f5>
 ;;;;
+;;;; TODO:
+;;;;   * project-resource: find files matching given re in basedir (ala grep)
 
 ;; ---------------------------------------------------------------------
 ;; Project list 
@@ -174,6 +176,10 @@ Compare with `if'."
   (interactive "sCompile options: ")
   (cd mk-proj-basedir)
   (compile (concat mk-proj-compile-cmd " " opts)))
+
+(defun project-home ()
+  (interactive)
+  (cd mk-proj-basedir))
 
 ;; ---------------------------------------------------------------------
 ;; Run me!
