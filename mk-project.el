@@ -16,9 +16,7 @@
 ;;;;   * Rebuild tags:    "C-c p t"  project-tags
 ;;;;
 ;;;; TODO:
-;;;;  * disabling undo in project-find-file not working...
 ;;;;  * use a keymap instead of global set key?
-;;;;  * remove projname from config-alist
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -216,18 +214,20 @@ Compare with `if'."
   "Clear the contents of the fib buffer"
   (aif (get-buffer mk-proj-fib-name)
     (with-current-buffer it
+      (setq buffer-read-only nil)
       (kill-region (point-min) (point-max))
-      t)
-    nil))
+      (setq buffer-read-only t))))
 
 (defun mk-proj-fib-cb (process event)
   "Handle failure to complete fib building"
-  (if (string= event "finished\n")
-      (progn
-        (buffer-enable-undo mk-proj-fib-name)
-        (message "The %s buffer has been succesfully rebuilt" mk-proj-fib-name))
+  (cond
+   ((string= event "finished\n")
+    (with-current-buffer (get-buffer mk-proj-fib-name) 
+      (setq buffer-read-only t))
+    (message "The %s buffer has been succesfully rebuilt" mk-proj-fib-name))
+   (t
     (mk-proj-fib-clear)
-    (message "Failed to generate the %s buffer!" mk-proj-fib-name)))
+    (message "Failed to generate the %s buffer!" mk-proj-fib-name))))
 
 (defun project-index ()
   "Regenerate the *file-index* buffer that is used for project-find-file"
@@ -239,8 +239,9 @@ Compare with `if'."
         (proc-name "index-process"))
     (when mk-proj-git-p
       (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
-    (aif (get-buffer mk-proj-fib-name)
-         (buffer-disable-undo)) ;; this is a large change we don't need to undo
+    (with-current-buffer (get-buffer-create mk-proj-fib-name)
+      (buffer-disable-undo) ;; this is a large change we don't need to undo
+      (setq buffer-read-only nil))
     (start-process-shell-command proc-name mk-proj-fib-name find-cmd) 
     (set-process-sentinel (get-process proc-name) 'mk-proj-fib-cb)))
 
