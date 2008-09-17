@@ -243,7 +243,7 @@
 ;; etags-select
 ;; ----------------------------------------------------------
 (autoload 'etags-select-find-tag "etags-select" "for etags-select method" t)
-(setq etags-select-no-select-for-one-match nil)
+(setq etags-select-no-select-for-one-match t)
 (global-set-key "\M-." 'etags-select-find-tag)
 (global-set-key [f7] 'etags-select-find-tag)
 
