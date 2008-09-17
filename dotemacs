@@ -222,7 +222,7 @@
   (require 'jde))
 
 (defun my-jde-mode-hook ()
-  (global-set-key [f5] 'jde-compile))
+  (local-set-key [f5] 'jde-compile))
 
 (add-hook 'jde-mode-hook 'my-jde-mode-hook)
 
