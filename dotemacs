@@ -39,6 +39,9 @@
 (setq compilation-read-command t)       ;; always ask for compile command
 (setq compilation-scroll-output t)      ;; scroll compilation window
 
+;; make compiler error clickable in shell
+(add-hook 'shell-mode-hook (lambda () (compilation-shell-minor-mode)))
+
 (defadvice scroll-up (around scroll-up first act)
   "Keep cursor in the same column."
   (let ((col (current-column)))
