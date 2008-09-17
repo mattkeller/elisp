@@ -1,19 +1,36 @@
-;;;; mk-project.el --  Lightweight project handling
+;;;; mk-project.el ---  Lightweight project handling
 ;;;;
-;;;; Perform per-project operations: grep, TAGS, compile
+;;;; Perform operations -- find-grep, compile, find-file, visit-tags-file --
+;;;; on a per-project basis. Projects are defined by passing project-def
+;;;; a list of settings. Project commands use these settings to restrict
+;;;; or enhance their operation. These operations allow IDE-like behavior,
+;;;; quick project setup and switching.
 ;;;;
-;;;; Admin:
-;;;;   * Load project     project-load
-;;;;   * Unload project   project-unload
+;;;; Project Administration:
+;;;;   * Load project:    project-load
+;;;;   * Unload project:  project-unload
 ;;;;   * Project Status:  project-status
 ;;;;
-;;;; Operations:
+;;;; Project Operations:
 ;;;;   * Compile project: project-compile
 ;;;;   * Grep project:    project-grep
 ;;;;   * Find file:       project-find-file
 ;;;;   * Index files:     project-index
 ;;;;   * Cd proj home:    project-home
 ;;;;   * Rebuild tags:    project-tags
+;;;;
+;;;; Example use:
+;;;;   (project-def "my-proj"
+;;;;         '((basedir "/home/me/my-proj/")
+;;;;           (src-patterns ("*.lisp" "*.c"))
+;;;;           (ignore-patterns ("*.elc" "*.o"))
+;;;;           (tags-file "/home/me/my-proj/TAGS")
+;;;;           (git-p t)
+;;;;           (compile-cmd "make")
+;;;;           (startup-hook myproj-startup-hook)))
+;;;;
+;;;;   (defun myproj-startup-hook () 
+;;;;     (find-file "/home/me/my-proj/foo.el"))
 ;;;;
 
 ;; ---------------------------------------------------------------------
@@ -39,7 +56,7 @@ Compare with `if'."
     str))
 
 ;; ---------------------------------------------------------------------
-;; Project list 
+;; Project Configuration
 ;; ---------------------------------------------------------------------
 
 (defvar mk-proj-list (make-hash-table :test 'equal))
@@ -51,10 +68,6 @@ Compare with `if'."
   "Assciate the settings in the alist <config-alist> with project <proj-name>"
   (puthash proj-name config-alist mk-proj-list))
 
-;; ---------------------------------------------------------------------
-;; Setup 
-;; ---------------------------------------------------------------------
-
 (defvar mk-proj-name nil "Name of the current project.")
 (defvar mk-proj-basedir (getenv "HOME") "Base directory of the current project.")
 (defvar mk-proj-src-patterns nil "List of shell expressions to search with grep-find, eg: '(\"*.java\" \"*.jsp\".)")
@@ -65,7 +78,7 @@ Compare with `if'."
 (defvar mk-proj-startup-hooks nil "List of hook functions to run after project-load.")
 (defvar mk-proj-shutdown-hooks nil "List of hook functions to run afer project-unload.")
 
-(defun mk-project-defaults ()
+(defun mk-proj-defaults ()
   "Set all default values for vars and keybindings"
   (setq mk-proj-name nil
         mk-proj-basedir (getenv "HOME")
@@ -86,7 +99,7 @@ Compare with `if'."
 
 (defun mk-proj-load-vars (proj-name proj-alist)
   "Set vars from config alist"
-  (mk-project-defaults)
+  (mk-proj-defaults)
   ;; required vars
   (setq mk-proj-name proj-name)
   (setq mk-proj-basedir (mk-proj-config-val 'basedir proj-alist))
@@ -122,7 +135,7 @@ Compare with `if'."
   (interactive)
   (when mk-proj-shutdown-hooks
     (run-hooks 'mk-proj-shutdown-hooks))
-  (mk-project-defaults)
+  (mk-proj-defaults)
   (message "Project settings have been cleared"))
 
 (defun project-status ()
