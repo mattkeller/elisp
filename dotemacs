@@ -248,7 +248,7 @@
 ;; etags-select
 ;; ----------------------------------------------------------
 (autoload 'etags-select-find-tag "etags-select" "for etags-select method" t)
-(setq etags-select-no-select-for-one-match nil)
+(setq etags-select-no-select-for-one-match t)
 (global-set-key "\M-." 'etags-select-find-tag)
 (global-set-key [f7] 'etags-select-find-tag)
 
@@ -447,7 +447,10 @@
   (mcp-jde-setup "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3_static/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3_static/classes"
                  mcp12-jars
-                 "1.6.0_05"))
+                 "1.6.0_05")
+  (find-file "~/proj/geol3/NOTES")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/restoreConfigData.pl")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/saveConfigData.pl"))
 
 (project-def "12dyn"
              '((basedir "/mcp/")
