@@ -138,7 +138,7 @@ Compare with `if'."
   (if mk-proj-tags-file
     (progn
       (cd mk-proj-basedir)
-      (message "Refreshing TAGS file %s (in the background)" mk-proj-tags-file)
+      (message "Refreshing TAGS file %s..." mk-proj-tags-file)
       (let ((etags-cmd (concat "find " mk-proj-basedir " -type f " 
                                (mk-proj-find-cmd-src-args mk-proj-src-patterns)
                                " | etags -o " mk-proj-tags-file " - "))
@@ -211,7 +211,7 @@ Compare with `if'."
    ((string= event "finished\n")
     (with-current-buffer (get-buffer mk-proj-fib-name) 
       (setq buffer-read-only t))
-    (message "The %s buffer has been succesfully rebuilt" mk-proj-fib-name))
+    (message "Refreshing %s buffer...done" mk-proj-fib-name))
    (t
     (mk-proj-fib-clear)
     (message "Failed to generate the %s buffer!" mk-proj-fib-name))))
@@ -219,7 +219,7 @@ Compare with `if'."
 (defun project-index ()
   "Regenerate the *file-index* buffer that is used for project-find-file"
   (interactive)
-  (message "Refreshing %s buffer (in the background)" mk-proj-fib-name)
+  (message "Refreshing %s buffer..." mk-proj-fib-name)
   (mk-proj-fib-clear)
   (let ((find-cmd (concat "find " mk-proj-basedir " -type f " 
                           (mk-proj-find-cmd-ignore-args mk-proj-ignore-patterns)))
