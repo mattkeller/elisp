@@ -125,7 +125,9 @@ Compare with `if'."
         (message "Base directory %s does not exist!" mk-proj-basedir)
         (throw 'project-load t))
       (cd mk-proj-basedir)
-      (when mk-proj-tags-file (visit-tags-table mk-proj-tags-file))
+      (when mk-proj-tags-file 
+        (aif (get-buffer "TAGS") (kill-buffer it))
+        (visit-tags-table mk-proj-tags-file))
       (project-index)
       (when mk-proj-startup-hooks
         (run-hooks 'mk-proj-startup-hooks)))))
