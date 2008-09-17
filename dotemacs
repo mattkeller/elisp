@@ -1,4 +1,4 @@
-;;; -*- Mode: Emacs-Lisp; -*-
+;;;; -*- Mode: Emacs-Lisp; -*-
 (setq custom-file "~/.emacs-custom.el")
 (load custom-file 'noerror)
 
@@ -69,7 +69,7 @@
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 
 ;; ---------------------------------------------------------
-;; Custom keybindings
+;; Global keybindings
 ;; ---------------------------------------------------------
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ;; = meta
 (global-set-key (kbd "C-c C-m") 'execute-extended-command) ;; = meta
@@ -80,8 +80,8 @@
 
 (global-set-key [f1]  'bs-show)
 (global-set-key [f2]  'shell)
-;;(global-set-key [f3]  'kill-buffer) ;; start macro
-;;(global-set-key [f4]  'shell)       ;; end macro, rerun macro
+(global-set-key [f3]  'kmacro-start-macro-or-insert-counter) ;; emacs std
+(global-set-key [f4]  'kmacro-end-or-call-macro)             ;; emacs std
 (global-set-key [f5]  'compile)
 (global-set-key [f6]  'grep-find)
 (global-set-key [f7]  'find-tag)
@@ -200,14 +200,12 @@
 ;; NXML Setup
 ;; ---------------------------------------------------------
 (load "~/elisp/nxml-mode/rng-auto")
-(setq auto-mode-alist
-      (cons '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\)\\'" . nxml-mode)
-	    auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\)\\'" . nxml-mode))
 
 ;; ---------------------------------------------------------
 ;; Java Setup
 ;; ---------------------------------------------------------
-(setq auto-mode-alist (cons '("\\.java$" . java-mode) auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.java$" . java-mode))
 (setq semantic-load-turn-useful-things-on t)
 (setq semanticdb-default-save-directory "~/.semantic.cache")
 (setq semanticdb-persistent-path nil)
@@ -220,10 +218,7 @@
 (if defer-loading-jde
     (progn
       (autoload 'jde-mode "jde" "JDE mode." t)
-      (setq auto-mode-alist
-            (append
-             '(("\\.java\\'" . jde-mode))
-             auto-mode-alist)))
+      (add-to-list 'auto-mode-alist '("\\.java\\'" . jde-mode)))
   (require 'jde))
 
 (defun my-jde-mode-hook ()
