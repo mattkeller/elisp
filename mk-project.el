@@ -55,6 +55,16 @@ Compare with `if'."
 ;; Setup 
 ;; ---------------------------------------------------------------------
 
+(defvar mk-proj-name nil "Name of the current project.")
+(defvar mk-proj-basedir nil "Base directory of the current project.")
+(defvar mk-proj-src-patterns nil "List of shell expressions to search with grep-find, eg: '(\"*.java\" \"*.jsp\".)")
+(defvar mk-proj-ignore-patterns nil "List of shell expressions to avoid searching for with project-find-file, eg '(\"*.class\").")
+(defvar mk-proj-git-p nil "True if this is a git project. Project commands will avoid the .git directory.")
+(defvar mk-proj-tags-file nil "Path to the TAGS file for this project.")
+(defvar mk-proj-compile-cmd nil "Command to build the entire project.")
+(defvar mk-proj-startup-hooks nil "List of hook functions to run after project-load.")
+(defvar mk-proj-shutdown-hooks nil "List of hook functions to run afer project-unload.")
+
 (defun mk-project-defaults ()
   "Set all default values for vars and keybindings"
   (setq mk-proj-name nil
