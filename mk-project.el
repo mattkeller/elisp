@@ -3,20 +3,18 @@
 ;;;; Perform per-project operations: grep, TAGS, compile
 ;;;;
 ;;;; Admin:
-;;;;   * Load project     "C-c p l"  project-load
-;;;;   * Unload project   "C-c p u"  project-unload
-;;;;   * Project Status:  "C-c p s"  project-status
+;;;;   * Load project     project-load
+;;;;   * Unload project   project-unload
+;;;;   * Project Status:  project-status
 ;;;;
 ;;;; Operations:
-;;;;   * Compile project: "C-c p c"  project-compile
-;;;;   * Grep project:    "C-c p g"  project-grep
-;;;;   * Find file:       "C-c p f"  project-find-file
-;;;;   * Index files:     "C-c p i"  project-index
-;;;;   * Cd proj home:    "C-c p h"  project-home
-;;;;   * Rebuild tags:    "C-c p t"  project-tags
+;;;;   * Compile project: project-compile
+;;;;   * Grep project:    project-grep
+;;;;   * Find file:       project-find-file
+;;;;   * Index files:     project-index
+;;;;   * Cd proj home:    project-home
+;;;;   * Rebuild tags:    project-tags
 ;;;;
-;;;; TODO:
-;;;;  * use a keymap instead of global set key?
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -69,17 +67,6 @@ Compare with `if'."
         mk-proj-startup-hooks nil
         mk-proj-shutdown-hooks nil)
   (cd mk-proj-basedir))
-
-(defun mk-project-keybindings ()
-  (global-set-key (kbd "C-c p c") 'project-compile)
-  (global-set-key (kbd "C-c p g") 'project-grep)
-  (global-set-key (kbd "C-c p l") 'project-load)
-  (global-set-key (kbd "C-c p u") 'project-unload)
-  (global-set-key (kbd "C-c p f") 'project-find-file)
-  (global-set-key (kbd "C-c p i") 'project-index)
-  (global-set-key (kbd "C-c p s") 'project-status)
-  (global-set-key (kbd "C-c p h") 'project-home)
-  (global-set-key (kbd "C-c p t") 'project-tags))
 
 (defun mk-proj-config-val (key config-alist)
   "Get a config value from a config alist, nil if doesn't exist"
@@ -280,7 +267,6 @@ is found, this prompts for completion. See also: project-index."
 ;; Run me!
 ;; ---------------------------------------------------------------------
 
-(mk-project-keybindings)
 (mk-project-defaults)
 
 (provide 'mk-project)

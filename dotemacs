@@ -301,6 +301,16 @@
 ;; ----------------------------------------------------------
 (require 'mk-project)
 
+(global-set-key (kbd "C-c p c") 'project-compile)
+(global-set-key (kbd "C-c p g") 'project-grep)
+(global-set-key (kbd "C-c p l") 'project-load)
+(global-set-key (kbd "C-c p u") 'project-unload)
+(global-set-key (kbd "C-c p f") 'project-find-file)
+(global-set-key (kbd "C-c p i") 'project-index)
+(global-set-key (kbd "C-c p s") 'project-status)
+(global-set-key (kbd "C-c p h") 'project-home)
+(global-set-key (kbd "C-c p t") 'project-tags)
+
 (project-def "mk-project"
              `((basedir ,(concat (getenv "HOME") "/elisp/"))
                (src-patterns ("*.el"))
