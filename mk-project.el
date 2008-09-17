@@ -56,7 +56,7 @@ Compare with `if'."
 ;; ---------------------------------------------------------------------
 
 (defvar mk-proj-name nil "Name of the current project.")
-(defvar mk-proj-basedir nil "Base directory of the current project.")
+(defvar mk-proj-basedir (getenv "HOME") "Base directory of the current project.")
 (defvar mk-proj-src-patterns nil "List of shell expressions to search with grep-find, eg: '(\"*.java\" \"*.jsp\".)")
 (defvar mk-proj-ignore-patterns nil "List of shell expressions to avoid searching for with project-find-file, eg '(\"*.class\").")
 (defvar mk-proj-git-p nil "True if this is a git project. Project commands will avoid the .git directory.")
@@ -272,11 +272,5 @@ is found, this prompts for completion. See also: project-index."
           (let ((file (completing-read "Multiple matches, pick one: " matches)))
             (when file
               (find-file file)))))))))
-
-;; ---------------------------------------------------------------------
-;; Run me!
-;; ---------------------------------------------------------------------
-
-(mk-project-defaults)
 
 (provide 'mk-project)
