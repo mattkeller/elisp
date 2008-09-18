@@ -10,7 +10,7 @@
 ;;;;   * Load project:    project-load
 ;;;;   * Unload project:  project-unload
 ;;;;   * Project Status:  project-status
-;;;;   * Close files:     project-cloe-files
+;;;;   * Close files:     project-close-files
 ;;;;
 ;;;; Project Operations:
 ;;;;   * Compile project: project-compile
