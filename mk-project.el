@@ -34,6 +34,9 @@
 ;;;;     (find-file "/home/me/my-proj/foo.el"))
 ;;;;
 
+(require 'grep)
+(require 'thingatpt)
+
 ;; ---------------------------------------------------------------------
 ;; Utils
 ;; ---------------------------------------------------------------------
@@ -228,19 +231,22 @@ Compare with `if'."
 ;; Grep 
 ;; ---------------------------------------------------------------------
 
-(defun project-grep (s)
+(defun project-grep ()
   "Run find-grep using this project's settings for basedir and src files."
-  (interactive "sGrep project for: ")
-  (cd mk-proj-basedir)
-  (let ((find-cmd (concat "find . -type f"))
-        (grep-cmd (concat "grep -i -n \"" s "\"")))
-    (when mk-proj-src-patterns
-      (setq find-cmd (concat find-cmd (mk-proj-find-cmd-src-args mk-proj-src-patterns))))
-    (when mk-proj-tags-file
-      (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
-    (when mk-proj-git-p
-      (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
-    (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd))))
+  (interactive)
+  (let* ((wap (word-at-point))
+         (regex (if wap (read-string (concat "Grep project for (default \"" wap "\"): ") nil nil wap)
+                 (read-string "Grep project for: "))))
+    (cd mk-proj-basedir)
+    (let ((find-cmd (concat "find . -type f"))
+          (grep-cmd (concat "grep -i -n \"" regex "\"")))
+      (when mk-proj-src-patterns
+        (setq find-cmd (concat find-cmd (mk-proj-find-cmd-src-args mk-proj-src-patterns))))
+      (when mk-proj-tags-file
+        (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
+      (when mk-proj-git-p
+        (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
+      (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd)))))
 
 ;; ---------------------------------------------------------------------
 ;; Compile 
