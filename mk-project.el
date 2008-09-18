@@ -103,12 +103,12 @@ Compare with `if'."
   (mk-proj-defaults)
   ;; required vars
   (setq mk-proj-name proj-name)
-  (setq mk-proj-basedir (mk-proj-config-val 'basedir proj-alist))
+  (setq mk-proj-basedir (expand-file-name (mk-proj-config-val 'basedir proj-alist)))
   ;; optional vars
   (aif (mk-proj-config-val 'src-patterns proj-alist) (setq mk-proj-src-patterns it))
   (aif (mk-proj-config-val 'ignore-patterns proj-alist) (setq mk-proj-ignore-patterns it))
   (aif (mk-proj-config-val 'git-p proj-alist) (setq mk-proj-git-p it))
-  (aif (mk-proj-config-val 'tags-file proj-alist) (setq mk-proj-tags-file it))
+  (aif (mk-proj-config-val 'tags-file proj-alist) (setq mk-proj-tags-file (expand-file-name it)))
   (aif (mk-proj-config-val 'compile-cmd proj-alist) (setq mk-proj-compile-cmd it))
   (aif (mk-proj-config-val 'startup-hook proj-alist) (setq mk-proj-startup-hooks (list it)))
   (aif (mk-proj-config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hooks (list it))))

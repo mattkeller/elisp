@@ -319,10 +319,10 @@
   (find-file (concat mk-proj-basedir "mk-project.el")))
 
 (project-def "qrev"
-             '((basedir "/home/mk/code/lisp/qrev/")
+             '((basedir "~mk/code/lisp/qrev/")
                (src-patterns ("*.lisp"))
                (ignore-patterns ("*.fasl"))
-               (tags-file "/home/mk/code/lisp/qrev/TAGS")
+               (tags-file "~mk/code/lisp/qrev/TAGS")
                (git-p t)
                (compile-cmd "make -k")
                (startup-hook qrev-startup-hook)
