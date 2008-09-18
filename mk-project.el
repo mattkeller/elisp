@@ -10,6 +10,7 @@
 ;;;;   * Load project:    project-load
 ;;;;   * Unload project:  project-unload
 ;;;;   * Project Status:  project-status
+;;;;   * Close files:     project-close-files
 ;;;;
 ;;;; Project Operations:
 ;;;;   * Compile project: project-compile
@@ -116,7 +117,10 @@ Compare with `if'."
   "Load a project's settings."
   (interactive)
   (catch 'project-load
-    (let ((name (completing-read "Project Name: " mk-proj-list)))
+    (let ((oldname mk-proj-name)
+          (name (completing-read "Project Name: " mk-proj-list)))
+      (unless (string= oldname name)
+        (project-unload))
       (aif (mk-proj-find-config name)
            (mk-proj-load-vars name it)
            (message "Project %s does not exist!" name)
@@ -124,6 +128,7 @@ Compare with `if'."
       (when (not (file-directory-p mk-proj-basedir))
         (message "Base directory %s does not exist!" mk-proj-basedir)
         (throw 'project-load t))
+      (message "Loading project %s" name)
       (cd mk-proj-basedir)
       (when mk-proj-tags-file 
         (aif (get-buffer "TAGS") (kill-buffer it))
@@ -135,10 +140,42 @@ Compare with `if'."
 (defun project-unload ()
   "Revert to default project settings."
   (interactive)
-  (when mk-proj-shutdown-hooks
-    (run-hooks 'mk-proj-shutdown-hooks))
+  (when mk-proj-name
+    (message "Unloading project %s" mk-proj-name)
+    (when mk-proj-tags-file (aif (get-buffer "TAGS") (kill-buffer it)))
+    (mk-proj-fib-clear)
+    (when (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
+      (project-close-files))
+    (when mk-proj-shutdown-hooks (run-hooks 'mk-proj-shutdown-hooks)))
   (mk-proj-defaults)
   (message "Project settings have been cleared"))
+
+(defun project-close-files ()
+  "Close all unmodified files that reside in the project's basedir"
+  (let ((closed nil)
+        (dirty nil)
+        (basedir-len (length mk-proj-basedir)))
+    (dolist (b (mk-proj-buffers))
+      (cond
+       ((buffer-modified-p b)
+        (push (buffer-name) dirty))
+       (t
+        (kill-buffer b)
+        (push (buffer-name) closed))))
+    (message "Closed %d buffers, %d modified buffers where left open" 
+             (length closed) (length dirty))))
+
+(defun mk-proj-buffers ()
+  "Get a list of buffers that reside in this project's basedir"
+  (let ((basedir-len (length mk-proj-basedir))
+        (buffers nil))
+    (dolist (b (buffer-list))
+      (let ((b-name (buffer-file-name b)))
+        (when (and b-name
+                   (>= (length b-name) basedir-len)
+                   (string= (substring b-name 0 basedir-len) mk-proj-basedir))
+              (push b buffers))))
+    buffers))
 
 (defun project-status ()
   "View project's variables."
