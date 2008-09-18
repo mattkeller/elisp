@@ -4,7 +4,7 @@
 
 (require 'cl)
 
-(iswitchb-mode 1)                   ;; more informative buffer switching
+(ido-mode t)                        ;; more informative buffer switching
 (line-number-mode 1)
 (column-number-mode 1)              ;; lines and columns, duh
 (menu-bar-mode 1)                   ;; keyboard only, please
@@ -77,6 +77,8 @@
 (global-set-key (kbd "M-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-x C-b") 'bs-show)
 (global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-x C-f") 'ido-find-file)
+(global-set-key (kbd "C-x C-p") 'ffap)
 
 (global-set-key [f1]  'bs-show)
 (global-set-key [f2]  'shell)
