@@ -166,16 +166,19 @@ Compare with `if'."
     (message "Closed %d buffers, %d modified buffers where left open" 
              (length closed) (length dirty))))
 
+(defun mk-proj-buffer-p (buf)
+  "Is the given buffer in our project  based on filename? Also detects dired buffers open to basedir/*"
+  (let ((file-name (buffer-file-name buf)))
+    (if (and file-name
+             (string-match (concat "^" (regexp-quote mk-proj-basedir)) file-name))
+        t
+      nil)))
+
 (defun mk-proj-buffers ()
   "Get a list of buffers that reside in this project's basedir"
-  (let ((basedir-len (length mk-proj-basedir))
-        (buffers nil))
+  (let ((buffers nil))
     (dolist (b (buffer-list))
-      (let ((b-name (buffer-file-name b)))
-        (when (and b-name
-                   (>= (length b-name) basedir-len)
-                   (string= (substring b-name 0 basedir-len) mk-proj-basedir))
-              (push b buffers))))
+      (when (mk-proj-buffer-p b) (push b buffers)))
     buffers))
 
 (defun project-status ()
