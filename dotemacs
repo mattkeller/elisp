@@ -304,6 +304,7 @@
 (global-set-key (kbd "C-c p i") 'project-index)
 (global-set-key (kbd "C-c p s") 'project-status)
 (global-set-key (kbd "C-c p h") 'project-home)
+(global-set-key (kbd "C-c p d") 'project-dired)
 (global-set-key (kbd "C-c p t") 'project-tags)
 
 (project-def "mk-project"

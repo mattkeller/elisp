@@ -19,6 +19,7 @@
 ;;;;   * Index files:     project-index
 ;;;;   * Cd proj home:    project-home
 ;;;;   * Rebuild tags:    project-tags
+;;;;   * Open Dired:      project-dired
 ;;;;
 ;;;; Example use:
 ;;;;   (project-def "my-proj"
@@ -258,10 +259,19 @@ Compare with `if'."
   (project-home)
   (compile (concat mk-proj-compile-cmd " " opts)))
 
+;; ---------------------------------------------------------------------
+;; Home and Dired
+;; ---------------------------------------------------------------------
+
 (defun project-home ()
   "cd to the basedir of the current project"
   (interactive)
   (cd mk-proj-basedir))
+
+(defun project-dired ()
+  "Open dired in the project's basedir (or jump to the existing dired buffer)"
+  (interactive)
+  (dired mk-proj-basedir))
 
 ;; ---------------------------------------------------------------------
 ;; Find-file 
