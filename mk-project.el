@@ -10,7 +10,7 @@
 ;;;;   * Load project:    project-load
 ;;;;   * Unload project:  project-unload
 ;;;;   * Project Status:  project-status
-;;;;   * Close files:     project-close-files
+;;;;   * Close files:     project-cloe-files
 ;;;;
 ;;;; Project Operations:
 ;;;;   * Compile project: project-compile
@@ -144,8 +144,9 @@ Compare with `if'."
     (message "Unloading project %s" mk-proj-name)
     (when mk-proj-tags-file (aif (get-buffer "TAGS") (kill-buffer it)))
     (mk-proj-fib-clear)
-    (when (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
-      (project-close-files))
+    (when (and (mk-proj-buffers)
+               (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
+      (project-close-files)))
     (when mk-proj-shutdown-hooks (run-hooks 'mk-proj-shutdown-hooks)))
   (mk-proj-defaults)
   (message "Project settings have been cleared"))
