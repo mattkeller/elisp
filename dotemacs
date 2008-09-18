@@ -335,7 +335,9 @@
     (find-file file))
   (message "Qrev it up, baby!"))
 
-(defun qrev-shutdown-hook () (message "Adios, qrev"))
+(defun qrev-shutdown-hook ()
+  (when (y-or-n-p "Close slime? ")
+    (slime-quit-lisp)))
 
 (defvar mcp10-jars '("mcp_3rdParty/java/database/oracle/oracle.zip"
                      "mcp_3rdParty/java/management/jdmk/jawall.jar"
