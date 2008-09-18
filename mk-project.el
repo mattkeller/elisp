@@ -157,6 +157,7 @@ Compare with `if'."
 
 (defun project-close-files ()
   "Close all unmodified files that reside in the project's basedir"
+  (interactive)
   (let ((closed nil)
         (dirty nil)
         (basedir-len (length mk-proj-basedir)))
