@@ -76,8 +76,8 @@ Compare with `if'."
 (defvar mk-proj-git-p nil "True if this is a git project. Project commands will avoid the .git directory.")
 (defvar mk-proj-tags-file nil "Path to the TAGS file for this project.")
 (defvar mk-proj-compile-cmd nil "Command to build the entire project.")
-(defvar mk-proj-startup-hooks nil "List of hook functions to run after project-load.")
-(defvar mk-proj-shutdown-hooks nil "List of hook functions to run afer project-unload.")
+(defvar mk-proj-startup-hook nil "Hook function to run after project-load.")
+(defvar mk-proj-shutdown-hook nil "Hook function to run afer project-unload.")
 
 (defun mk-proj-defaults ()
   "Set all default values for vars and keybindings"
@@ -88,8 +88,8 @@ Compare with `if'."
         mk-proj-git-p nil
         mk-proj-tags-file nil
         mk-proj-compile-cmd "make -k"
-        mk-proj-startup-hooks nil
-        mk-proj-shutdown-hooks nil)
+        mk-proj-startup-hook nil
+        mk-proj-shutdown-hook nil)
   (cd mk-proj-basedir))
 
 (defun mk-proj-config-val (key config-alist)
@@ -110,8 +110,8 @@ Compare with `if'."
   (aif (mk-proj-config-val 'git-p proj-alist) (setq mk-proj-git-p it))
   (aif (mk-proj-config-val 'tags-file proj-alist) (setq mk-proj-tags-file (expand-file-name it)))
   (aif (mk-proj-config-val 'compile-cmd proj-alist) (setq mk-proj-compile-cmd it))
-  (aif (mk-proj-config-val 'startup-hook proj-alist) (setq mk-proj-startup-hooks (list it)))
-  (aif (mk-proj-config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hooks (list it))))
+  (aif (mk-proj-config-val 'startup-hook proj-alist) (setq mk-proj-startup-hook it))
+  (aif (mk-proj-config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hook it)))
 
 (defun project-load ()
   "Load a project's settings."
@@ -134,8 +134,8 @@ Compare with `if'."
         (aif (get-buffer "TAGS") (kill-buffer it))
         (visit-tags-table mk-proj-tags-file))
       (project-index)
-      (when mk-proj-startup-hooks
-        (run-hooks 'mk-proj-startup-hooks)))))
+      (when mk-proj-startup-hook
+        (run-hooks 'mk-proj-startup-hook)))))
 
 (defun project-unload ()
   "Revert to default project settings."
@@ -147,7 +147,7 @@ Compare with `if'."
     (when (and (mk-proj-buffers)
                (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
       (project-close-files)))
-    (when mk-proj-shutdown-hooks (run-hooks 'mk-proj-shutdown-hooks)))
+    (when mk-proj-shutdown-hook (run-hooks 'mk-proj-shutdown-hook)))
   (mk-proj-defaults)
   (message "Project settings have been cleared"))
 
@@ -183,7 +183,7 @@ Compare with `if'."
   (interactive)
   (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; Git-p=%s; Tags=%s; Compile=%s; Startup=%s; Shutdown=%s"
            mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-git-p
-           mk-proj-tags-file mk-proj-compile-cmd mk-proj-startup-hooks mk-proj-shutdown-hooks))
+           mk-proj-tags-file mk-proj-compile-cmd mk-proj-startup-hook mk-proj-shutdown-hook))
 
 ;; ---------------------------------------------------------------------
 ;; Etags
