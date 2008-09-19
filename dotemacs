@@ -1,22 +1,27 @@
 ;;;; -*- Mode: Emacs-Lisp; -*-
+
+;;; Keep Custom settings out of .emacs
+
 (setq custom-file "~/.emacs-custom.el")
 (load custom-file 'noerror)
 
 (require 'cl)
 
-(ido-mode t)                        ;; more informative buffer switching
+;;; Generic customizations ---------------------------------------------
+
+(ido-mode t)                        ; more informative buffer switching
 (line-number-mode 1)
 (show-paren-mode t)
-(column-number-mode 1)              ;; lines and columns, duh
-(menu-bar-mode 1)                   ;; keyboard only, please
+(column-number-mode 1)              ; lines and columns, duh
+(menu-bar-mode 1)                   ; keyboard only, please
 (tool-bar-mode 0)
-(setq-default indent-tabs-mode nil) ;; by default, insert spaces, not a full tab
-(setq visible-bell t)               ;; no beeping!
-(fset 'yes-or-no-p 'y-or-n-p)       ;; query with y or n always
+(setq-default indent-tabs-mode nil) ; by default, insert spaces, not a full tab
+(setq visible-bell t)               ; no beeping!
+(fset 'yes-or-no-p 'y-or-n-p)       ; query with y or n always
 (setq inhibit-splash-screen t)
-(blink-cursor-mode nil)             ;; no blinking!
-(auto-compression-mode 1)           ;; inline edit files in gzip, bzip2 archives
-(transient-mark-mode nil)           ;; don't highlight region, unless Ctrl-Space x 2
+(blink-cursor-mode nil)             ; no blinking!
+(auto-compression-mode 1)           ; inline edit files in gzip, bzip2 archives
+(transient-mark-mode nil)           ; don't highlight region, unless Ctrl-Space x 2
 (put 'narrow-to-region 'disabled nil)
 (put 'erase-buffer 'disabled nil)
 
@@ -26,22 +31,17 @@
 (setq frame-title-format "emacs [%b]")
 (setq icon-title-format "emacs [%b]")
 (which-func-mode)
-(setq mouse-yank-at-point t)        ;; paste at cursor, not mouse location
+(setq mouse-yank-at-point t)        ; paste at cursor, not mouse location
 
-(when (fboundp 'ffap-bindings)      ;; find-file-at-point
+(when (fboundp 'ffap-bindings)      ; find-file-at-point
   (ffap-bindings))
 
-;;; Scroll settings
-(setq scroll-preserve-screen-position nil) ;; cursor stays in same place during page up/down
-(setq scroll-margin 2)                     ;; start scrolling when 2 rows from top/bottom
-(setq scroll-conservatively 1)             ;; smooth scrolling
-(setq next-line-add-newlines nil)          ;; don't add newlines just by scrolling
+;;; Scroll settings ----------------------------------------------------
 
-(setq compilation-read-command t)       ;; always ask for compile command
-(setq compilation-scroll-output t)      ;; scroll compilation window
-
-;; make compiler error clickable in shell
-(add-hook 'shell-mode-hook (lambda () (compilation-shell-minor-mode)))
+(setq scroll-preserve-screen-position nil) ; cursor stays in same place during page up/down
+(setq scroll-margin 2)                     ; start scrolling when 2 rows from top/bottom
+(setq scroll-conservatively 1)             ; smooth scrolling
+(setq next-line-add-newlines nil)          ; don't add newlines just by scrolling
 
 (defadvice scroll-up (around scroll-up first act)
   "Keep cursor in the same column."
@@ -55,9 +55,16 @@
     ad-do-it
     (move-to-column col)))
 
-;; ---------------------------------------------------------
-;; Load utility libs
-;; ---------------------------------------------------------
+;;; Compile mode settings ----------------------------------------------
+
+(setq compilation-read-command t)       ; always ask for compile command
+(setq compilation-scroll-output t)      ; scroll compilation window
+
+(add-hook 'shell-mode-hook 
+          (lambda () (compilation-shell-minor-mode))) ; make compiler error clickable in shell
+
+;;; Load utility libs --------------------------------------------------
+
 (add-to-list 'load-path "~/elisp")
 (autoload 'find-file-recursively "find-recursive" "" t)
 (autoload 'linum "linum" "" t)
@@ -68,12 +75,12 @@
 (autoload 'magit-status "magit" "Magit git helper" t)
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+(load "projects.el")
 
-;; ---------------------------------------------------------
-;; Global keybindings
-;; ---------------------------------------------------------
-(global-set-key (kbd "C-x C-m") 'execute-extended-command) ;; = meta
-(global-set-key (kbd "C-c C-m") 'execute-extended-command) ;; = meta
+;;; Global keybindings -------------------------------------------------
+
+(global-set-key (kbd "C-x C-m") 'execute-extended-command) ; = meta
+(global-set-key (kbd "C-c C-m") 'execute-extended-command) ; = meta
 (global-set-key (kbd "M-s") 'isearch-forward-regexp)
 (global-set-key (kbd "M-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-x C-b") 'bs-show)
@@ -83,8 +90,8 @@
 
 (global-set-key [f1]  'ibuffer)
 (global-set-key [f2]  'shell)
-(global-set-key [f3]  'kmacro-start-macro-or-insert-counter) ;; emacs std
-(global-set-key [f4]  'kmacro-end-or-call-macro)             ;; emacs std
+(global-set-key [f3]  'kmacro-start-macro-or-insert-counter) ; emacs std
+(global-set-key [f4]  'kmacro-end-or-call-macro)             ; emacs std
 (global-set-key [f5]  'compile)
 (global-set-key [f6]  'grep-find)
 (global-set-key [f7]  'find-tag)
@@ -102,9 +109,8 @@
 (global-set-key (kbd "M-_") 'shrink-window)
 (global-set-key (kbd "M-+") 'enlarge-window)
 
-;; ---------------------------------------------------------
-;; Backups in ~/.backups
-;; ---------------------------------------------------------
+;;; Backups in ~/.backups ----------------------------------------------
+
 (defconst use-backup-dir t)
 (setq backup-directory-alist (quote ((".*" . "~/.backup")))
       version-control t                ; Use version numbers for backups
@@ -113,26 +119,22 @@
       delete-old-versions t            ; Ask to delete excess backup versions?
       backup-by-copying-when-linked t) ; Copy linked files, don't rename.
 
-;; ---------------------------------------------------------
-;; Emacs Code Browser
-;; ---------------------------------------------------------
+;;; Emacs Code Browser -------------------------------------------------
+
 (add-to-list 'load-path "~/elisp/ecb-2.32")
 (require 'ecb-autoloads)
 (setq ecb-layout-name "left10")
 
-;; ---------------------------------------------------------
-;; Programming Style
-;;   Java and C++ pick up c-mode-hook
-;; ---------------------------------------------------------
+;;; Programming Style: Java and C++ pick up c-mode-hook ----------------
+
 (add-hook 'c-mode-hook
           '(lambda ()
              (c-set-style "K&R")
              (setq c-basic-offset 4)
              (setq indent-tabs-mode nil)))
 
-;; ---------------------------------------------------------
-;; Ruby setup
-;; ---------------------------------------------------------
+;;; Ruby setup ---------------------------------------------------------
+
 (autoload 'ruby-mode "ruby-mode" "Mode for editing ruby source files")
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
 (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
@@ -151,9 +153,8 @@
              (inf-ruby-keys)
              (local-set-key [f5] 'ruby-lint)))
 
-;; ---------------------------------------------------------
-;; SLIME Setup
-;; ---------------------------------------------------------
+;;; SLIME Setup --------------------------------------------------------
+
 (when (string-equal system-name "mktop")
   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
   (add-to-list 'load-path "/home/mk/.sbcl/site/slime")
@@ -190,22 +191,21 @@
 
        (paredit-mode +1))))
 
-;; do slime mode for all lisp files
+; do slime mode for all lisp files
 (add-hook 'lisp-mode-hook (lambda ()
                             (cond ((not (featurep 'slime))
                                    (require 'slime)
                                    (normal-mode)))
 			    (modify-syntax-entry ?- "w")))
 
-;; ---------------------------------------------------------
-;; NXML Setup
-;; ---------------------------------------------------------
-(load "~/elisp/nxml-mode/rng-auto")
+;;; NXML Setup ---------------------------------------------------------
+
+(add-to-list 'load-path "~/elisp/nxml-mode")
+(autoload 'nxml-mode "nxml-mode" "" t)
 (add-to-list 'auto-mode-alist '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\)\\'" . nxml-mode))
 
-;; ---------------------------------------------------------
-;; Java Setup
-;; ---------------------------------------------------------
+;;; Java Setup ---------------------------------------------------------
+
 (add-to-list 'auto-mode-alist '("\\.java$" . java-mode))
 (setq semantic-load-turn-useful-things-on t)
 (setq semanticdb-default-save-directory "~/.semantic.cache")
@@ -232,25 +232,22 @@
                              (setq c-basic-offset 3)
                              (setq-default indent-tabs-mode nil)))
 
-;; ----------------------------------------------------------
-;; Javascript
-;; ----------------------------------------------------------
+;;; Javascript ---------------------------------------------------------
+
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 (setq js2-basic-offset 2)
 (setq js2-use-font-lock-faces t)
 
-;; ----------------------------------------------------------
-;; etags-select
-;; ----------------------------------------------------------
+;;; etags-select -------------------------------------------------------
+
 (autoload 'etags-select-find-tag "etags-select" "for etags-select method" t)
 (setq etags-select-no-select-for-one-match t)
 (global-set-key "\M-." 'etags-select-find-tag)
 (global-set-key [f7] 'etags-select-find-tag)
 
-;; ----------------------------------------------------------
-;; Tramp (remote editing)
-;; ----------------------------------------------------------
+;;; Tramp (remote editing) ---------------------------------------------
+
 (setq tramp-default-method "scp")
 (setq tramp-default-user-alist
                '(("scp" ".*\\.littleredbat\\.net\\" "mk")
@@ -260,46 +257,35 @@
                  ("scp" "deb" "matthewk")
                  (nil nil "matthewk")))
 
-;; ----------------------------------------------------------
-;; Git VC backend setup
-;; ----------------------------------------------------------
+;;; Git VC backend setup -----------------------------------------------
+
 (require 'vc-git)
 (when (featurep 'vc-git) (add-to-list 'vc-handled-backends 'git))
 (require 'git)
 (autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t)
 
-;; ---------------------------------------------------------
-;; org-mode
-;; ---------------------------------------------------------
+;;; org-mode -----------------------------------------------------------
+
 (add-to-list 'load-path "~/elisp/org-mode")
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 
-;; ---------------------------------------------------------
-;; file-local bookmarks from bm.el
-;; ---------------------------------------------------------
-;; (require 'bm)
-;; (global-set-key (kbd "<M-f2>") 'bm-toggle)
-;; (global-set-key (kbd "<f2>")   'bm-next)
-;; (global-set-key (kbd "<S-f2>") 'bm-previous)
+;;; file-local bookmarks from bm.el ------------------------------------
 
-;; ----------------------------------------------------------
-;; Yet Another Snippet extension
-;; ----------------------------------------------------------
+; (require 'bm)
+; (global-set-key (kbd "<M-f2>") 'bm-toggle)
+; (global-set-key (kbd "<f2>")   'bm-next)
+; (global-set-key (kbd "<S-f2>") 'bm-previous)
+
+;;; Yet Another Snippet extension --------------------------------------
+
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/elisp/snippets")
 
-;; ----------------------------------------------------------
-;; Projects
-;; ----------------------------------------------------------
-(load "projects.el")
-
-;; ----------------------------------------------------------
-;; my elisp functions
-;; ----------------------------------------------------------
+;;; my elisp functions -------------------------------------------------
 
 (defun iwb ()
   "indent whole buffer"
@@ -314,9 +300,9 @@
   (save-excursion
     (when (and element (not (equal element "")))
       (when (string-match "[ \t]*$" element)
-        (setq element (replace-match "" nil nil element))) ;; trim whitespace
+        (setq element (replace-match "" nil nil element))) ; trim whitespace
       (when (string-match "^[ \t]*" element)
-        (setq element (replace-match "" nil nil element))) ;; trim whitespace
+        (setq element (replace-match "" nil nil element))) ; trim whitespace
       (goto-char (region-end))
       (insert "</" element ">")
       (goto-char (region-beginning))
