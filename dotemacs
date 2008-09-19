@@ -30,7 +30,7 @@
 
 (setq frame-title-format "emacs [%b]")
 (setq icon-title-format "emacs [%b]")
-(which-func-mode)
+(which-func-mode t)
 (setq mouse-yank-at-point t)        ; paste at cursor, not mouse location
 
 (when (fboundp 'ffap-bindings)      ; find-file-at-point
