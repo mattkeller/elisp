@@ -6,6 +6,7 @@
 
 (ido-mode t)                        ;; more informative buffer switching
 (line-number-mode 1)
+(show-paren-mode t)
 (column-number-mode 1)              ;; lines and columns, duh
 (menu-bar-mode 1)                   ;; keyboard only, please
 (tool-bar-mode 0)
@@ -153,8 +154,6 @@
 ;; ---------------------------------------------------------
 ;; SLIME Setup
 ;; ---------------------------------------------------------
-(show-paren-mode)
-
 (when (string-equal system-name "mktop")
   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
   (add-to-list 'load-path "/home/mk/.sbcl/site/slime")
