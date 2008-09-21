@@ -13,7 +13,7 @@
 (line-number-mode 1)
 (show-paren-mode t)
 (column-number-mode 1)              ; lines and columns, duh
-(menu-bar-mode 1)                   ; keyboard only, please
+(menu-bar-mode 0)                   ; keyboard only, please
 (tool-bar-mode 0)
 (setq-default indent-tabs-mode nil) ; by default, insert spaces, not a full tab
 (setq visible-bell t)               ; no beeping!
@@ -35,6 +35,8 @@
 
 (when (fboundp 'ffap-bindings)      ; find-file-at-point
   (ffap-bindings))
+
+(defalias 'qrr 'query-replace-regexp) ; find a good keybinding for this?
 
 ;;; Scroll settings ----------------------------------------------------
 
