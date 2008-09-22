@@ -19,12 +19,10 @@
 
 ;;; Commentary:
 
-;; Perform operations (find-grep, compile, find-file,
-;; visit-tags-file, etc) -- on a per-project basis. Projects are
-;; defined by passing project-def a list of settings. Project
-;; commands use these settings to restrict or enhance their
-;; operation. These operations allow IDE-like behavior, quick
-;; project setup and switching.
+;; Perform operations (find-grep, compile, find-file, visit-tags-file,
+;; etc) on a per-project basis. A 'project' in this sense is a
+;; directory of related files - usually a directory of source
+;; files. 
 
 ;; Project Administration:
 ;;   * Load project:    project-load
