@@ -1,39 +1,74 @@
-;;;; mk-project.el ---  Lightweight project handling
-;;;;
-;;;; Perform operations -- find-grep, compile, find-file, visit-tags-file --
-;;;; on a per-project basis. Projects are defined by passing project-def
-;;;; a list of settings. Project commands use these settings to restrict
-;;;; or enhance their operation. These operations allow IDE-like behavior,
-;;;; quick project setup and switching.
-;;;;
-;;;; Project Administration:
-;;;;   * Load project:    project-load
-;;;;   * Unload project:  project-unload
-;;;;   * Project Status:  project-status
-;;;;   * Close files:     project-close-files
-;;;;
-;;;; Project Operations:
-;;;;   * Compile project: project-compile
-;;;;   * Grep project:    project-grep
-;;;;   * Find file:       project-find-file
-;;;;   * Index files:     project-index
-;;;;   * Cd proj home:    project-home
-;;;;   * Rebuild tags:    project-tags
-;;;;   * Open Dired:      project-dired
-;;;;
-;;;; Example use:
-;;;;   (project-def "my-proj"
-;;;;         '((basedir "/home/me/my-proj/")
-;;;;           (src-patterns ("*.lisp" "*.c"))
-;;;;           (ignore-patterns ("*.elc" "*.o"))
-;;;;           (tags-file "/home/me/my-proj/TAGS")
-;;;;           (git-p t)
-;;;;           (compile-cmd "make")
-;;;;           (startup-hook myproj-startup-hook)))
-;;;;
-;;;;   (defun myproj-startup-hook () 
-;;;;     (find-file "/home/me/my-proj/foo.el"))
-;;;;
+;;; mk-project.el ---  Lightweight project handling
+
+;; Copyright (C) 2008  Matt Keller <mattkeller at gmail dot com>
+;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+
+;; Perform operations (find-grep, compile, find-file,
+;; visit-tags-file, etc) -- on a per-project basis. Projects are
+;; defined by passing project-def a list of settings. Project
+;; commands use these settings to restrict or enhance their
+;; operation. These operations allow IDE-like behavior, quick
+;; project setup and switching.
+
+;; Project Administration:
+;;   * Load project:    project-load
+;;   * Unload project:  project-unload
+;;   * Project Status:  project-status
+;;   * Close files:     project-close-files
+
+;; Project Operations:
+;;   * Compile project: project-compile
+;;   * Grep project:    project-grep
+;;   * Find file:       project-find-file
+;;   * Index files:     project-index
+;;   * Cd proj home:    project-home
+;;   * Rebuild tags:    project-tags
+;;   * Open Dired:      project-dired
+
+;; Example use:
+;;
+;;   (require 'mk-project)
+;;
+;;   (project-def "my-proj"
+;;         '((basedir "/home/me/my-proj/")
+;;           (src-patterns ("*.lisp" "*.c"))
+;;           (ignore-patterns ("*.elc" "*.o"))
+;;           (tags-file "/home/me/my-proj/TAGS")
+;;           (git-p t)
+;;           (compile-cmd "make")
+;;           (startup-hook myproj-startup-hook)))
+;;
+;;   (defun myproj-startup-hook () 
+;;     (find-file "/home/me/my-proj/foo.el"))
+;;
+;; (global-set-key (kbd "C-c p c") 'project-compile)
+;; (global-set-key (kbd "C-c p g") 'project-grep)
+;; (global-set-key (kbd "C-c p l") 'project-load)
+;; (global-set-key (kbd "C-c p u") 'project-unload)
+;; (global-set-key (kbd "C-c p f") 'project-find-file)
+;; (global-set-key (kbd "C-c p i") 'project-index)
+;; (global-set-key (kbd "C-c p s") 'project-status)
+;; (global-set-key (kbd "C-c p h") 'project-home)
+;; (global-set-key (kbd "C-c p d") 'project-dired)
+;; (global-set-key (kbd "C-c p t") 'project-tags)
+
+;;; Code:
 
 (require 'grep)
 (require 'thingatpt)
@@ -347,3 +382,5 @@ is found, this prompts for completion. See also: project-index."
               (find-file file)))))))))
 
 (provide 'mk-project)
+
+;;; mk-project.el ends here
