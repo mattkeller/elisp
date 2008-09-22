@@ -95,6 +95,10 @@ Compare with `if'."
     (replace-match replacement t t str)
     str))
 
+(defun mk-proj-assert-proj ()
+  (unless mk-proj-name
+    (error "No project is set!")))
+
 ;; ---------------------------------------------------------------------
 ;; Project Configuration
 ;; ---------------------------------------------------------------------
@@ -193,6 +197,7 @@ Compare with `if'."
 (defun project-close-files ()
   "Close all unmodified files that reside in the project's basedir"
   (interactive)
+  (mk-proj-assert-proj)
   (let ((closed nil)
         (dirty nil)
         (basedir-len (length mk-proj-basedir)))
@@ -224,6 +229,7 @@ Compare with `if'."
 (defun project-status ()
   "View project's variables."
   (interactive)
+  (mk-proj-assert-proj)
   (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; Git-p=%s; Tags=%s; Compile=%s; Startup=%s; Shutdown=%s"
            mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-git-p
            mk-proj-tags-file mk-proj-compile-cmd mk-proj-startup-hook mk-proj-shutdown-hook))
@@ -241,6 +247,7 @@ Compare with `if'."
 (defun project-tags ()
   "Regenerate the projects TAG file. Runs in the background."
   (interactive)
+  (mk-proj-assert-proj)
   (if mk-proj-tags-file
     (progn
       (cd mk-proj-basedir)
@@ -271,6 +278,7 @@ Compare with `if'."
 (defun project-grep ()
   "Run find-grep using this project's settings for basedir and src files."
   (interactive)
+  (mk-proj-assert-proj)
   (let* ((wap (word-at-point))
          (regex (if wap (read-string (concat "Grep project for (default \"" wap "\"): ") nil nil wap)
                  (read-string "Grep project for: "))))
@@ -292,6 +300,7 @@ Compare with `if'."
 (defun project-compile (opts)
   "Run the compile command for this project."
   (interactive "sCompile options: ")
+  (mk-proj-assert-proj)
   (project-home)
   (compile (concat mk-proj-compile-cmd " " opts)))
 
@@ -302,11 +311,13 @@ Compare with `if'."
 (defun project-home ()
   "cd to the basedir of the current project"
   (interactive)
+  (mk-proj-assert-proj)
   (cd mk-proj-basedir))
 
 (defun project-dired ()
   "Open dired in the project's basedir (or jump to the existing dired buffer)"
   (interactive)
+  (mk-proj-assert-proj)
   (dired mk-proj-basedir))
 
 ;; ---------------------------------------------------------------------
@@ -337,6 +348,7 @@ Compare with `if'."
 (defun project-index ()
   "Regenerate the *file-index* buffer that is used for project-find-file"
   (interactive)
+  (mk-proj-assert-proj)
   (message "Refreshing %s buffer..." mk-proj-fib-name)
   (mk-proj-fib-clear)
   (let ((find-cmd (concat "find " mk-proj-basedir " -type f " 
@@ -357,6 +369,7 @@ The file list in buffer *file-index* is scanned for regex matches. If only
 one match is found, the file is opened automatically. If more than one match
 is found, this prompts for completion. See also: project-index."
   (interactive "sFind file in project matching: ")
+  (mk-proj-assert-proj)
   (unless (get-buffer mk-proj-fib-name)
     (when (yes-or-no-p "No file index exists for this project. Generate one? ")
       (project-index))
