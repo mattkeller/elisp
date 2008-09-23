@@ -20,7 +20,7 @@
 (setq visible-bell t)                        ; no beeping!
 (fset 'yes-or-no-p 'y-or-n-p)                ; query with y or n always
 (setq inhibit-splash-screen t)               ; no splash screen!
-(blink-cursor-mode nil)                      ; no blinking!
+(blink-cursor-mode 0)                        ; no blinking!
 (auto-compression-mode 1)                    ; inline edit files in gzip, bzip2 archives
 (transient-mark-mode nil)                    ; don't highlight region, unless Ctrl-Space x 2
 (setq help-window-select t)                  ; always jump to the help window
@@ -28,7 +28,7 @@
 (put 'erase-buffer 'disabled nil)            ; allow erase-buffer
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
-(set-background-color "gray97")              
+(set-background-color "gray97")
 
 (setq frame-title-format "emacs [%b]")
 (setq icon-title-format "emacs [%b]")
@@ -61,7 +61,7 @@
 (setq compilation-read-command t)       ; always ask for compile command
 (setq compilation-scroll-output t)      ; scroll compilation window
 
-(add-hook 'shell-mode-hook 
+(add-hook 'shell-mode-hook
           (lambda () (compilation-shell-minor-mode))) ; make compiler error clickable in shell
 
 ;;; Load utility libs --------------------------------------------------
@@ -85,6 +85,7 @@
 
 (global-set-key (kbd "C-x C-b") 'bs-show)
 (global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-c t") 'line-to-window-top)
 (global-set-key (kbd "C-x C-f") 'ido-find-file)
 (global-set-key (kbd "C-x C-p") 'ffap)
 (global-set-key (kbd "<C-tab>") 'other-window)
@@ -116,7 +117,7 @@
 
 ;;; Backups in ~/.backups ----------------------------------------------
 
-(defconst use-backup-dir t)
+(defconst Hvuse-backup-dir t)
 (setq backup-directory-alist (quote ((".*" . "~/.backup")))
       version-control t                ; Use version numbers for backups
       kept-new-versions 16             ; Number of newest versions to keep
@@ -349,5 +350,7 @@
   (when (get-buffer "*slime-repl sbcl*")
     (switch-to-buffer "*slime-repl sbcl*")))
 
-
+(defun line-to-window-top ()
+  (interactive)
+  (recenter-top-bottom 1))
 
