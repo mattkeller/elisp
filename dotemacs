@@ -26,6 +26,7 @@
 (setq help-window-select t)                  ; always jump to the help window
 (put 'narrow-to-region 'disabled nil)        ; allow narrow-to-region
 (put 'erase-buffer 'disabled nil)            ; allow erase-buffer
+(setq message-log-max 5000)                  ; allow lots of messages 
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
 (set-background-color "gray97")
@@ -291,6 +292,17 @@
 (require 'yasnippet)
 (yas/initialize)
 (yas/load-directory "~/elisp/snippets")
+
+;;; Browse Kill Ring ---------------------------------------------------
+
+(require 'browse-kill-ring)
+(defadvice yank-pop (around kill-ring-browse-maybe (arg))
+  "If last action was not a yank, run `browse-kill-ring' instead."
+  (if (not (eq last-command 'yank))
+      (browse-kill-ring)
+    ad-do-it))
+(ad-activate 'yank-pop)
+
 
 ;;; my elisp functions -------------------------------------------------
 
