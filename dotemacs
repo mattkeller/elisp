@@ -9,35 +9,35 @@
 
 ;;; Generic customizations ---------------------------------------------
 
-(ido-mode t)                        ; more informative buffer switching
-(line-number-mode 1)
-(show-paren-mode t)
-(column-number-mode 1)              ; lines and columns, duh
-(menu-bar-mode 0)                   ; keyboard only, please
-(tool-bar-mode 0)
-(setq-default indent-tabs-mode nil) ; by default, insert spaces, not a full tab
-(setq visible-bell t)               ; no beeping!
-(fset 'yes-or-no-p 'y-or-n-p)       ; query with y or n always
-(setq inhibit-splash-screen t)
-(blink-cursor-mode nil)             ; no blinking!
-(auto-compression-mode 1)           ; inline edit files in gzip, bzip2 archives
-(transient-mark-mode nil)           ; don't highlight region, unless Ctrl-Space x 2
-(setq help-window-select t)         ; always jump to the help window
-(put 'narrow-to-region 'disabled nil)
-(put 'erase-buffer 'disabled nil)
+(ido-mode t)                                 ; more informative buffer switching
+(line-number-mode 1)                         ; show line number in mode-line
+(show-paren-mode t)                          ; flash matching paren
+(column-number-mode 1)                       ; lines and columns, duh
+(menu-bar-mode 0)                            ; keyboard only, please
+(tool-bar-mode 0)                            ; no tool bar
+(which-func-mode t)                          ; show current fn in mode-line
+(setq-default indent-tabs-mode nil)          ; by default, insert spaces, not a full tab
+(setq visible-bell t)                        ; no beeping!
+(fset 'yes-or-no-p 'y-or-n-p)                ; query with y or n always
+(setq inhibit-splash-screen t)               ; no splash screen!
+(blink-cursor-mode nil)                      ; no blinking!
+(auto-compression-mode 1)                    ; inline edit files in gzip, bzip2 archives
+(transient-mark-mode nil)                    ; don't highlight region, unless Ctrl-Space x 2
+(setq help-window-select t)                  ; always jump to the help window
+(put 'narrow-to-region 'disabled nil)        ; allow narrow-to-region
+(put 'erase-buffer 'disabled nil)            ; allow erase-buffer
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
-(set-background-color "gray97")
+(set-background-color "gray97")              
 
 (setq frame-title-format "emacs [%b]")
 (setq icon-title-format "emacs [%b]")
-(which-func-mode t)
-(setq mouse-yank-at-point t)        ; paste at cursor, not mouse location
+(setq mouse-yank-at-point t)                 ; paste at cursor, not mouse location
 
-(when (fboundp 'ffap-bindings)      ; find-file-at-point
+(when (fboundp 'ffap-bindings)               ; find-file-at-point
   (ffap-bindings))
 
-(defalias 'qrr 'query-replace-regexp) ; find a good keybinding for this?
+(defalias 'qrr 'query-replace-regexp)        ; TODO: find a good keybinding for this?
 
 ;;; Scroll settings ----------------------------------------------------
 
