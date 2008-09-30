@@ -156,7 +156,9 @@
                  "1.6.0_05")
   (find-file "~/proj/geol3/NOTES")
   (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/restoreConfigData.pl")
-  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/saveConfigData.pl"))
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/saveConfigData.pl")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
 
 (project-def "12dyn"
              '((basedir "/mcp/")
