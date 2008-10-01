@@ -17,6 +17,9 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+;; The latest version of this file can be found at
+;; http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=mk-project.el;hb=HEAD
+
 ;;; Commentary:
 
 ;; Perform operations (find-grep, compile, find-file, visit-tags-file,
