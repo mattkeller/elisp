@@ -44,19 +44,19 @@
 
 ;; Example use:
 ;;
-;;   (require 'mk-project)
+;; (require 'mk-project)
 ;;
-;;   (project-def "my-proj"
-;;         '((basedir "/home/me/my-proj/")
-;;           (src-patterns ("*.lisp" "*.c"))
-;;           (ignore-patterns ("*.elc" "*.o"))
-;;           (tags-file "/home/me/my-proj/TAGS")
-;;           (git-p t)
-;;           (compile-cmd "make")
-;;           (startup-hook myproj-startup-hook)))
+;; (project-def "my-proj"
+;;       '((basedir "/home/me/my-proj/")
+;;         (src-patterns ("*.lisp" "*.c"))
+;;         (ignore-patterns ("*.elc" "*.o"))
+;;         (tags-file "/home/me/my-proj/TAGS")
+;;         (git-p t)
+;;         (compile-cmd "make")
+;;         (startup-hook myproj-startup-hook)))
 ;;
-;;   (defun myproj-startup-hook () 
-;;     (find-file "/home/me/my-proj/foo.el"))
+;; (defun myproj-startup-hook () 
+;;   (find-file "/home/me/my-proj/foo.el"))
 ;;
 ;; (global-set-key (kbd "C-c p c") 'project-compile)
 ;; (global-set-key (kbd "C-c p g") 'project-grep)
