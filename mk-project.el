@@ -171,9 +171,7 @@ Compare with `if'."
         (throw 'project-load t))
       (message "Loading project %s" name)
       (cd mk-proj-basedir)
-      (when mk-proj-tags-file 
-        (aif (get-buffer "TAGS") (kill-buffer it))
-        (visit-tags-table mk-proj-tags-file))
+      (mk-proj-set-tags-file mk-proj-tags-file)
       (project-index)
       (when mk-proj-startup-hook
         (run-hooks 'mk-proj-startup-hook)))))
@@ -183,7 +181,7 @@ Compare with `if'."
   (interactive)
   (when mk-proj-name
     (message "Unloading project %s" mk-proj-name)
-    (when mk-proj-tags-file (aif (get-buffer "TAGS") (kill-buffer it)))
+    (mk-proj-set-tags-file nil)
     (mk-proj-fib-clear)
     (when (and (mk-proj-buffers)
                (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
@@ -236,11 +234,23 @@ Compare with `if'."
 ;; Etags
 ;; ---------------------------------------------------------------------
 
+(defun mk-proj-set-tags-file (tags-file)
+  "Setup TAGS file when given a valid file name; otherwise clean the TAGS"
+  (aif (get-buffer "TAGS") (kill-buffer it))
+  (setq tags-file-name tags-file
+        tags-table-list nil)
+  (when (and tags-file (file-exists-p tags-file)) 
+    (visit-tags-table tags-file)))
+
 (defun mk-proj-etags-cb (process event)
   "Visit tags table when the etags process finishes."
   (message "Etags process %s received event %s" process event)
-  (when (string= event "finished\n")
-    (visit-tags-table mk-proj-tags-file)))
+  (kill-buffer (get-buffer "*etags*"))
+  (cond
+   ((string= event "finished\n")
+    (mk-proj-set-tags-file mk-proj-tags-file)
+    (message "Refreshing TAGS file %s...done" mk-proj-tags-file))
+   (t (message "Refreshing TAGS file %s...failed" mk-proj-tags-file))))
 
 (defun project-tags ()
   "Regenerate the projects TAG file. Runs in the background."
