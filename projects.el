@@ -60,7 +60,7 @@
                              "management/jdmk/jdmkrt.jar"
                              "security/bcprov-jdk14-124.jar"
                              "masSoapServices/masservice.jar"
-                             "jazzlib/jazzlib.jar"))
+                             "jazzlib/jazzlib.jar")))
 
 (defvar mcp12-jars (mapcar '(lambda (j) (concat "mcp_3rdParty/" j)) 
                            '("core/3rdParty.jar"
@@ -125,10 +125,11 @@
                              "build/pluggable-instrumentor.jar"
                              "build/qdox.jar"
                              "optional/hibernate3.jar"
-                             "optional/jboss-hibernate.jar"))
+                             "optional/jboss-hibernate.jar")))
 
 (defvar mcp-jdk-reg '(("1.5.0_11" . "/localdisk/jdk1.5.0_11")
-                      ("1.6.0_05" . "/localdisk/jdk1.6.0_05")))
+                      ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
+                      ("1.6.0_07" . "/localdisk/data/matthewk/jdk1.6.0_07")))
 
 (defun mcp-jde-setup (basedir classdir jar-list jdk)
   (require 'jde)
@@ -153,7 +154,7 @@
   (mcp-jde-setup "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3_static/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3_static/classes"
                  mcp12-jars
-                 "1.6.0_05")
+                 "1.6.0_07")
   (find-file "~/proj/geol3/NOTES")
   (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/restoreConfigData.pl")
   (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/saveConfigData.pl")
