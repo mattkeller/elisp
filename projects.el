@@ -140,26 +140,6 @@
     (setq jde-jdk-registry mcp-jdk-reg)
     (setq jde-jdk (list jdk))))
 
-(project-def "12static"
-             '((basedir "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/TAGS")
-               (git-p t)
-               (compile-cmd "mcpant 12static")
-               (startup-hook mcp-12static-startup-hook)
-               (shutdown-hook nil)))
-
-(defun mcp-12static-startup-hook ()
-  (mcp-jde-setup "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3_static/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3_static/classes"
-                 mcp12-jars
-                 "1.6.0_07")
-  (find-file "~/proj/geol3/NOTES")
-  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/restoreConfigData.pl")
-  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/saveConfigData.pl")
-  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
-  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
 
 (project-def "12dyn"
              '((basedir "/mcp/")
@@ -175,7 +155,12 @@
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/classes"
                  mcp12-jars
-                 "1.6.0_05"))
+                 "1.6.0_07")
+  (find-file "~/proj/geol3/NOTES")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/restoreConfigData.pl")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_root/data/db/run/bin/util/saveConfigData.pl")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
+  (find-file "/localdisk/viewstore/matthewk_mcp_core_12.0_3_static/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
 
 
 ;;; OBSOLETE?
