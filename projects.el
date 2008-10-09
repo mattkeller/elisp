@@ -13,7 +13,7 @@
 (global-set-key (kbd "C-c p d") 'project-dired)
 (global-set-key (kbd "C-c p t") 'project-tags)
 
-(defvar sip-basedir (concat (getenv "HOME") "/code/lisp/sip/"))
+(defvar sip-basedir (concat (getenv "HOME") "/code/lisp/cl-sip/"))
 
 (project-def "cl-sip"
              `((basedir ,sip-basedir)
@@ -23,7 +23,7 @@
                (git-p t)
                (startup-hook cl-sip-startup-hook)))
 
-(defun qrev-startup-hook ()
+(defun cl-sip-startup-hook ()
   (slime)
   (dolist (file (directory-files sip-basedir t "\.lisp$" t))
     (find-file file)))
