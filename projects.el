@@ -168,7 +168,7 @@
 
 (defun mcp-12dyn-startup-hook ()
   (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/classes"
+                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/work/classes"
                  mcp12-jars
                  "1.6.0_07")
   (find-file "~/proj/geol3/NOTES")
