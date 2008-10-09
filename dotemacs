@@ -26,6 +26,7 @@
 (setq help-window-select t)                  ; always jump to the help window
 (put 'narrow-to-region 'disabled nil)        ; allow narrow-to-region
 (put 'erase-buffer 'disabled nil)            ; allow erase-buffer
+(put 'downcase-region 'disabled nil)         ; allow downcase-region
 (setq message-log-max 5000)                  ; allow lots of messages 
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
@@ -365,4 +366,3 @@
 (defun line-to-window-top ()
   (interactive)
   (recenter-top-bottom 1))
-
