@@ -31,6 +31,7 @@
 (project-def "elisp"
              `((basedir ,(concat (getenv "HOME") "/elisp/"))
                (src-patterns ("*.el"))
+               (file-list-cache ,(concat (getenv "HOME") "/.elisp-files"))
                (ignore-patterns ("*.elc"))
                (tags-file ,(concat (getenv "HOME") "/elisp/" "TAGS"))
                (git-p t)
@@ -161,6 +162,7 @@
                (src-patterns ("*.java" "*.jsp"))
                (ignore-patterns ("*.class" "*.wsdl"))
                (tags-file "/home/matthewk/.TAGS12")
+               (file-list-cache "/home/matthewk/.12dyn-files")
                (git-p nil)
                (compile-cmd "mcpant 12dyn")
                (startup-hook mcp-12dyn-startup-hook)

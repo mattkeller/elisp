@@ -4,11 +4,11 @@
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2, or
-;; (at your option) any later version.
+;; published by the Free Software Foundation; either version 2, or (at
+;; your option) any later version.
 ;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ;; General Public License for more details.
 ;;
@@ -24,8 +24,7 @@
 
 ;; Perform operations (find-grep, compile, find-file, visit-tags-file,
 ;; etc) on a per-project basis. A 'project' in this sense is a
-;; directory of related files - usually a directory of source
-;; files. 
+;; directory of related files - usually a directory of source files.
 
 ;; Project Administration:
 ;;   * Load project:    project-load
@@ -113,6 +112,8 @@ Compare with `if'."
   "Assciate the settings in the alist <config-alist> with project <proj-name>"
   (puthash proj-name config-alist mk-proj-list))
 
+(defconst mk-proj-fib-name "*file-index*" "Buffer name of the file-list cache")
+
 (defvar mk-proj-name nil "Name of the current project.")
 (defvar mk-proj-basedir (getenv "HOME") "Base directory of the current project.")
 (defvar mk-proj-src-patterns nil "List of shell expressions to search with grep-find, eg: '(\"*.java\" \"*.jsp\".)")
@@ -122,6 +123,7 @@ Compare with `if'."
 (defvar mk-proj-compile-cmd nil "Command to build the entire project.")
 (defvar mk-proj-startup-hook nil "Hook function to run after project-load.")
 (defvar mk-proj-shutdown-hook nil "Hook function to run afer project-unload.")
+(defvar mk-proj-file-list-cache nil "Cache *file-list* buffer to this file")
 
 (defun mk-proj-defaults ()
   "Set all default values for vars and keybindings"
@@ -133,7 +135,8 @@ Compare with `if'."
         mk-proj-tags-file nil
         mk-proj-compile-cmd "make -k"
         mk-proj-startup-hook nil
-        mk-proj-shutdown-hook nil)
+        mk-proj-shutdown-hook nil
+        mk-proj-file-list-cache nil)
   (cd mk-proj-basedir))
 
 (defun mk-proj-config-val (key config-alist)
@@ -155,7 +158,8 @@ Compare with `if'."
   (aif (mk-proj-config-val 'tags-file proj-alist) (setq mk-proj-tags-file (expand-file-name it)))
   (aif (mk-proj-config-val 'compile-cmd proj-alist) (setq mk-proj-compile-cmd it))
   (aif (mk-proj-config-val 'startup-hook proj-alist) (setq mk-proj-startup-hook it))
-  (aif (mk-proj-config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hook it)))
+  (aif (mk-proj-config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hook it))
+  (aif (mk-proj-config-val 'file-list-cache proj-alist) (setq mk-proj-file-list-cache it)))
 
 (defun project-load ()
   "Load a project's settings."
@@ -175,7 +179,7 @@ Compare with `if'."
       (message "Loading project %s" name)
       (cd mk-proj-basedir)
       (mk-proj-set-tags-file mk-proj-tags-file)
-      (project-index)
+      (mk-proj-fib-init)
       (when mk-proj-startup-hook
         (run-hooks 'mk-proj-startup-hook)))))
 
@@ -185,7 +189,7 @@ Compare with `if'."
   (when mk-proj-name
     (message "Unloading project %s" mk-proj-name)
     (mk-proj-set-tags-file nil)
-    (mk-proj-fib-clear)
+    (aif (get-buffer mk-proj-fib-name) (kill-buffer it))
     (when (and (mk-proj-buffers)
                (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
       (project-close-files)))
@@ -229,9 +233,9 @@ Compare with `if'."
   "View project's variables."
   (interactive)
   (mk-proj-assert-proj)
-  (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; Git-p=%s; Tags=%s; Compile=%s; Startup=%s; Shutdown=%s"
+  (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; Git-p=%s; Tags=%s; Compile=%s; File-Cache=%s; Startup=%s; Shutdown=%s"
            mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-git-p
-           mk-proj-tags-file mk-proj-compile-cmd mk-proj-startup-hook mk-proj-shutdown-hook))
+           mk-proj-tags-file mk-proj-compile-cmd mk-proj-file-list-cache mk-proj-startup-hook mk-proj-shutdown-hook))
 
 ;; ---------------------------------------------------------------------
 ;; Etags
@@ -242,7 +246,7 @@ Compare with `if'."
   (aif (get-buffer "TAGS") (kill-buffer it))
   (setq tags-file-name tags-file
         tags-table-list nil)
-  (when (and tags-file (file-exists-p tags-file)) 
+  (when (and tags-file (file-readable-p tags-file)) 
     (visit-tags-table tags-file)))
 
 (defun mk-proj-etags-cb (process event)
@@ -335,7 +339,15 @@ Compare with `if'."
 ;; Find-file 
 ;; ---------------------------------------------------------------------
 
-(defconst mk-proj-fib-name "*file-index*")
+(defun mk-proj-fib-init ()
+  (if (and mk-proj-file-list-cache
+           (file-readable-p mk-proj-file-list-cache))
+      (with-current-buffer (find-file-noselect mk-proj-file-list-cache)
+          (with-current-buffer (rename-buffer mk-proj-fib-name)
+            (setq buffer-read-only t)
+            (set-buffer-modified-p nil)
+            (message "Loading *file-index* from %s" mk-proj-file-list-cache)))
+    (project-index)))
 
 (defun mk-proj-fib-clear ()
   "Clear the contents of the fib buffer"
@@ -350,7 +362,9 @@ Compare with `if'."
   (cond
    ((string= event "finished\n")
     (with-current-buffer (get-buffer mk-proj-fib-name) 
-      (setq buffer-read-only t))
+      (setq buffer-read-only t)
+      (when mk-proj-file-list-cache
+        (write-file mk-proj-file-list-cache)))
     (message "Refreshing %s buffer...done" mk-proj-fib-name))
    (t
     (mk-proj-fib-clear)
