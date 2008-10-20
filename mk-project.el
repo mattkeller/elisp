@@ -51,6 +51,7 @@
 ;;         (ignore-patterns ("*.elc" "*.o"))
 ;;         (tags-file "/home/me/my-proj/TAGS")
 ;;         (git-p t)
+;;         (file-list-cache "/home/mk/.my-proj-files")
 ;;         (compile-cmd "make")
 ;;         (startup-hook myproj-startup-hook)))
 ;;
@@ -72,6 +73,7 @@
 
 (require 'grep)
 (require 'thingatpt)
+(require 'cl)
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -115,7 +117,7 @@ Compare with `if'."
 (defconst mk-proj-fib-name "*file-index*" "Buffer name of the file-list cache")
 
 (defvar mk-proj-name nil "Name of the current project.")
-(defvar mk-proj-basedir (getenv "HOME") "Base directory of the current project.")
+(defvar mk-proj-basedir nil "Base directory of the current project.")
 (defvar mk-proj-src-patterns nil "List of shell expressions to search with grep-find, eg: '(\"*.java\" \"*.jsp\".)")
 (defvar mk-proj-ignore-patterns nil "List of shell expressions to avoid searching for with project-find-file, eg '(\"*.class\").")
 (defvar mk-proj-git-p nil "True if this is a git project. Project commands will avoid the .git directory.")
@@ -127,39 +129,31 @@ Compare with `if'."
 
 (defun mk-proj-defaults ()
   "Set all default values for vars and keybindings"
-  (setq mk-proj-name nil
-        mk-proj-basedir (getenv "HOME")
-        mk-proj-src-patterns nil
-        mk-proj-ignore-patterns nil
-        mk-proj-git-p nil
-        mk-proj-tags-file nil
-        mk-proj-compile-cmd "make -k"
-        mk-proj-startup-hook nil
-        mk-proj-shutdown-hook nil
-        mk-proj-file-list-cache nil)
-  (cd mk-proj-basedir))
-
-(defun mk-proj-config-val (key config-alist)
-  "Get a config value from a config alist, nil if doesn't exist"
-  (if (assoc key config-alist)
-    (car (cdr (assoc key config-alist)))
-    nil))
+  (dolist (v '(mk-proj-name mk-proj-basedir mk-proj-src-patterns
+               mk-proj-ignore-patterns mk-proj-git-p mk-proj-tags-file
+               mk-proj-compile-cmd mk-proj-startup-hook
+               mk-proj-shutdown-hook mk-proj-file-list-cache))
+    (setf (symbol-value v) nil)))
 
 (defun mk-proj-load-vars (proj-name proj-alist)
   "Set vars from config alist"
-  (mk-proj-defaults)
-  ;; required vars
-  (setq mk-proj-name proj-name)
-  (setq mk-proj-basedir (expand-file-name (mk-proj-config-val 'basedir proj-alist)))
-  ;; optional vars
-  (aif (mk-proj-config-val 'src-patterns proj-alist) (setq mk-proj-src-patterns it))
-  (aif (mk-proj-config-val 'ignore-patterns proj-alist) (setq mk-proj-ignore-patterns it))
-  (aif (mk-proj-config-val 'git-p proj-alist) (setq mk-proj-git-p it))
-  (aif (mk-proj-config-val 'tags-file proj-alist) (setq mk-proj-tags-file (expand-file-name it)))
-  (aif (mk-proj-config-val 'compile-cmd proj-alist) (setq mk-proj-compile-cmd it))
-  (aif (mk-proj-config-val 'startup-hook proj-alist) (setq mk-proj-startup-hook it))
-  (aif (mk-proj-config-val 'shutdown-hook proj-alist) (setq mk-proj-shutdown-hook it))
-  (aif (mk-proj-config-val 'file-list-cache proj-alist) (setq mk-proj-file-list-cache it)))
+  (labels ((config-val (key)
+            (if (assoc key proj-alist)
+                (car (cdr (assoc key proj-alist)))
+              nil))
+           (maybe-set-var (var &optional fn)
+             (let ((proj-var (intern (concat "mk-proj-" (symbol-name var))))
+                   (val (config-val var)))
+               (when val (setf (symbol-value proj-var) (if fn (funcall fn val) val))))))
+    (mk-proj-defaults)
+    ;; required vars
+    (setq mk-proj-name proj-name)
+    (setq mk-proj-basedir (expand-file-name (config-val 'basedir)))
+    ;; optional vars
+    (dolist (v '(src-patterns ignore-patterns git-p tags-file compile-cmd
+                 startup-hook shutdown-hook file-list-cache))
+      (maybe-set-var v))
+    (maybe-set-var 'tags-file #'expand-file-name)))
 
 (defun project-load ()
   "Load a project's settings."
