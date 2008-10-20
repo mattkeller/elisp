@@ -138,19 +138,6 @@ The list is used by 'project-find-file' to quickly locate project files.")
 ;; Utils
 ;; ---------------------------------------------------------------------
 
-(defmacro aif (test true-body &rest false-body)
-  "Evaluate true-body or false-body depending on value of test.
-if test returns non-nil, bind `it' to the value, and evaluate
-true-body.  otherwise, evaluate forms in false-body as if in `progn'.
-compare with `if'."
-  (let ((sym (gensym "-mk-proj-aif-")))
-    `(let ((,sym ,test))
-       (if ,sym
-	   (let ((it ,sym))
-	     ,true-body)
-	 (progn
-	   ,@false-body)))))
-
 (defun mk-proj-replace-tail (str tail-str replacement)
   (if (string-match (concat tail-str "$")  str)
     (replace-match replacement t t str)
@@ -159,6 +146,10 @@ compare with `if'."
 (defun mk-proj-assert-proj ()
   (unless mk-proj-name
     (error "No project is set!")))
+
+(defun mk-proj-maybe-kill-buffer (bufname)
+  (let ((b (get-buffer bufname)))
+    (when b (kill-buffer b))))
 
 ;; ---------------------------------------------------------------------
 ;; Project Configuration
@@ -210,10 +201,11 @@ compare with `if'."
           (name (completing-read "Project Name: " mk-proj-list)))
       (unless (string= oldname name)
         (project-unload))
-      (aif (mk-proj-find-config name)
-           (mk-proj-load-vars name it)
-           (message "Project %s does not exist!" name)
-           (throw 'project-load t))
+      (let ((proj-config (mk-proj-find-config name)))
+        (if proj-config
+            (mk-proj-load-vars name proj-config)
+          (message "Project %s does not exist!" name)
+          (throw 'project-load t)))
       (when (not (file-directory-p mk-proj-basedir))
         (message "Base directory %s does not exist!" mk-proj-basedir)
         (throw 'project-load t))
@@ -230,7 +222,7 @@ compare with `if'."
   (when mk-proj-name
     (message "Unloading project %s" mk-proj-name)
     (mk-proj-set-tags-file nil)
-    (aif (get-buffer mk-proj-fib-name) (kill-buffer it))
+    (mk-proj-maybe-kill-buffer mk-proj-fib-name)
     (when (and (mk-proj-buffers)
                (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
       (project-close-files)))
@@ -284,7 +276,7 @@ compare with `if'."
 
 (defun mk-proj-set-tags-file (tags-file)
   "Setup TAGS file when given a valid file name; otherwise clean the TAGS"
-  (aif (get-buffer "TAGS") (kill-buffer it))
+  (mk-proj-maybe-kill-buffer "TAGS")
   (setq tags-file-name tags-file
         tags-table-list nil)
   (when (and tags-file (file-readable-p tags-file))
@@ -393,11 +385,12 @@ compare with `if'."
 
 (defun mk-proj-fib-clear ()
   "Clear the contents of the fib buffer"
-  (aif (get-buffer mk-proj-fib-name)
-    (with-current-buffer it
-      (setq buffer-read-only nil)
-      (kill-region (point-min) (point-max))
-      (setq buffer-read-only t))))
+  (let ((buf (get-buffer mk-proj-fib-name)))
+    (when buf
+      (with-current-buffer buf
+        (setq buffer-read-only nil)
+        (kill-region (point-min) (point-max))
+        (setq buffer-read-only t)))))
 
 (defun mk-proj-fib-cb (process event)
   "Handle failure to complete fib building"
