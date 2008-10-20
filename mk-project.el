@@ -4,11 +4,11 @@
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2, or (at
-;; your option) any later version.
+;; published by the Free Software Foundation; either version 2, or
+;; (at your option) any later version.
 ;;
-;; This program is distributed in the hope that it will be useful, but
-;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ;; General Public License for more details.
 ;;
@@ -17,29 +17,26 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
-;; The latest version of this file can be found at
-;; http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=mk-project.el;hb=HEAD
-
 ;;; Commentary:
 
-;; Perform operations (find-grep, compile, find-file, visit-tags-file,
-;; etc) on a per-project basis. A 'project' in this sense is a
-;; directory of related files - usually a directory of source files.
-
-;; Project Administration:
-;;   * Load project:    project-load
-;;   * Unload project:  project-unload
-;;   * Project Status:  project-status
-;;   * Close files:     project-close-files
-
-;; Project Operations:
-;;   * Compile project: project-compile
-;;   * Grep project:    project-grep
-;;   * Find file:       project-find-file
-;;   * Index files:     project-index
-;;   * Cd proj home:    project-home
-;;   * Rebuild tags:    project-tags
-;;   * Open Dired:      project-dired
+;; Quickly switch between projects and perform operations on a
+;; per-project basis. A 'project' in this sense is a directory of
+;; related files, usually a directory of source files. Projects are
+;; defined in pure elisp with the 'project-def' function. See the
+;; documentation of the following project operation functions for
+;; more details.
+;;
+;; project-load        - set project variables, run startup hook
+;; project-unload      - run shutdown hook, unset project variables
+;; project-status      - print values of project variables
+;; project-close-files - close all files in this project
+;; project-compile     - run the compile command
+;; project-grep        - fun find-grep on the project's basedir
+;; project-find-file   - quickly open a file in basedir by regex
+;; project-index       - re-index the project files
+;; project-home        - cd to the project's basedir
+;; project-tags        - regenerate the project's TAGS file
+;; project-dired       - open 'dired' on the project's basedir
 
 ;; Example use:
 ;;
@@ -50,12 +47,13 @@
 ;;         (src-patterns ("*.lisp" "*.c"))
 ;;         (ignore-patterns ("*.elc" "*.o"))
 ;;         (tags-file "/home/me/my-proj/TAGS")
-;;         (git-p t)
 ;;         (file-list-cache "/home/mk/.my-proj-files")
+;;         (git-p t)
 ;;         (compile-cmd "make")
-;;         (startup-hook myproj-startup-hook)))
+;;         (startup-hook myproj-startup-hook)
+;;         (shutdown-hook nil)))
 ;;
-;; (defun myproj-startup-hook () 
+;; (defun myproj-startup-hook ()
 ;;   (find-file "/home/me/my-proj/foo.el"))
 ;;
 ;; (global-set-key (kbd "C-c p c") 'project-compile)
@@ -69,6 +67,12 @@
 ;; (global-set-key (kbd "C-c p d") 'project-dired)
 ;; (global-set-key (kbd "C-c p t") 'project-tags)
 
+;; See the "Project Variables" documentation below for an explanation of
+;; each project setting.
+
+;; The latest version of this file can be found at:
+;; http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=mk-project.el;hb=HEAD
+
 ;;; Code:
 
 (require 'grep)
@@ -76,15 +80,70 @@
 (require 'cl)
 
 ;; ---------------------------------------------------------------------
+;; Project Variables
+;;
+;; These variables are set when a project is loaded and nil'd out when
+;; unloaded. These symbols are the same as defined in the 2nd parameter 
+;; to project-def except for their "mk-proj-" prefix.
+;; ---------------------------------------------------------------------
+
+(defvar mk-proj-name nil
+  "Name of the current project. Required. First argument to project-def.")
+
+(defvar mk-proj-basedir nil
+  "Base directory of the current project. Required. Value is expanded with
+expand-file-name. Example: ~me/my-proj/.")
+
+(defvar mk-proj-src-patterns nil
+  "List of shell patterns to search with grep-find and include in the TAGS
+file. Optional. Example: '(\"*.java\" \"*.jsp\").")
+
+(defvar mk-proj-ignore-patterns nil
+  "List of shell patterns to avoid searching for with project-find-file.
+Optional. Example: '(\"*.class\").")
+
+(defvar mk-proj-git-p nil
+  "Set to t if this is a git project. Project commands will avoid the .git
+directory. Optional.")
+
+(defvar mk-proj-tags-file nil
+  "Path to the TAGS file for this project. Optional. Use an absolute path,
+not one relative to basedir. Value is expanded with expand-file-name.")
+
+(defvar mk-proj-compile-cmd nil
+  "Shell command to build the entire project. Optional. Example: make -k.")
+
+(defvar mk-proj-startup-hook nil
+  "Hook function to run after the project is loaded. Optional. Project
+variables (e.g. mk-proj-basedir) will be set and can be referenced from this
+function.")
+
+(defvar mk-proj-shutdown-hook nil
+  "Hook function to run after the project is unloaded. Optional.  Project
+variables (e.g. mk-proj-basedir) will still be set and can be referenced
+from this function.")
+
+(defvar mk-proj-file-list-cache nil
+  "Cache *file-index* buffer to this file. Optional. If set, the *file-index*
+buffer will take its initial value from this file and updates to the buffer
+via 'project-index' will save to this file. Value is expanded with 
+expand-file-name.")
+
+(defconst mk-proj-fib-name "*file-index*"
+  "Buffer name of the file-list cache. This buffer contains a list of all
+the files under the project's basedir - minus those matching ignore-patterns.
+The list is used by 'project-find-file' to quickly locate project files.")
+
+;; ---------------------------------------------------------------------
 ;; Utils
 ;; ---------------------------------------------------------------------
 
 (defmacro aif (test true-body &rest false-body)
-  "Evaluate TRUE-BODY or FALSE-BODY depending on value of TEST.
-If TEST returns non-nil, bind `it' to the value, and evaluate
-TRUE-BODY.  Otherwise, evaluate forms in FALSE-BODY as if in `progn'.
-Compare with `if'."
-  (let ((sym (gensym "--ibuffer-aif-")))
+  "Evaluate true-body or false-body depending on value of test.
+if test returns non-nil, bind `it' to the value, and evaluate
+true-body.  otherwise, evaluate forms in false-body as if in `progn'.
+compare with `if'."
+  (let ((sym (gensym "-mk-proj-aif-")))
     `(let ((,sym ,test))
        (if ,sym
 	   (let ((it ,sym))
@@ -111,24 +170,11 @@ Compare with `if'."
   (gethash proj-name mk-proj-list))
 
 (defun project-def (proj-name config-alist)
-  "Assciate the settings in the alist <config-alist> with project <proj-name>"
+  "Associate the settings in <config-alist> with project <proj-name>"
   (puthash proj-name config-alist mk-proj-list))
 
-(defconst mk-proj-fib-name "*file-index*" "Buffer name of the file-list cache")
-
-(defvar mk-proj-name nil "Name of the current project.")
-(defvar mk-proj-basedir nil "Base directory of the current project.")
-(defvar mk-proj-src-patterns nil "List of shell expressions to search with grep-find, eg: '(\"*.java\" \"*.jsp\".)")
-(defvar mk-proj-ignore-patterns nil "List of shell expressions to avoid searching for with project-find-file, eg '(\"*.class\").")
-(defvar mk-proj-git-p nil "True if this is a git project. Project commands will avoid the .git directory.")
-(defvar mk-proj-tags-file nil "Path to the TAGS file for this project.")
-(defvar mk-proj-compile-cmd nil "Command to build the entire project.")
-(defvar mk-proj-startup-hook nil "Hook function to run after project-load.")
-(defvar mk-proj-shutdown-hook nil "Hook function to run afer project-unload.")
-(defvar mk-proj-file-list-cache nil "Cache *file-list* buffer to this file")
-
 (defun mk-proj-defaults ()
-  "Set all default values for vars and keybindings"
+  "Set all default values for project variables"
   (dolist (v '(mk-proj-name mk-proj-basedir mk-proj-src-patterns
                mk-proj-ignore-patterns mk-proj-git-p mk-proj-tags-file
                mk-proj-compile-cmd mk-proj-startup-hook
@@ -136,7 +182,7 @@ Compare with `if'."
     (setf (symbol-value v) nil)))
 
 (defun mk-proj-load-vars (proj-name proj-alist)
-  "Set vars from config alist"
+  "Set project variables from proj-alist"
   (labels ((config-val (key)
             (if (assoc key proj-alist)
                 (car (cdr (assoc key proj-alist)))
@@ -151,9 +197,10 @@ Compare with `if'."
     (setq mk-proj-basedir (expand-file-name (config-val 'basedir)))
     ;; optional vars
     (dolist (v '(src-patterns ignore-patterns git-p tags-file compile-cmd
-                 startup-hook shutdown-hook file-list-cache))
+                 startup-hook shutdown-hook))
       (maybe-set-var v))
-    (maybe-set-var 'tags-file #'expand-file-name)))
+    (maybe-set-var 'tags-file #'expand-file-name)
+    (maybe-set-var 'file-list-cache #'expand-file-name)))
 
 (defun project-load ()
   "Load a project's settings."
@@ -178,7 +225,7 @@ Compare with `if'."
         (run-hooks 'mk-proj-startup-hook)))))
 
 (defun project-unload ()
-  "Revert to default project settings."
+  "Unload the current project's settings after runnin the shutdown hook."
   (interactive)
   (when mk-proj-name
     (message "Unloading project %s" mk-proj-name)
@@ -205,11 +252,11 @@ Compare with `if'."
        (t
         (kill-buffer b)
         (push (buffer-name) closed))))
-    (message "Closed %d buffers, %d modified buffers where left open" 
+    (message "Closed %d buffers, %d modified buffers where left open"
              (length closed) (length dirty))))
 
 (defun mk-proj-buffer-p (buf)
-  "Is the given buffer in our project  based on filename? Also detects dired buffers open to basedir/*"
+  "Is the given buffer in our project based on filename? Also detects dired buffers open to basedir/*"
   (let ((file-name (buffer-file-name buf)))
     (if (and file-name
              (string-match (concat "^" (regexp-quote mk-proj-basedir)) file-name))
@@ -240,7 +287,7 @@ Compare with `if'."
   (aif (get-buffer "TAGS") (kill-buffer it))
   (setq tags-file-name tags-file
         tags-table-list nil)
-  (when (and tags-file (file-readable-p tags-file)) 
+  (when (and tags-file (file-readable-p tags-file))
     (visit-tags-table tags-file)))
 
 (defun mk-proj-etags-cb (process event)
@@ -254,14 +301,14 @@ Compare with `if'."
    (t (message "Refreshing TAGS file %s...failed" mk-proj-tags-file))))
 
 (defun project-tags ()
-  "Regenerate the projects TAG file. Runs in the background."
+  "Regenerate the project's TAG file. Runs in the background."
   (interactive)
   (mk-proj-assert-proj)
   (if mk-proj-tags-file
     (progn
       (cd mk-proj-basedir)
       (message "Refreshing TAGS file %s..." mk-proj-tags-file)
-      (let ((etags-cmd (concat "find " mk-proj-basedir " -type f " 
+      (let ((etags-cmd (concat "find " mk-proj-basedir " -type f "
                                (mk-proj-find-cmd-src-args mk-proj-src-patterns)
                                " | etags -o " mk-proj-tags-file " - "))
             (proc-name "etags-process"))
@@ -281,7 +328,7 @@ Compare with `if'."
   (concat " -not " (mk-proj-find-cmd-src-args ignore-patterns)))
 
 ;; ---------------------------------------------------------------------
-;; Grep 
+;; Grep
 ;; ---------------------------------------------------------------------
 
 (defun project-grep ()
@@ -303,7 +350,7 @@ Compare with `if'."
       (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd)))))
 
 ;; ---------------------------------------------------------------------
-;; Compile 
+;; Compile
 ;; ---------------------------------------------------------------------
 
 (defun project-compile (opts)
@@ -330,10 +377,11 @@ Compare with `if'."
   (dired mk-proj-basedir))
 
 ;; ---------------------------------------------------------------------
-;; Find-file 
+;; Find-file
 ;; ---------------------------------------------------------------------
 
 (defun mk-proj-fib-init ()
+  "Either load the *file-index* buffer from the file cache, or create it afresh."
   (if (and mk-proj-file-list-cache
            (file-readable-p mk-proj-file-list-cache))
       (with-current-buffer (find-file-noselect mk-proj-file-list-cache)
@@ -355,7 +403,7 @@ Compare with `if'."
   "Handle failure to complete fib building"
   (cond
    ((string= event "finished\n")
-    (with-current-buffer (get-buffer mk-proj-fib-name) 
+    (with-current-buffer (get-buffer mk-proj-fib-name)
       (setq buffer-read-only t)
       (when mk-proj-file-list-cache
         (write-file mk-proj-file-list-cache)))
@@ -370,7 +418,7 @@ Compare with `if'."
   (mk-proj-assert-proj)
   (message "Refreshing %s buffer..." mk-proj-fib-name)
   (mk-proj-fib-clear)
-  (let ((find-cmd (concat "find " mk-proj-basedir " -type f " 
+  (let ((find-cmd (concat "find " mk-proj-basedir " -type f "
                           (mk-proj-find-cmd-ignore-args mk-proj-ignore-patterns)))
         (proc-name "index-process"))
     (when mk-proj-git-p
@@ -378,7 +426,7 @@ Compare with `if'."
     (with-current-buffer (get-buffer-create mk-proj-fib-name)
       (buffer-disable-undo) ;; this is a large change we don't need to undo
       (setq buffer-read-only nil))
-    (start-process-shell-command proc-name mk-proj-fib-name find-cmd) 
+    (start-process-shell-command proc-name mk-proj-fib-name find-cmd)
     (set-process-sentinel (get-process proc-name) 'mk-proj-fib-cb)))
 
 (defun* project-find-file (regex)

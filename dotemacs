@@ -366,3 +366,5 @@
 (defun line-to-window-top ()
   (interactive)
   (recenter-top-bottom 1))
+
+(put 'set-goal-column 'disabled nil)
