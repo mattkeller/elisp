@@ -248,6 +248,13 @@
 (setq js2-basic-offset 2)
 (setq js2-use-font-lock-faces t)
 
+;;; OCaml --------------------------------------------------------------
+
+(add-to-list 'load-path "~/elisp/ocaml")
+(add-to-list 'auto-mode-alist '("\\.ml[iyl]?$" .  caml-mode))
+(autoload 'caml-mode "ocaml" "ocaml" "Major mode for editing Caml code." t)
+(autoload 'camldebug "camldebug" "camldebug" "Debug caml mode")
+
 ;;; etags-select -------------------------------------------------------
 
 (autoload 'etags-select-find-tag "etags-select" "for etags-select method" t)
