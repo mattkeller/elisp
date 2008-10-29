@@ -161,7 +161,7 @@
              (inf-ruby-keys)
              (local-set-key [f5] 'ruby-lint)))
 
-;;; SLIME Setup --------------------------------------------------------
+;;; SLIME & Lisp(s) Setup --------------------------------------------------------
 
 (when (string-equal system-name "mktop")
   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
@@ -205,6 +205,8 @@
                                    (require 'slime)
                                    (normal-mode)))
 			    (modify-syntax-entry ?- "w")))
+
+(require 'clojure-auto)
 
 ;;; NXML Setup ---------------------------------------------------------
 
