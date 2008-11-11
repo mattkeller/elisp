@@ -48,7 +48,7 @@
 ;;         (ignore-patterns ("*.elc" "*.o"))
 ;;         (tags-file "/home/me/my-proj/TAGS")
 ;;         (file-list-cache "/home/mk/.my-proj-files")
-;;         (git-p t)
+;;         (vcs git)
 ;;         (compile-cmd "make")
 ;;         (startup-hook myproj-startup-hook)
 ;;         (shutdown-hook nil)))
@@ -83,7 +83,7 @@
 ;; Project Variables
 ;;
 ;; These variables are set when a project is loaded and nil'd out when
-;; unloaded. These symbols are the same as defined in the 2nd parameter 
+;; unloaded. These symbols are the same as defined in the 2nd parameter
 ;; to project-def except for their "mk-proj-" prefix.
 ;; ---------------------------------------------------------------------
 
@@ -102,9 +102,10 @@ file. Optional. Example: '(\"*.java\" \"*.jsp\").")
   "List of shell patterns to avoid searching for with project-find-file.
 Optional. Example: '(\"*.class\").")
 
-(defvar mk-proj-git-p nil
-  "Set to t if this is a git project. Project commands will avoid the .git
-directory. Optional.")
+; TODO: generalize this to ignore-paths variable
+(defvar mk-proj-vcs nil
+  "When set to one of the VCS types in mk-proj-vcs-path, grep and index
+commands will ignore the VCS's private files (e.g., .CVS/). Example: 'git")
 
 (defvar mk-proj-tags-file nil
   "Path to the TAGS file for this project. Optional. Use an absolute path,
@@ -126,13 +127,20 @@ from this function.")
 (defvar mk-proj-file-list-cache nil
   "Cache *file-index* buffer to this file. Optional. If set, the *file-index*
 buffer will take its initial value from this file and updates to the buffer
-via 'project-index' will save to this file. Value is expanded with 
+via 'project-index' will save to this file. Value is expanded with
 expand-file-name.")
 
 (defconst mk-proj-fib-name "*file-index*"
   "Buffer name of the file-list cache. This buffer contains a list of all
 the files under the project's basedir - minus those matching ignore-patterns.
 The list is used by 'project-find-file' to quickly locate project files.")
+
+(defconst mk-proj-vcs-path '((git . "'*/.git/*'")
+                              (cvs . "'*/.CVS/*'")
+                              (svn . "'*/.svn/*'")
+                              (bzr . "'*/.bzr/*'"))
+  "When mk-proj-vcs is one of the VCS types listed here, ignore the associated
+paths when greping or indexing the project.")
 
 ;; ---------------------------------------------------------------------
 ;; Utils
@@ -151,6 +159,11 @@ The list is used by 'project-find-file' to quickly locate project files.")
   (let ((b (get-buffer bufname)))
     (when b (kill-buffer b))))
 
+(defun mk-proj-get-vcs-path ()
+  (if mk-proj-vcs
+      (cdr (assoc mk-proj-vcs mk-proj-vcs-path))
+    nil))
+
 ;; ---------------------------------------------------------------------
 ;; Project Configuration
 ;; ---------------------------------------------------------------------
@@ -167,7 +180,7 @@ The list is used by 'project-find-file' to quickly locate project files.")
 (defun mk-proj-defaults ()
   "Set all default values for project variables"
   (dolist (v '(mk-proj-name mk-proj-basedir mk-proj-src-patterns
-               mk-proj-ignore-patterns mk-proj-git-p mk-proj-tags-file
+               mk-proj-ignore-patterns mk-proj-vcs mk-proj-tags-file
                mk-proj-compile-cmd mk-proj-startup-hook
                mk-proj-shutdown-hook mk-proj-file-list-cache))
     (setf (symbol-value v) nil)))
@@ -187,7 +200,7 @@ The list is used by 'project-find-file' to quickly locate project files.")
     (setq mk-proj-name proj-name)
     (setq mk-proj-basedir (expand-file-name (config-val 'basedir)))
     ;; optional vars
-    (dolist (v '(src-patterns ignore-patterns git-p tags-file compile-cmd
+    (dolist (v '(src-patterns ignore-patterns vcs tags-file compile-cmd
                  startup-hook shutdown-hook))
       (maybe-set-var v))
     (maybe-set-var 'tags-file #'expand-file-name)
@@ -208,6 +221,9 @@ The list is used by 'project-find-file' to quickly locate project files.")
           (throw 'project-load t)))
       (when (not (file-directory-p mk-proj-basedir))
         (message "Base directory %s does not exist!" mk-proj-basedir)
+        (throw 'project-load t))
+      (when (and mk-proj-vcs (not (mk-proj-get-vcs-path)))
+        (message "Invalid VCS setting!")
         (throw 'project-load t))
       (message "Loading project %s" name)
       (cd mk-proj-basedir)
@@ -266,8 +282,8 @@ The list is used by 'project-find-file' to quickly locate project files.")
   "View project's variables."
   (interactive)
   (mk-proj-assert-proj)
-  (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; Git-p=%s; Tags=%s; Compile=%s; File-Cache=%s; Startup=%s; Shutdown=%s"
-           mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-git-p
+  (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; VCS=%s; Tags=%s; Compile=%s; File-Cache=%s; Startup=%s; Shutdown=%s"
+           mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-vcs
            mk-proj-tags-file mk-proj-compile-cmd mk-proj-file-list-cache mk-proj-startup-hook mk-proj-shutdown-hook))
 
 ;; ---------------------------------------------------------------------
@@ -337,8 +353,8 @@ The list is used by 'project-find-file' to quickly locate project files.")
         (setq find-cmd (concat find-cmd (mk-proj-find-cmd-src-args mk-proj-src-patterns))))
       (when mk-proj-tags-file
         (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
-      (when mk-proj-git-p
-        (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
+      (when (mk-proj-get-vcs-path)
+        (setq find-cmd (concat find-cmd " -not -path " (mk-proj-get-vcs-path))))
       (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd)))))
 
 ;; ---------------------------------------------------------------------
@@ -414,8 +430,8 @@ The list is used by 'project-find-file' to quickly locate project files.")
   (let ((find-cmd (concat "find " mk-proj-basedir " -type f "
                           (mk-proj-find-cmd-ignore-args mk-proj-ignore-patterns)))
         (proc-name "index-process"))
-    (when mk-proj-git-p
-      (setq find-cmd (concat find-cmd " -not -path '*/.git*'")))
+    (when (mk-proj-get-vcs-path)
+      (setq find-cmd (concat find-cmd " -not -path " (mk-proj-get-vcs-path))))
     (with-current-buffer (get-buffer-create mk-proj-fib-name)
       (buffer-disable-undo) ;; this is a large change we don't need to undo
       (setq buffer-read-only nil))
