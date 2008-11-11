@@ -20,7 +20,7 @@
                (src-patterns (".lisp" "*.asd"))
                (ignore-patterns ("*.fasl"))
                (tags-file ,(concat sip-basedir "TAGS"))
-               (git-p t)
+               (vcs git)
                (startup-hook cl-sip-startup-hook)))
 
 (defun cl-sip-startup-hook ()
@@ -34,7 +34,7 @@
                (file-list-cache ,(concat (getenv "HOME") "/.elisp-files"))
                (ignore-patterns ("*.elc"))
                (tags-file ,(concat (getenv "HOME") "/elisp/" "TAGS"))
-               (git-p t)
+               (vcs git)
                (startup-hook mk-project-startup-hook)))
 
 (defun mk-project-startup-hook ()
@@ -46,7 +46,7 @@
                (src-patterns ("*.lisp"))
                (ignore-patterns ("*.fasl"))
                (tags-file "~mk/code/lisp/qrev/TAGS")
-               (git-p t)
+               (vcs git)
                (compile-cmd "make -k")
                (startup-hook qrev-startup-hook)
                (shutdown-hook qrev-shutdown-hook)))
@@ -163,7 +163,6 @@
                (ignore-patterns ("*.class" "*.wsdl"))
                (tags-file "/home/matthewk/.TAGS12")
                (file-list-cache "/home/matthewk/.12dyn-files")
-               (git-p nil)
                (compile-cmd "mcpant 12dyn")
                (startup-hook mcp-12dyn-startup-hook)
                (shutdown-hook nil)))
@@ -177,6 +176,22 @@
   (find-file "/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
   (find-file "/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
 
+
+(project-def "12sp1"
+             '((basedir "/mcp/")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/home/matthewk/.TAGS12sp1")
+               (file-list-cache "/home/matthewk/.12sp1-files")
+               (compile-cmd "mcpant fmc")
+               (startup-hook mcp-12sp1-startup-hook)
+               (shutdown-hook nil)))
+
+(defun mcp-12sp1-startup-hook ()
+  (mcp-jde-setup "/mcp"
+                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_sp1/work/classes"
+                 mcp12-jars
+                 "1.6.0_07"))
 
 ;;; OBSOLETE?
 
