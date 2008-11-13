@@ -193,6 +193,22 @@
                  mcp12-jars
                  "1.6.0_07"))
 
+(project-def "agcf-int"
+             '((basedir "/mcp/")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/home/matthewk/.TAGS-agcf-int")
+               (file-list-cache "/home/matthewk/.agcf-int.files")
+               (compile-cmd "mcpant agcf-int")
+               (startup-hook mcp-agcf-int-startup-hook)
+               (shutdown-hook nil)))
+
+(defun mcp-agcf-int-startup-hook ()
+  (mcp-jde-setup "/mcp"
+                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"
+                 mcp12-jars
+                 "1.6.0_07"))
+
 ;;; OBSOLETE?
 
 (defun mcp-set-proj (proj)
