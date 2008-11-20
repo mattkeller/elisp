@@ -207,7 +207,8 @@
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"
                  mcp12-jars
-                 "1.6.0_07"))
+                 "1.6.0_07")
+  (find-file "~/proj/agcf/hotline/NOTES.txt"))
 
 ;;; OBSOLETE?
 
