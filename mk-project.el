@@ -415,7 +415,8 @@ paths when greping or indexing the project.")
     (with-current-buffer (get-buffer mk-proj-fib-name)
       (setq buffer-read-only t)
       (when mk-proj-file-list-cache
-        (write-file mk-proj-file-list-cache)))
+        (write-file mk-proj-file-list-cache)
+        (rename-buffer mk-proj-fib-name)))
     (message "Refreshing %s buffer...done" mk-proj-fib-name))
    (t
     (mk-proj-fib-clear)
