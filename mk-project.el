@@ -70,8 +70,8 @@
 ;; See the "Project Variables" documentation below for an explanation of
 ;; each project setting.
 
-;; The latest version of this file can be found at:
-;; http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=mk-project.el;hb=HEAD
+;; More information about this library, including the most recent version,
+;; is available at http://www.littleredbat.net/mk/code/mk-project.html
 
 ;;; Code:
 
