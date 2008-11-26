@@ -250,6 +250,9 @@
 (setq js2-basic-offset 2)
 (setq js2-use-font-lock-faces t)
 
+(require 'flymake-jslint)
+(add-hook 'javascript-mode-hook (lambda () (flymake-mode t)))
+
 ;;; OCaml --------------------------------------------------------------
 
 (add-to-list 'load-path "~/elisp/ocaml")
