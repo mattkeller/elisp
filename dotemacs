@@ -27,7 +27,7 @@
 (put 'narrow-to-region 'disabled nil)        ; allow narrow-to-region
 (put 'erase-buffer 'disabled nil)            ; allow erase-buffer
 (put 'downcase-region 'disabled nil)         ; allow downcase-region
-(setq message-log-max 5000)                  ; allow lots of messages 
+(setq message-log-max 5000)                  ; allow lots of messages
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
 (set-background-color "gray97")
@@ -126,6 +126,24 @@
       kept-old-versions 2              ; Number of oldest versions to keep
       delete-old-versions t            ; Ask to delete excess backup versions?
       backup-by-copying-when-linked t) ; Copy linked files, don't rename.
+
+;;; Emacs server -------------------------------------------------------
+
+(require 'server)
+
+(defun start-named-server (name)
+  "Start a server named 'name' - ensure only 1 server of that name is running"
+  (interactive "sServer Name: ")
+  (setq server-name name)
+  (setq mk-server-socket-file (concat server-socket-dir "/" name))
+  (unless (file-exists-p mk-server-socket-file)
+    (server-start)
+    (add-hook 'kill-emacs-hook
+              (lambda ()
+                (when (file-exists-p mk-server-socket-file)
+                  (delete-file mk-server-socket-file))))))
+
+(start-named-server "server") ; default server-name
 
 ;;; Emacs Code Browser -------------------------------------------------
 
