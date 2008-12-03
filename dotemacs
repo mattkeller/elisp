@@ -45,6 +45,7 @@
 (setq scroll-margin 2)                     ; start scrolling when 2 rows from top/bottom
 (setq scroll-conservatively 1)             ; smooth scrolling
 (setq next-line-add-newlines nil)          ; don't add newlines just by scrolling
+(set-scroll-bar-mode 'right)               ; scroll bar on right of buffer
 
 (defadvice scroll-up (around scroll-up first act)
   "Keep cursor in the same column."
