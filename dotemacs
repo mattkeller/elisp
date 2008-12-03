@@ -1,6 +1,6 @@
 ;;;; -*- Mode: Emacs-Lisp; -*-
 
-;;; Keep Custom settings out of .emacs
+;;; Keep Custom settings out of .emacs ---------------------------------
 
 (setq custom-file "~/.emacs-custom.el")
 (load custom-file 'noerror)
@@ -9,34 +9,35 @@
 
 ;;; Generic customizations ---------------------------------------------
 
-(ido-mode t)                                 ; more informative buffer switching
-(line-number-mode 1)                         ; show line number in mode-line
-(show-paren-mode t)                          ; flash matching paren
-(column-number-mode 1)                       ; lines and columns, duh
-(menu-bar-mode 0)                            ; keyboard only, please
-(tool-bar-mode 0)                            ; no tool bar
-(which-func-mode t)                          ; show current fn in mode-line
-(setq-default indent-tabs-mode nil)          ; by default, insert spaces, not a full tab
-(setq visible-bell t)                        ; no beeping!
-(fset 'yes-or-no-p 'y-or-n-p)                ; query with y or n always
-(setq inhibit-splash-screen t)               ; no splash screen!
-(blink-cursor-mode 0)                        ; no blinking!
-(auto-compression-mode 1)                    ; inline edit files in gzip, bzip2 archives
-(transient-mark-mode nil)                    ; don't highlight region, unless Ctrl-Space x 2
-(setq help-window-select t)                  ; always jump to the help window
-(put 'narrow-to-region 'disabled nil)        ; allow narrow-to-region
-(put 'erase-buffer 'disabled nil)            ; allow erase-buffer
-(put 'downcase-region 'disabled nil)         ; allow downcase-region
-(setq message-log-max 5000)                  ; allow lots of messages
+(ido-mode t)                             ; more informative buffer switching
+(line-number-mode 1)                     ; show line number in mode-line
+(show-paren-mode t)                      ; flash matching paren
+(column-number-mode 1)                   ; lines and columns, duh
+(menu-bar-mode 0)                        ; keyboard only, please
+(tool-bar-mode 0)                        ; no tool bar
+(which-func-mode t)                      ; show current fn in mode-line
+(setq-default indent-tabs-mode nil)      ; by default, insert spaces, not a full tab
+(setq visible-bell t)                    ; no beeping!
+(fset 'yes-or-no-p 'y-or-n-p)            ; query with y or n always
+(setq inhibit-splash-screen t)           ; no splash screen!
+(blink-cursor-mode 0)                    ; no blinking!
+(auto-compression-mode 1)                ; inline edit files in gzip, bzip2 archives
+(transient-mark-mode nil)                ; don't highlight region, unless Ctrl-Space x 2
+(setq help-window-select t)              ; always jump to the help window
+(setq message-log-max 5000)              ; allow lots of messages
+(put 'narrow-to-region 'disabled nil)    ; allow narrow-to-region
+(put 'erase-buffer 'disabled nil)        ; allow erase-buffer
+(put 'downcase-region 'disabled nil)     ; allow downcase-region
+(put 'set-goal-column 'disabled nil)     ; allow set-goal-column
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
 (set-background-color "gray97")
 
 (setq frame-title-format "emacs [%b]")
 (setq icon-title-format "emacs [%b]")
-(setq mouse-yank-at-point t)                 ; paste at cursor, not mouse location
+(setq mouse-yank-at-point t)             ; paste at cursor, not mouse location
 
-(when (fboundp 'ffap-bindings)               ; find-file-at-point
+(when (fboundp 'ffap-bindings)           ; find-file-at-point
   (ffap-bindings))
 
 ;;; Scroll settings ----------------------------------------------------
@@ -64,8 +65,9 @@
 (setq compilation-read-command t)       ; always ask for compile command
 (setq compilation-scroll-output t)      ; scroll compilation window
 
+; make compiler error clickable in shell
 (add-hook 'shell-mode-hook
-          (lambda () (compilation-shell-minor-mode))) ; make compiler error clickable in shell
+          (lambda () (compilation-shell-minor-mode))) 
 
 ;;; Load utility libs --------------------------------------------------
 
@@ -79,6 +81,7 @@
 (autoload 'magit-status "magit" "Magit git helper" t)
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+
 (load "projects.el")
 
 ;;; Global keybindings -------------------------------------------------
@@ -87,8 +90,8 @@
 (global-set-key (kbd "C-c C-m") 'execute-extended-command) ; = meta-x
 
 (global-set-key (kbd "C-x C-b") 'bs-show)
-(global-set-key (kbd "M-g") 'goto-line)
-(global-set-key (kbd "C-c t") 'line-to-window-top)
+(global-set-key (kbd "M-g")     'goto-line)
+(global-set-key (kbd "C-c t")   'line-to-window-top)
 (global-set-key (kbd "C-x C-f") 'ido-find-file)
 (global-set-key (kbd "C-x C-p") 'ffap)
 (global-set-key (kbd "<C-tab>") 'other-window)
@@ -404,4 +407,3 @@
   (interactive)
   (recenter-top-bottom 1))
 
-(put 'set-goal-column 'disabled nil)
