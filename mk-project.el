@@ -95,12 +95,12 @@
 expand-file-name. Example: ~me/my-proj/.")
 
 (defvar mk-proj-src-patterns nil
-  "List of shell patterns to search with grep-find and include in the TAGS
-file. Optional. Example: '(\"*.java\" \"*.jsp\").")
+  "List of shell patterns to include in the TAGS file. Optional. Example: 
+'(\"*.java\" \"*.jsp\").")
 
 (defvar mk-proj-ignore-patterns nil
-  "List of shell patterns to avoid searching for with project-find-file.
-Optional. Example: '(\"*.class\").")
+  "List of shell patterns to avoid searching for with project-find-file and 
+project-grep. Optional. Example: '(\"*.class\").")
 
 ; TODO: generalize this to ignore-paths variable
 (defvar mk-proj-vcs nil
@@ -340,7 +340,7 @@ paths when greping or indexing the project.")
 ;; ---------------------------------------------------------------------
 
 (defun project-grep ()
-  "Run find-grep using this project's settings for basedir and src files."
+  "Run find-grep on the project's basedir, excluding files in mk-proj-ignore-patterns, tag files, etc"
   (interactive)
   (mk-proj-assert-proj)
   (let* ((wap (word-at-point))
@@ -349,8 +349,8 @@ paths when greping or indexing the project.")
     (cd mk-proj-basedir)
     (let ((find-cmd (concat "find . -type f"))
           (grep-cmd (concat "grep -i -n \"" regex "\"")))
-      (when mk-proj-src-patterns
-        (setq find-cmd (concat find-cmd (mk-proj-find-cmd-src-args mk-proj-src-patterns))))
+      (when mk-proj-ignore-patterns
+        (setq find-cmd (concat find-cmd (mk-proj-find-cmd-ignore-args mk-proj-ignore-patterns))))
       (when mk-proj-tags-file
         (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
       (when (mk-proj-get-vcs-path)
