@@ -177,21 +177,22 @@
   (find-file "/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
 
 
-(project-def "12sp1"
+(project-def "agcf12sp1"
              '((basedir "/mcp/")
                (src-patterns ("*.java" "*.jsp"))
                (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/matthewk/.TAGS12sp1")
-               (file-list-cache "/home/matthewk/.12sp1-files")
-               (compile-cmd "mcpant fmc")
+               (tags-file "/home/matthewk/.TAGSagcf12sp1")
+               (file-list-cache "/home/matthewk/.agcf12sp1-files")
+               (compile-cmd "mcpant agcf12sp1")
                (startup-hook mcp-12sp1-startup-hook)
                (shutdown-hook nil)))
 
 (defun mcp-12sp1-startup-hook ()
   (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_sp1/work/classes"
+                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1/work/classes"
                  mcp12-jars
-                 "1.6.0_07"))
+                 "1.6.0_07")
+  (find-file "~/proj/agcf/hotline/NOTES.txt"))
 
 (project-def "agcf-int"
              '((basedir "/mcp/")
