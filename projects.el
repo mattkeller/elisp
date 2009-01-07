@@ -192,7 +192,7 @@
                  "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1/work/classes"
                  mcp12-jars
                  "1.6.0_07")
-  (find-file "~/proj/agcf/hotline/NOTES.txt"))
+  (find-file "~/proj/agcf/hotline/NOTES.org"))
 
 (project-def "agcf-int"
              '((basedir "/mcp/")
@@ -209,7 +209,7 @@
                  "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"
                  mcp12-jars
                  "1.6.0_07")
-  (find-file "~/proj/agcf/hotline/NOTES.txt"))
+  (find-file "~/proj/agcf/hotline/NOTES.org"))
 
 ;;; OBSOLETE?
 
