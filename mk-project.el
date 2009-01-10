@@ -355,7 +355,9 @@ paths when greping or indexing the project.")
         (setq find-cmd (concat find-cmd " -not -name 'TAGS'")))
       (when (mk-proj-get-vcs-path)
         (setq find-cmd (concat find-cmd " -not -path " (mk-proj-get-vcs-path))))
-      (grep-find (concat find-cmd " -print0 | xargs -0 -e " grep-cmd)))))
+      (let* ((whole-cmd (concat find-cmd " -print0 | xargs -0 -e " grep-cmd))
+             (confirmed-cmd (read-string "Grep command: " whole-cmd nil whole-cmd)))
+        (grep-find confirmed-cmd)))))
 
 ;; ---------------------------------------------------------------------
 ;; Compile
