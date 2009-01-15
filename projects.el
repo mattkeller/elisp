@@ -189,7 +189,7 @@
 
 (defun mcp-12sp1-startup-hook ()
   (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1/work/classes"
+                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"
                  mcp12-jars
                  "1.6.0_07")
   (find-file "~/proj/agcf/hotline/NOTES.org"))
