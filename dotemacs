@@ -1,4 +1,4 @@
-;;;; -*- Mode: Emacs-Lisp; -*-
+;;; -*- Mode: Emacs-Lisp; -*-
 
 ;;; Keep Custom settings out of .emacs ---------------------------------
 
@@ -345,6 +345,19 @@
 (autoload 'twitter-status-edit "twitter" nil t)
 ;;(global-set-key "\C-xt" 'twitter-get-friends-timeline)
 (add-hook 'twitter-status-edit-mode-hook 'longlines-mode)
+
+;;; color-theme -------------------------------------------------------
+
+(add-to-list 'load-path "~/elisp/color-theme")
+(require 'color-theme)
+
+(defun my-color-theme () 
+  (interactive)
+  (ecase (intern (completing-read "Theme: " '("light" "dark" "gray" "reset")))
+    (light (color-theme-emacs-21))
+    (dark  (color-theme-arjen))
+    (gray  (color-theme-jedit-grey))
+    (reset (color-theme-snapshot))))
 
 ;;; my elisp functions -------------------------------------------------
 
