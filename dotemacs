@@ -350,6 +350,7 @@
 
 (add-to-list 'load-path "~/elisp/color-theme")
 (require 'color-theme)
+(color-theme-initialize)
 
 (defun my-color-theme () 
   (interactive)
