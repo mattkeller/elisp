@@ -124,7 +124,7 @@
 
 ;;; Backups in ~/.backups ----------------------------------------------
 
-(defconst Hvuse-backup-dir t)
+(defconst use-backup-dir t)
 (setq backup-directory-alist (quote ((".*" . "~/.backup")))
       version-control t                ; Use version numbers for backups
       kept-new-versions 16             ; Number of newest versions to keep
