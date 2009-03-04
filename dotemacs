@@ -22,7 +22,7 @@
 (setq inhibit-splash-screen t)           ; no splash screen!
 (blink-cursor-mode 0)                    ; no blinking!
 (auto-compression-mode 1)                ; inline edit files in gzip, bzip2 archives
-(transient-mark-mode nil)                ; don't highlight region, unless Ctrl-Space x 2
+(transient-mark-mode 1)                  ; don't highlight region, unless Ctrl-Space x 2
 (setq help-window-select t)              ; always jump to the help window
 (setq message-log-max 5000)              ; allow lots of messages
 (put 'narrow-to-region 'disabled nil)    ; allow narrow-to-region
@@ -163,6 +163,21 @@
              (c-set-style "K&R")
              (setq c-basic-offset 4)
              (setq indent-tabs-mode nil)))
+
+;;; Perl setup ---------------------------------------------------------
+(require 'cperl-mode)
+(add-to-list 'auto-mode-alist '("\\.\\([pP][Llm]\\|al\\)\\'" . cperl-mode))
+(add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
+(add-to-list 'interpreter-mode-alist '("perl5" . cperl-mode))
+(add-to-list 'interpreter-mode-alist '("miniperl" . cperl-mode))
+
+(defun perl-compile ()
+  "Run perl -c against the current file"
+  (interactive)
+  (shell-command (concat "perl -c " (buffer-file-name))))
+
+(add-hook 'cperl-mode-hook 
+          '(lambda () (local-set-key [f5] 'perl-compile)))
 
 ;;; Ruby setup ---------------------------------------------------------
 
