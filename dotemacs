@@ -122,6 +122,8 @@
 (global-set-key (kbd "M-_") 'shrink-window)
 (global-set-key (kbd "M-+") 'enlarge-window)
 
+(global-set-key (kbd "M-/") 'hippie-expand)
+
 ;;; Backups in ~/.backups ----------------------------------------------
 
 (defconst use-backup-dir t)
@@ -374,6 +376,18 @@
     (dark  (color-theme-arjen))
     (gray  (color-theme-jedit-grey))
     (reset (color-theme-snapshot))))
+
+;;; hippie-expand fun --------------------------------------------------
+
+(setq hippie-expand-try-functions-list 
+      '(try-expand-dabbrev-visible
+        try-expand-dabbrev-from-kill
+        try-expand-dabbrev-all-buffers
+        try-expand-line
+        try-complete-file-name-partially
+        try-complete-file-name
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
 
 ;;; my elisp functions -------------------------------------------------
 
