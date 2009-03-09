@@ -451,6 +451,8 @@
   (interactive)
   (recenter-top-bottom 1))
 
+(global-set-key (kbd "C-c z") 'line-to-window-top)
+
  (defun shell-dwim (&optional create)
    "Start or switch to an inferior shell process, in a smart way.
 
