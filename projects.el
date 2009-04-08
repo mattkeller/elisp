@@ -141,7 +141,8 @@
                              "build/pluggable-instrumentor.jar"
                              "build/qdox.jar"
                              "optional/hibernate3.jar"
-                             "optional/jboss-hibernate.jar")))
+                             "optional/jboss-hibernate.jar"
+                             "lib/jars/optional/junit-4.5.jar")))
 
 (defvar mcp-jdk-reg '(("1.5.0_11" . "/localdisk/jdk1.5.0_11")
                       ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
