@@ -146,7 +146,7 @@
 
 (defvar mcp-jdk-reg '(("1.5.0_11" . "/localdisk/jdk1.5.0_11")
                       ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
-                      ("1.6.0_07" . "/localdisk/data/matthewk/jdk1.6.0_07")))
+                      ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11")))
 
 (defun mcp-jde-setup (basedir classdir jar-list jdk)
   (require 'jde)
@@ -172,7 +172,7 @@
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/work/classes"
                  mcp12-jars
-                 "1.6.0_07")
+                 "1.6.0_11")
   (find-file "~/proj/geol3/NOTES")
   (find-file "/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
   (find-file "/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
@@ -192,7 +192,7 @@
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"
                  mcp12-jars
-                 "1.6.0_07")
+                 "1.6.0_11")
   (find-file "~/proj/agcf/hotline/NOTES.org"))
 
 (project-def "agcf-int"
