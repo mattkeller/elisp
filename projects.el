@@ -188,6 +188,24 @@
                (startup-hook mcp-12sp1-startup-hook)
                (shutdown-hook nil)))
 
+(project-def "agcf-static"
+             '((basedir "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_static/mcp/")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/home/matthewk/.TAGSagcf-static")
+               (file-list-cache "/home/matthewk/.agcf-static-files")
+               (compile-cmd "mcpant agcf-static")
+               (startup-hook mcp-12sp1-static-startup-hook)
+               (shutdown-hook nil)
+               (vcs git)))
+
+(defun mcp-12sp1-static-startup-hook ()
+  (mcp-jde-setup "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_dev_static/mcp/"
+                 "/localdisk/data/matthewk/ant/agcf-static/work/classes"
+                 mcp12-jars
+                 "1.6.0_11"))
+
+
 (defun mcp-12sp1-startup-hook ()
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"
@@ -209,8 +227,36 @@
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"
                  mcp12-jars
-                 "1.6.0_07")
+                 "1.6.0_11")
   (find-file "~/proj/agcf/hotline/NOTES.org"))
+
+(project-def "agcf-git"
+             '((basedir "/localdisk/data/matthewk/git/agcf-static.git/mcp")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/home/matthewk/.TAGS-agcf-git")
+               (file-list-cache "/home/matthewk/.agcf-git.files")
+               (compile-cmd "mcpant agcf-git")
+               (startup-hook mcp-agcf-git-startup-hook)
+               (shutdown-hook nil)))
+
+(defun mcp-agcf-git-startup-hook ()
+  (mcp-jde-setup "/mcp"
+                 "/localdisk/data/matthewk/ant/agcf-git/work/classes"
+                 mcp12-jars
+                 "1.6.0_11")
+  (find-file "/localdisk/data/matthewk/git/agcf-static.git/mcp/mcp_labs/common/test_tools/agcf/configureSuite.pl"))
+
+
+(project-def "scplite.mcs"
+             '((basedir "/home/matthewk/git/scplite.mcs.git")
+               (src-patterns ("*.C" "*.H" "*.c" "*.h"))
+               (ignore-patterns ("*.o"))
+               (tags-file "/home/matthewk/git/scplite.mcs.git/TAGS")
+               (file-list-cache "/home/matthewk/.scplite.mcs.files")
+               (compile-cmd "./buildphx.sh")
+               (vcs git)))
+               
 
 ;;; OBSOLETE?
 
