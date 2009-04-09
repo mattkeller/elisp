@@ -22,7 +22,7 @@
 (setq inhibit-splash-screen t)           ; no splash screen!
 (blink-cursor-mode 0)                    ; no blinking!
 (auto-compression-mode 1)                ; inline edit files in gzip, bzip2 archives
-(transient-mark-mode 1)                  ; don't highlight region, unless Ctrl-Space x 2
+(transient-mark-mode 0)                  ; don't highlight region, unless Ctrl-Space x 2
 (setq help-window-select t)              ; always jump to the help window
 (setq message-log-max 5000)              ; allow lots of messages
 (put 'narrow-to-region 'disabled nil)    ; allow narrow-to-region
