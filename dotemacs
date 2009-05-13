@@ -471,3 +471,8 @@
                       (generate-new-buffer-name "*shell*")
                     next-shell-buffer)))
      (shell buffer)))
+
+(defun grep-kill ()
+  "Alias for kill-grep"
+  (interactive)
+  (kill-grep))
