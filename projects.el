@@ -107,7 +107,7 @@
                              "masSoapServices/masservice.jar"
                              "jazzlib/jazzlib.jar")))
 
-(defvar mcp12-jars (mapcar '(lambda (j) (concat "mcp_3rdParty/" j)) 
+(defvar mcp12-jars (mapcar '(lambda (j) (concat "mcp_3rdParty/" j))
                            '("core/3rdParty.jar"
                              "optional/tools.jar"
                              "build/log4j.jar"
@@ -173,19 +173,29 @@
                              "optional/jboss-hibernate.jar"
                              "lib/jars/optional/junit-4.5.jar")))
 
-(defvar mcp-jdk-reg '(("1.5.0_11" . "/localdisk/jdk1.5.0_11")
-                      ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
-                      ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11")
-                      ("1.6.0_13" . "/opt/jdk1.6.0_13")))
+(defun mktop-p ()
+  (string-equal system-name "mktop"))
 
-(defun mcp-jde-setup (basedir classdir jar-list jdk)
+(defvar mcp12-preferred-jdk (if (mktop-p) "1.6.0_13" "1.6.0_11")
+  "The preferred mcp12 jdk to use per machine")
+
+(defvar mcp-jdk-reg (if (mktop-p)
+                        '(("1.6.0_13" . "/opt/jdk1.6.0_13"))
+                      '(("1.5.0_11" . "/localdisk/jdk1.5.0_11")
+                        ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
+                        ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11"))))
+
+(defun mcp-jde-setup (basedir classdir &optional jar-list jdk)
+  "Setup JDE for a particular project. Defaults to mcp12 jar-list and jdk."
   (require 'jde)
-  (let ((classpath (mapcar '(lambda (j) (concat mk-proj-basedir j)) jar-list)))
+  (let ((classpath (mapcar '(lambda (j)
+                              (concat mk-proj-basedir j))
+                           (if (null jar-list) mcp12-jars jar-list))))
     (setq jde-compile-option-directory classdir)
     (setq jde-compile-option-sourcepath (list (concat mk-proj-basedir "mcp_core_root/src")))
     (setq jde-global-classpath (push  classdir classpath))
     (setq jde-jdk-registry mcp-jdk-reg)
-    (setq jde-jdk (list jdk))))
+    (setq jde-jdk (list (if (null jdk) mcp12-preferred-jdk jdk)))))
 
 ;;; --------------------------------------------------------------------
 ;;; mcp12 projects
@@ -203,9 +213,7 @@
 
 (defun mcp-12dyn-startup-hook ()
   (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/work/classes"
-                 mcp12-jars
-                 "1.6.0_11")
+                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/work/classes")
   (find-file "~/proj/geol3/NOTES")
   (find-file "/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
   (find-file "/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
@@ -226,9 +234,7 @@
 
 (defun agcf12sp1-startup-hook ()
   (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"
-                 mcp12-jars
-                 "1.6.0_11"))
+                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"))
 
 (project-def "agcf-static"
              '((basedir "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_static/mcp/")
@@ -243,9 +249,7 @@
 
 (defun agcf-static-startup-hook ()
   (mcp-jde-setup "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_dev_static/mcp/"
-                 "/localdisk/data/matthewk/ant/agcf-static/work/classes"
-                 mcp12-jars
-                 "1.6.0_11"))
+                 "/localdisk/data/matthewk/ant/agcf-static/work/classes"))
 
 (project-def "agcf-static-home"
              '((basedir "/home/mk/nt/agcf-static/mcp/")
@@ -260,9 +264,7 @@
 
 (defun agcf-static-home-startup-hook ()
   (mcp-jde-setup "/home/mk/nt/agcf-static/mcp/"
-                 "/home/mk/nt/ant/agcf-static/work/classes"
-                 mcp12-jars
-                 "1.6.0_11"))
+                 "/home/mk/nt/ant/agcf-static/work/classes"))
 
 (project-def "agcf-mct-home"
              '((basedir "/home/mk/nt/agcf-mct/mcp/")
@@ -277,9 +279,7 @@
 
 (defun agcf-mct-home-startup-hook ()
   (mcp-jde-setup "/home/mk/nt/agcf-mct/mcp/"
-                 "/home/mk/nt/ant/agcf-mct/work/classes"
-                 mcp12-jars
-                 "1.6.0_13"))
+                 "/home/mk/nt/ant/agcf-mct/work/classes"))
 
 (project-def "agcf-int"
              '((basedir "/mcp/")
@@ -293,9 +293,7 @@
 
 (defun agcf-int-startup-hook ()
   (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"
-                 mcp12-jars
-                 "1.6.0_11"))
+                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"))
 
 (project-def "agcf-git"
              '((basedir "/localdisk/data/matthewk/git/agcf-static.git/mcp")
@@ -309,9 +307,7 @@
 
 (defun agcf-git-startup-hook ()
   (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/agcf-git/work/classes"
-                 mcp12-jars
-                 "1.6.0_11")
+                 "/localdisk/data/matthewk/ant/agcf-git/work/classes")
   (find-file "/localdisk/data/matthewk/git/agcf-static.git/mcp/mcp_labs/common/test_tools/agcf/configureSuite.pl"))
 
 
