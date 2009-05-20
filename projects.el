@@ -110,6 +110,7 @@
                              "masSoapServices/masservice.jar"
                              "jazzlib/jazzlib.jar")))
 
+; TOOD: could we extract this automatically from the filesystem or build.xml?
 (defvar mcp12-jars (mapcar '(lambda (j) (concat "mcp_3rdParty/" j))
                            '("core/3rdParty.jar"
                              "optional/tools.jar"
@@ -204,16 +205,6 @@
 ;;; mcp12 projects
 ;;; --------------------------------------------------------------------
 
-(project-def "12dyn"
-             '((basedir "/mcp/")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/matthewk/.TAGS12")
-               (file-list-cache "/home/matthewk/.12dyn-files")
-               (compile-cmd "mcpant 12dyn")
-               (startup-hook mcp-12dyn-startup-hook)
-               (shutdown-hook nil)))
-
 (defun mcp-12dyn-startup-hook ()
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/work/classes")
@@ -225,89 +216,6 @@
 ;;; AGCF projects
 ;;; --------------------------------------------------------------------
 
-(project-def "agcf12sp1"
-             '((basedir "/mcp/")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/matthewk/.TAGSagcf12sp1")
-               (file-list-cache "/home/matthewk/.agcf12sp1-files")
-               (compile-cmd "mcpant agcf12sp1")
-               (startup-hook agcf12sp1-startup-hook)
-               (shutdown-hook nil)))
-
-(defun agcf12sp1-startup-hook ()
-  (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"))
-
-(project-def "agcf-static"
-             '((basedir "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_static/mcp/")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/matthewk/.TAGSagcf-static")
-               (file-list-cache "/home/matthewk/.agcf-static-files")
-               (compile-cmd "mcpant agcf-static")
-               (startup-hook agcf-static-startup-hook)
-               (shutdown-hook nil)
-               (vcs git)))
-
-(defun agcf-static-startup-hook ()
-  (mcp-jde-setup "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_dev_static/mcp/"
-                 "/localdisk/data/matthewk/ant/agcf-static/work/classes"))
-
-(project-def "agcf-static-home"
-             '((basedir "/home/mk/nt/agcf-static/mcp/")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/mk/.TAGSagcf-static")
-               (file-list-cache "/home/mk/.agcf-static-files")
-               (compile-cmd "mcpant agcf-static")
-               (startup-hook agcf-static-home-startup-hook)
-               (shutdown-hook nil)
-               (vcs git)))
-
-(defun agcf-static-home-startup-hook ()
-  (mcp-jde-setup "/home/mk/nt/agcf-static/mcp/"
-                 "/home/mk/nt/ant/agcf-static/work/classes"))
-
-(project-def "agcf-mct-home"
-             '((basedir "/home/mk/nt/agcf-mct/mcp/")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/mk/.TAGSagcf-mct")
-               (file-list-cache "/home/mk/.agcf-mct-files")
-               (compile-cmd "mcpant agcf-mct")
-               (startup-hook agcf-mct-home-startup-hook)
-               (shutdown-hook nil)
-               (vcs git)))
-
-(defun agcf-mct-home-startup-hook ()
-  (mcp-jde-setup "/home/mk/nt/agcf-mct/mcp/"
-                 "/home/mk/nt/ant/agcf-mct/work/classes"))
-
-(project-def "agcf-int"
-             '((basedir "/mcp/")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/matthewk/.TAGS-agcf-int")
-               (file-list-cache "/home/matthewk/.agcf-int.files")
-               (compile-cmd "mcpant agcf-int")
-               (startup-hook agcf-int-startup-hook)
-               (shutdown-hook nil)))
-
-(defun agcf-int-startup-hook ()
-  (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"))
-
-(project-def "agcf-git"
-             '((basedir "/localdisk/data/matthewk/git/agcf-static.git/mcp")
-               (src-patterns ("*.java" "*.jsp"))
-               (ignore-patterns ("*.class" "*.wsdl"))
-               (tags-file "/home/matthewk/.TAGS-agcf-git")
-               (file-list-cache "/home/matthewk/.agcf-git.files")
-               (compile-cmd "mcpant agcf-git")
-               (startup-hook agcf-git-startup-hook)
-               (shutdown-hook nil)))
-
 (defun agcf-git-startup-hook ()
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/agcf-git/work/classes")
@@ -317,37 +225,42 @@
 ;;; MCP Project Auto loader utils
 ;;; --------------------------------------------------------------------
 
-;; TODO: auto-startup hook creation is broken! Can't find a way for
-;; emacs to dynamically create a fn with name X. If I use a macro, the
-;; name of the fn is not eval'd and I end up doing "defun
-;; startup-hook-name ()...". If I use a fn, how do I change the name
-;; of the defined function? Defun is itself a fn so it doesn't eval
-;; its args. Tried pushing lambdas to the hook list, but emacs doesn't
-;; have proper closures (to hold the workdir, viewdir info). So fuck
-;; you emacs!
+;;; These functions enable me to automatically create mk-project
+;;; projects based on my mcpant (~/.*.ant) project files. This removes
+;;; a ton of duplicated project-def statements as well as making it
+;;; very easy to create new projects. Only startup and shutdown hooks
+;;; need to stay in this file.
 
-(defun mcp-auto-startup-hook (name viewdir workdir)
-  "Define a startup hook called `name', unless one already
-exists. In which case it should call mcp-jde-setup explicitly!"
-  (message (concat "Defining mcp-auto-startup-hook function " name))
-  (defun name ()
-     (message (concat "Running mcp-auto-startup-hook " name))
-     (mcp-jde-setup ,viewdir ,workdir)))
+(defvar mcp-proj-dirs (make-hash-table :test 'equal)
+  "Map proj-name to (viewdir workdir) pairs")
+
+(defun mcp-proj-dir-add (name viewdir workdir)
+  "Add a project's viewdir/workdir info to our hash"
+  (puthash name (list viewdir workdir) mcp-proj-dirs))
+
+(defun mcp-proj-dir-get (name)
+  "Retreive (viewdir workdir) for project `name'"
+  (gethash name mcp-proj-dirs))
+
+(defun mcp-generic-startup-hook ()
+  "Sets up JDE for the current project"
+  (let ((data (mcp-proj-dir-get mk-proj-name)))
+    (when data
+      (mcp-jde-setup (first data) (second data)))))
 
 (defun mcp-auto-project-def (name)
-  "Define a mk-project based on ~/.<name>.ant. Startup & shutdown
-  hooks will be <name>-startup-hook and <name>-startup-hook."
+  "Define a mk-project based on ~/.`name'.ant. Predefined Startup
+  & shutdown hooks can be <name>-startup-hook and
+  <name>-startup-hook."
   (interactive "sProject Name: ")
   (let* ((proj-file (concat homedir "." name ".ant"))
          (lst (mcp-parse-project-file proj-file)))
-    (message (concat "list is " (second lst)))
     (let ((viewdir (first lst))
           (workdir (second lst)))
       (if (and workdir viewdir)
           (let* ((startup-hook-name (concat name "-startup-hook"))
                  (shutdown-hook-name (concat name "-shutdown-hook")))
-            (message (concat "Startup hook name is " startup-hook-name))
-            (mcp-auto-startup-hook startup-hook-name viewdir workdir)
+            (mcp-proj-dir-add name viewdir workdir)
             (project-def name
                          `((basedir ,viewdir)
                            (src-patterns ("*.java" "*.jsp"))
@@ -355,11 +268,15 @@ exists. In which case it should call mcp-jde-setup explicitly!"
                            (tags-file ,(concat homedir ".TAGS" name))
                            (file-list-cache ,(concat homedir "." name "-files"))
                            (compile-cmd ,(concat "mcpant " name))
-                           (startup-hook ,(if (functionp (intern startup-hook-name)) (intern startup-hook-name) nil))
-                           (shutdown-hook nil),(if (functionp (intern shutdown-hook-name)) (itern shutdown-hook-name) nil))
-                           (vcs git)))
-            (message (concat "Created project " name ". View is " viewdir ", work is " workdir)))
-        (message (concat "Sorry, can't parse " proj-file))))))
+                           (startup-hook ,(if (functionp (intern startup-hook-name))
+                                              (intern startup-hook-name)
+                                            'mcp-generic-startup-hook))
+                           (shutdown-hook ,(if (functionp (intern shutdown-hook-name))
+                                                    (intern shutdown-hook-name)
+                                                  'nil))
+                           (vcs git))) ;; TODO: assuming all mcp projects use git for now
+            (message (concat "Created MCP project " name ". View is " viewdir ", work is " workdir)))
+        (message (concat "Sorry, can't parse " proj-file " MCP project file"))))))
 
 (defun mcp-parse-project-file (proj-file)
   "Given a mcp ant project file, return '(viewdir workdir)"
@@ -384,3 +301,17 @@ exists. In which case it should call mcp-jde-setup explicitly!"
                     (setq workdir (car (cdr lst))))))))
           (forward-line)))
       (list viewdir workdir)))
+
+(defun mcp-load-all-projects ()
+  "Load all projects we have ~/.*.ant files for"
+  (interactive)
+  (mapcar (function (lambda (f)
+              (when (string-match "^\\." f)
+                (setq f (replace-match "" nil nil f))
+                (when (string-match "\\.ant" f)
+                  (setq f (replace-match "" nil nil f))
+                  (mcp-auto-project-def f)))))
+          (directory-files (getenv "HOME") nil ".*.ant" t)))
+
+;; Load them all!
+(mcp-load-all-projects)
