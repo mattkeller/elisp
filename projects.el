@@ -13,11 +13,13 @@
 (global-set-key (kbd "C-c p d") 'project-dired)
 (global-set-key (kbd "C-c p t") 'project-tags)
 
+(defvar homedir (concat (getenv "HOME") "/"))
+
 ;;; --------------------------------------------------------------------
 ;;; cl-sip
 ;;; --------------------------------------------------------------------
 
-(defvar sip-basedir (concat (getenv "HOME") "/code/lisp/cl-sip/"))
+(defvar sip-basedir (concat homedir "code/lisp/cl-sip/"))
 
 (project-def "cl-sip"
              `((basedir ,sip-basedir)
@@ -37,11 +39,11 @@
 ;;; --------------------------------------------------------------------
 
 (project-def "elisp"
-             `((basedir ,(concat (getenv "HOME") "/elisp/"))
+             `((basedir ,(concat homedir "elisp/"))
                (src-patterns ("*.el"))
-               (file-list-cache ,(concat (getenv "HOME") "/.elisp-files"))
+               (file-list-cache ,(concat homedir ".elisp-files"))
                (ignore-patterns ("*.elc"))
-               (tags-file ,(concat (getenv "HOME") "/elisp/" "TAGS"))
+               (tags-file ,(concat homedir "elisp/" "TAGS"))
                (vcs git)
                (startup-hook mk-project-startup-hook)))
 
