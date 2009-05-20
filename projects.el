@@ -1,6 +1,7 @@
 ;;;; projects.el --- my mk-project settings
 
 (require 'mk-project)
+(require 'cl)
 
 (global-set-key (kbd "C-c p c") 'project-compile)
 (global-set-key (kbd "C-c p g") 'project-grep)
@@ -312,4 +313,74 @@
                  "/localdisk/data/matthewk/ant/agcf-git/work/classes")
   (find-file "/localdisk/data/matthewk/git/agcf-static.git/mcp/mcp_labs/common/test_tools/agcf/configureSuite.pl"))
 
+;;; --------------------------------------------------------------------
+;;; MCP Project Auto loader utils
+;;; --------------------------------------------------------------------
 
+;; TODO: auto-startup hook creation is broken! Can't find a way for
+;; emacs to dynamically create a fn with name X. If I use a macro, the
+;; name of the fn is not eval'd and I end up doing "defun
+;; startup-hook-name ()...". If I use a fn, how do I change the name
+;; of the defined function? Defun is itself a fn so it doesn't eval
+;; its args. Tried pushing lambdas to the hook list, but emacs doesn't
+;; have proper closures (to hold the workdir, viewdir info). So fuck
+;; you emacs!
+
+(defun mcp-auto-startup-hook (name viewdir workdir)
+  "Define a startup hook called `name', unless one already
+exists. In which case it should call mcp-jde-setup explicitly!"
+  (message (concat "Defining mcp-auto-startup-hook function " name))
+  (defun name ()
+     (message (concat "Running mcp-auto-startup-hook " name))
+     (mcp-jde-setup ,viewdir ,workdir)))
+
+(defun mcp-auto-project-def (name)
+  "Define a mk-project based on ~/.<name>.ant. Startup & shutdown
+  hooks will be <name>-startup-hook and <name>-startup-hook."
+  (interactive "sProject Name: ")
+  (let* ((proj-file (concat homedir "." name ".ant"))
+         (lst (mcp-parse-project-file proj-file)))
+    (message (concat "list is " (second lst)))
+    (let ((viewdir (first lst))
+          (workdir (second lst)))
+      (if (and workdir viewdir)
+          (let* ((startup-hook-name (concat name "-startup-hook"))
+                 (shutdown-hook-name (concat name "-shutdown-hook")))
+            (message (concat "Startup hook name is " startup-hook-name))
+            (mcp-auto-startup-hook startup-hook-name viewdir workdir)
+            (project-def name
+                         `((basedir ,viewdir)
+                           (src-patterns ("*.java" "*.jsp"))
+                           (ignore-patterns ("*.class" "*.wsdl"))
+                           (tags-file ,(concat homedir ".TAGS" name))
+                           (file-list-cache ,(concat homedir "." name "-files"))
+                           (compile-cmd ,(concat "mcpant " name))
+                           (startup-hook ,(if (functionp (intern startup-hook-name)) (intern startup-hook-name) nil))
+                           (shutdown-hook nil),(if (functionp (intern shutdown-hook-name)) (itern shutdown-hook-name) nil))
+                           (vcs git)))
+            (message (concat "Created project " name ". View is " viewdir ", work is " workdir)))
+        (message (concat "Sorry, can't parse " proj-file))))))
+
+(defun mcp-parse-project-file (proj-file)
+  "Given a mcp ant project file, return '(viewdir workdir)"
+    (let ((viewdir nil)
+          (workdir nil))
+      (unless (file-readable-p proj-file)
+        (error (concat "Unable to read " proj-file ".")))
+      (with-temp-buffer
+        (insert-file-contents proj-file)
+        (goto-char (point-min))
+        (while (not (eobp))
+          (let ((start (point)))
+            (while (not (eolp)) (forward-char)) ; goto end of line
+            (let ((line (buffer-substring start (point))))
+              (when (string-match "[ \t]*$" line) ; trim whitespace
+                (setq line (replace-match "" nil nil line)))
+              (let ((lst (split-string line "="))) ; split line
+                (when lst
+                  (when (string-equal (car lst) "VIEW_DIR")
+                    (setq viewdir (car (cdr lst))))
+                  (when (string-equal (car lst) "WORK_DIR")
+                    (setq workdir (car (cdr lst))))))))
+          (forward-line)))
+      (list viewdir workdir)))
