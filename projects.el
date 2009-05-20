@@ -13,6 +13,10 @@
 (global-set-key (kbd "C-c p d") 'project-dired)
 (global-set-key (kbd "C-c p t") 'project-tags)
 
+;;; --------------------------------------------------------------------
+;;; cl-sip
+;;; --------------------------------------------------------------------
+
 (defvar sip-basedir (concat (getenv "HOME") "/code/lisp/cl-sip/"))
 
 (project-def "cl-sip"
@@ -28,6 +32,10 @@
   (dolist (file (directory-files sip-basedir t "\.lisp$" t))
     (find-file file)))
 
+;;; --------------------------------------------------------------------
+;;; elisp
+;;; --------------------------------------------------------------------
+
 (project-def "elisp"
              `((basedir ,(concat (getenv "HOME") "/elisp/"))
                (src-patterns ("*.el"))
@@ -40,6 +48,10 @@
 (defun mk-project-startup-hook ()
   (find-file (concat mk-proj-basedir "dotemacs"))
   (find-file (concat mk-proj-basedir "mk-project.el")))
+
+;;; --------------------------------------------------------------------
+;;; Qrev
+;;; --------------------------------------------------------------------
 
 (project-def "qrev"
              '((basedir "~mk/code/lisp/qrev/")
@@ -60,6 +72,23 @@
 (defun qrev-shutdown-hook ()
   (when (y-or-n-p "Close slime? ")
     (slime-quit-lisp)))
+
+;;; --------------------------------------------------------------------
+;;; Scplite (MCS)
+;;; --------------------------------------------------------------------
+
+(project-def "scplite.mcs"
+             '((basedir "/home/matthewk/git/scplite.mcs.git")
+               (src-patterns ("*.C" "*.H" "*.c" "*.h"))
+               (ignore-patterns ("*.o"))
+               (tags-file "/home/matthewk/git/scplite.mcs.git/TAGS")
+               (file-list-cache "/home/matthewk/.scplite.mcs.files")
+               (compile-cmd "./buildphx.sh")
+               (vcs git)))
+
+;;; --------------------------------------------------------------------
+;;; MCP project utils
+;;; --------------------------------------------------------------------
 
 (defvar mcp10-jars (mapcar '(lambda (j) (concat "mcp_3rdParty/java/" j))
                            '("database/oracle/oracle.zip"
@@ -146,7 +175,8 @@
 
 (defvar mcp-jdk-reg '(("1.5.0_11" . "/localdisk/jdk1.5.0_11")
                       ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
-                      ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11")))
+                      ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11")
+                      ("1.6.0_13" . "/opt/jdk1.6.0_13")))
 
 (defun mcp-jde-setup (basedir classdir jar-list jdk)
   (require 'jde)
@@ -157,6 +187,9 @@
     (setq jde-jdk-registry mcp-jdk-reg)
     (setq jde-jdk (list jdk))))
 
+;;; --------------------------------------------------------------------
+;;; mcp12 projects
+;;; --------------------------------------------------------------------
 
 (project-def "12dyn"
              '((basedir "/mcp/")
@@ -177,6 +210,9 @@
   (find-file "/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
   (find-file "/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
 
+;;; --------------------------------------------------------------------
+;;; AGCF projects
+;;; --------------------------------------------------------------------
 
 (project-def "agcf12sp1"
              '((basedir "/mcp/")
@@ -185,8 +221,14 @@
                (tags-file "/home/matthewk/.TAGSagcf12sp1")
                (file-list-cache "/home/matthewk/.agcf12sp1-files")
                (compile-cmd "mcpant agcf12sp1")
-               (startup-hook mcp-12sp1-startup-hook)
+               (startup-hook agcf12sp1-startup-hook)
                (shutdown-hook nil)))
+
+(defun agcf12sp1-startup-hook ()
+  (mcp-jde-setup "/mcp"
+                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"
+                 mcp12-jars
+                 "1.6.0_11"))
 
 (project-def "agcf-static"
              '((basedir "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_static/mcp/")
@@ -195,23 +237,49 @@
                (tags-file "/home/matthewk/.TAGSagcf-static")
                (file-list-cache "/home/matthewk/.agcf-static-files")
                (compile-cmd "mcpant agcf-static")
-               (startup-hook mcp-12sp1-static-startup-hook)
+               (startup-hook agcf-static-startup-hook)
                (shutdown-hook nil)
                (vcs git)))
 
-(defun mcp-12sp1-static-startup-hook ()
+(defun agcf-static-startup-hook ()
   (mcp-jde-setup "/localdisk/viewstore/matthewk_AGCF_mcp12sp1_dev_static/mcp/"
                  "/localdisk/data/matthewk/ant/agcf-static/work/classes"
                  mcp12-jars
                  "1.6.0_11"))
 
+(project-def "agcf-static-home"
+             '((basedir "/home/mk/nt/agcf-static/mcp/")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/home/mk/.TAGSagcf-static")
+               (file-list-cache "/home/mk/.agcf-static-files")
+               (compile-cmd "mcpant agcf-static")
+               (startup-hook agcf-static-home-startup-hook)
+               (shutdown-hook nil)
+               (vcs git)))
 
-(defun mcp-12sp1-startup-hook ()
-  (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_core_12.0_sp1_dev/work/classes"
+(defun agcf-static-home-startup-hook ()
+  (mcp-jde-setup "/home/mk/nt/agcf-static/mcp/"
+                 "/home/mk/nt/ant/agcf-static/work/classes"
                  mcp12-jars
-                 "1.6.0_11")
-  (find-file "~/proj/agcf/hotline/NOTES.org"))
+                 "1.6.0_11"))
+
+(project-def "agcf-mct-home"
+             '((basedir "/home/mk/nt/agcf-mct/mcp/")
+               (src-patterns ("*.java" "*.jsp"))
+               (ignore-patterns ("*.class" "*.wsdl"))
+               (tags-file "/home/mk/.TAGSagcf-mct")
+               (file-list-cache "/home/mk/.agcf-mct-files")
+               (compile-cmd "mcpant agcf-mct")
+               (startup-hook agcf-mct-home-startup-hook)
+               (shutdown-hook nil)
+               (vcs git)))
+
+(defun agcf-mct-home-startup-hook ()
+  (mcp-jde-setup "/home/mk/nt/agcf-mct/mcp/"
+                 "/home/mk/nt/ant/agcf-mct/work/classes"
+                 mcp12-jars
+                 "1.6.0_13"))
 
 (project-def "agcf-int"
              '((basedir "/mcp/")
@@ -220,15 +288,14 @@
                (tags-file "/home/matthewk/.TAGS-agcf-int")
                (file-list-cache "/home/matthewk/.agcf-int.files")
                (compile-cmd "mcpant agcf-int")
-               (startup-hook mcp-agcf-int-startup-hook)
+               (startup-hook agcf-int-startup-hook)
                (shutdown-hook nil)))
 
-(defun mcp-agcf-int-startup-hook ()
+(defun agcf-int-startup-hook ()
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/matthewk_AGCF_mcp_12.0_int/work/classes"
                  mcp12-jars
-                 "1.6.0_11")
-  (find-file "~/proj/agcf/hotline/NOTES.org"))
+                 "1.6.0_11"))
 
 (project-def "agcf-git"
              '((basedir "/localdisk/data/matthewk/git/agcf-static.git/mcp")
@@ -237,10 +304,10 @@
                (tags-file "/home/matthewk/.TAGS-agcf-git")
                (file-list-cache "/home/matthewk/.agcf-git.files")
                (compile-cmd "mcpant agcf-git")
-               (startup-hook mcp-agcf-git-startup-hook)
+               (startup-hook agcf-git-startup-hook)
                (shutdown-hook nil)))
 
-(defun mcp-agcf-git-startup-hook ()
+(defun agcf-git-startup-hook ()
   (mcp-jde-setup "/mcp"
                  "/localdisk/data/matthewk/ant/agcf-git/work/classes"
                  mcp12-jars
@@ -248,53 +315,3 @@
   (find-file "/localdisk/data/matthewk/git/agcf-static.git/mcp/mcp_labs/common/test_tools/agcf/configureSuite.pl"))
 
 
-(project-def "scplite.mcs"
-             '((basedir "/home/matthewk/git/scplite.mcs.git")
-               (src-patterns ("*.C" "*.H" "*.c" "*.h"))
-               (ignore-patterns ("*.o"))
-               (tags-file "/home/matthewk/git/scplite.mcs.git/TAGS")
-               (file-list-cache "/home/matthewk/.scplite.mcs.files")
-               (compile-cmd "./buildphx.sh")
-               (vcs git)))
-               
-
-;;; OBSOLETE?
-
-(defun mcp-set-proj (proj)
-  (interactive "sProject name: ")
-  (let* ((mcp-dir "/mcp/")
-         (git-dir "/localdisk/data/matthewk/code/mcp.git/mcp/")
-         (src-dir mcp-dir)
-         (wrk-dir (concat "/localdisk/data/matthewk/workdir/" proj))
-         (cls-dir (concat wrk-dir "/classes")))
-    (when (y-or-n-p "Git project?")
-      (setq src-dir git-dir))
-    (if (file-directory-p src-dir)
-        (progn
-          (setq jde-compile-option-directory cls-dir)
-          (setq jde-compile-option-sourcepath (list (concat src-dir "mcp_core_root/src")
-                                                    (concat src-dir "mcp_core_root/src")
-                                                    (concat src-dir "mcp_core_ims/ims")))
-          (let* ((jars '("mcp_3rdParty/java/database/oracle/oracle.zip"
-                         "mcp_3rdParty/java/management/jdmk/jawall.jar"
-                         "mcp_3rdParty/java/megaco/megaco.jar"
-                         "mcp_3rdParty/java/parsing/jdom/jdom.jar"
-                         "mcp_3rdParty/java/uas/uasemClient.jar"
-                         "mcp_3rdParty/java/tools/sun/tools.jar"
-                         "mcp_3rdParty/java/axis/axis.jar"
-                         "mcp_3rdParty/java/axis/OPIClient.jar"
-                         "mcp_3rdParty/java/tomcat/tomcat.jar"
-                         "mcp_3rdParty/java/httpclient/commons-httpclient-2.0-rc2.jar"
-                         "mcp_3rdParty/java/management/jdmk/jsnmpapi.jar"
-                         "mcp_3rdParty/java/management/jdmk/jdmkrt.jar"
-                         "mcp_3rdParty/java/security/bcprov-jdk14-124.jar"
-                         "mcp_3rdParty/java/masSoapServices/masservice.jar"
-                         "mcp_3rdParty/java/jazzlib/jazzlib.jar"))
-                 (classpath (mapcar '(lambda (j) (concat src-dir j)) jars)))
-            (setq jde-global-classpath (push cls-dir classpath)))
-          (setq jde-jdk-registry '(("1.5.0_07" . "/localdisk/jdk1.5.0_07")))
-          (message "Change JDE paths for proj %s" proj)
-          t)
-      (progn
-        (message "Can't read dir %s" src-dir)
-        nil))))
