@@ -110,73 +110,6 @@
                              "masSoapServices/masservice.jar"
                              "jazzlib/jazzlib.jar")))
 
-; TOOD: could we extract this automatically from the filesystem or build.xml?
-(defvar mcp12-jars (mapcar '(lambda (j) (concat "mcp_3rdParty/" j))
-                           '("core/3rdParty.jar"
-                             "optional/tools.jar"
-                             "build/log4j.jar"
-                             "optional/axis.jar"
-                             "optional/tomcat.jar"
-                             "optional/masservice.jar"
-                             "optional/stinger.jar"
-                             "core/muse.jar"
-                             "core/commons-logging.jar"
-                             "build/webserv-ext.jar"
-                             "build/webserv-rt.jar"
-                             "optional/commons-beanutils-1.8.0-BETA.jar"
-                             "optional/jsf-api.jar"
-                             "optional/portal-portlet-jsr168api-lib.jar"
-                             "optional/jboss-jmx.jar"
-                             "optional/jbossall-client.jar"
-                             "optional/jboss-jaxrpc.jar"
-                             "optional/portal-api-lib.jar"
-                             "optional/jboss-system.jar"
-                             "optional/portal-common-portal-lib.jar"
-                             "optional/portal-theme-lib.jar"
-                             "build/commons-codec.jar"
-                             "build/jboss-aop-jdk50.jar"
-                             "optional/jboss-jaxws.jar"
-                             "optional/jaxb-api.jar"
-                             "core/3rdParty.jar"
-                             "build/httpservlet-event.jar"
-                             "build/httpservlet-ra.jar"
-                             "build/httpservlet-ratype.jar"
-                             "build/mobicents_lib.jar"
-                             "build/sip-ra.jar"
-                             "build/sip-ratype.jar"
-                             "build/sip-event.jar"
-                             "build/jain-sip-api-1.2.1.jar"
-                             "build/jain-sip-ri-1.2.1.jar"
-                             "build/slee_1_1.jar"
-                             "optional/OPIStubs.jar"
-                             "optional/jsf-impl.jar"
-                             "optional/jbosssx.jar"
-                             "optional/jboss-deployment.jar"
-                             "build/jgroups.jar"
-                             "build/jboss-cache-jdk50.jar"
-                             "build/servlet-api.jar"
-                             "build/trove.jar"
-                             "optional/richfaces-api-3.1.4.GA.jar"
-                             "optional/richfaces-ui-3.1.4.GA.jar"
-                             "optional/richfaces-impl-3.1.4.GA.jar"
-                             "optional/portletbridge-api-1.0.0.B1.jar"
-                             "optional/portletbridge-impl-1.0.0.B1.jar"
-                             "optional/portal-web-lib.jar"
-                             "optional/commons-discovery-0.2.jar"
-                             "optional/axis-jboss.jar"
-                             "build/concurrent.jar"
-                             "build/javassist.jar"
-                             "build/jboss-aop-jdk50-client.jar"
-                             "build/jboss-aspect-jdk50-client.jar"
-                             "build/jboss-aspect-library-jdk50.jar"
-                             "build/jboss-common.jar"
-                             "build/jrockit-pluggable-instrumentor.jar"
-                             "build/pluggable-instrumentor.jar"
-                             "build/qdox.jar"
-                             "optional/hibernate3.jar"
-                             "optional/jboss-hibernate.jar"
-                             "lib/jars/optional/junit-4.5.jar")))
-
 (defun mktop-p ()
   (string-equal system-name "mktop"))
 
@@ -189,12 +122,30 @@
                         ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
                         ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11"))))
 
+(defun mcp-get-jars-from-build-xml (basedir)
+  "Return the list of 'standard.jars' from build.xml"
+  (let* ((jars nil)
+         (root (with-temp-buffer
+                 (insert-file-contents (concat basedir "/mcp_core_root/loadbuild/scripts/build.xml"))
+                 (xml-parse-region (point-min) (point-max))))
+         (project (car root)))
+    (dolist (c (xml-get-children project 'path))
+      (let ((attrs (xml-node-attributes c)))
+        (when (and attrs (assq 'id attrs))
+          (when (string-equal "standard.jars" (cdr (assq 'id attrs)))
+            (dolist (elem (xml-get-children c 'pathelement))
+              (let ((jar (cdr (assq 'location (xml-node-attributes elem)))))
+                (when (string-match "${3pjars.dir}." jar)
+                  (setq jar (replace-match (concat basedir "/mcp_3rdParty/lib/jars/") nil nil jar)))
+                (push jar jars)))))))
+    jars))
+
 (defun mcp-jde-setup (basedir classdir &optional jar-list jdk)
-  "Setup JDE for a particular project. Defaults to mcp12 jar-list and jdk."
+  "Setup JDE for a particular project. Defaults to mcp12 jar-list and preferred jdk."
   (require 'jde)
   (let ((classpath (mapcar '(lambda (j)
                               (concat mk-proj-basedir j))
-                           (if (null jar-list) mcp12-jars jar-list))))
+                           (if (null jar-list) (mcp-get-jars-from-build-xml basedir) jar-list))))
     (setq jde-compile-option-directory classdir)
     (setq jde-compile-option-sourcepath (list (concat mk-proj-basedir "mcp_core_root/src")))
     (setq jde-global-classpath (push  classdir classpath))
