@@ -164,7 +164,8 @@
           '(lambda ()
              (c-set-style "K&R")
              (setq c-basic-offset 4)
-             (setq indent-tabs-mode nil)))
+             (setq indent-tabs-mode nil)
+             (linum)))
 
 ;;; Perl setup ---------------------------------------------------------
 (require 'cperl-mode)
@@ -179,7 +180,9 @@
   (shell-command (concat "perl -c " (buffer-file-name))))
 
 (add-hook 'cperl-mode-hook 
-          '(lambda () (local-set-key [f5] 'perl-compile)))
+          '(lambda () 
+             (local-set-key [f5] 'perl-compile)
+             (linum)))
 
 ;;; Ruby setup ---------------------------------------------------------
 
@@ -199,7 +202,8 @@
 (add-hook 'ruby-mode-hook
           '(lambda ()
              (inf-ruby-keys)
-             (local-set-key [f5] 'ruby-lint)))
+             (local-set-key [f5] 'ruby-lint)
+             (linum)))
 
 ;;; SLIME & Lisp(s) Setup --------------------------------------------------------
 
@@ -281,7 +285,8 @@
 (add-hook 'java-mode-hook '(lambda ()
                              (c-set-style "java")
                              (setq c-basic-offset 3)
-                             (setq-default indent-tabs-mode nil)))
+                             (setq-default indent-tabs-mode nil)
+                             (linum)))
 
 ;;; Javascript ---------------------------------------------------------
 
