@@ -66,12 +66,13 @@
   (let ((classpath (mapcar '(lambda (j)
                               (concat mk-proj-basedir j))
                            (if (null jar-list) (mcp-jde-jars-from-build-xml basedir) jar-list))))
-    (setq jde-compile-option-directory classdir)
-    (setq jde-compile-option-sourcepath (list (concat mk-proj-basedir "/mcp_core_root/src")))
-    (setq jde-global-classpath (push  classdir classpath))
-    (setq jde-jdk-registry mcp-jde-jdk-registry)
-    (setq jde-jdk (list (if (null jdk) mcp-jde-preferred-jdk jdk)))))
-
+    (setq jde-jdk                       (list (if (null jdk) mcp-jde-preferred-jdk jdk)))
+          jde-jdk-registry              mcp-jde-jdk-registry
+          jde-global-classpath          (push  classdir classpath)                     ;; Classpaths for compile, run, and debug cmds.
+          jde-sourcepath                (list (concat basedir "/mcp_core_root/src"))   ;; Path of source files for compile, run and debug.
+          jde-compile-option-classpath   nil                                           ;; Classpath for compile cmd. If set, overrides jde-global-classpath.
+          jde-compile-option-directory  classdir                                       ;; Directory into which to place the compiled class.
+          jde-compile-option-sourcepath (list (concat basedir "/mcp_core_root/src")))) ;; Path of sources required to compile the current class.
 
 
 ;;; --------------------------------------------------------------------
