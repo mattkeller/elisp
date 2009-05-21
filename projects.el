@@ -226,8 +226,8 @@
                                                     (intern shutdown-hook-name)
                                                   'nil))
                            (vcs git))) ;; TODO: assuming all mcp projects use git for now
-            (message (concat "Created MCP project " name ". View is " viewdir ", work is " workdir)))
-        (message (concat "Sorry, can't parse " proj-file " MCP project file"))))))
+            (message "Created MCP project %s. View is %s, work is %s." name viewdir workdir))
+        (message "Sorry, can't parse %s MCP project file" proj-file)))))
 
 (defun mcp-parse-project-file (proj-file)
   "Given a mcp ant project file, return '(viewdir workdir)"
@@ -256,12 +256,12 @@
 (defun mcp-load-all-projects ()
   "Load all projects we have ~/.*.ant files for"
   (interactive)
-  (mapcar (function (lambda (f)
-              (when (string-match "^\\." f)
+  (mapcar (lambda (f)
+            (when (string-match "^\\." f)
+              (setq f (replace-match "" nil nil f))
+              (when (string-match "\\.ant" f)
                 (setq f (replace-match "" nil nil f))
-                (when (string-match "\\.ant" f)
-                  (setq f (replace-match "" nil nil f))
-                  (mcp-auto-project-def f)))))
+                  (mcp-auto-project-def f))))
           (directory-files (getenv "HOME") nil ".*.ant" t)))
 
 ;; Load them all!
