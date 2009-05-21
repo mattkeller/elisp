@@ -131,7 +131,7 @@ set up JDE for the current project"
                          `((basedir ,viewdir)
                            (src-patterns ("*.java" "*.jsp"))
                            (ignore-patterns ("*.class" "*.wsdl"))
-                           (tags-file ,(concat (homedir) ".TAGS" name))
+                           (tags-file ,(concat (homedir) ".TAGS-" name))
                            (file-list-cache ,(concat (homedir) "." name "-files"))
                            (compile-cmd ,(concat "mcpant " name))
                            (startup-hook mcp-proj-generic-startup-hook)
