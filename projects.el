@@ -147,7 +147,7 @@
                               (concat mk-proj-basedir j))
                            (if (null jar-list) (mcp-get-jars-from-build-xml basedir) jar-list))))
     (setq jde-compile-option-directory classdir)
-    (setq jde-compile-option-sourcepath (list (concat mk-proj-basedir "mcp_core_root/src")))
+    (setq jde-compile-option-sourcepath (list (concat mk-proj-basedir "/mcp_core_root/src")))
     (setq jde-global-classpath (push  classdir classpath))
     (setq jde-jdk-registry mcp-jdk-reg)
     (setq jde-jdk (list (if (null jdk) mcp12-preferred-jdk jdk)))))
