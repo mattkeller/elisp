@@ -168,7 +168,8 @@
 ;;; --------------------------------------------------------------------
 
 (defun agcf-git-startup-hook ()
-  (mcp-jde-setup "/mcp"
+  (message "Hi from agcf-git-startup-hook")
+  (mcp-jde-setup "/localdisk/data/matthewk/git/agcf-static.git/mcp"
                  "/localdisk/data/matthewk/ant/agcf-git/work/classes")
   (find-file "/localdisk/data/matthewk/git/agcf-static.git/mcp/mcp_labs/common/test_tools/agcf/configureSuite.pl"))
 
@@ -194,10 +195,23 @@
   (gethash name mcp-proj-dirs))
 
 (defun mcp-generic-startup-hook ()
-  "Sets up JDE for the current project"
-  (let ((data (mcp-proj-dir-get mk-proj-name)))
-    (when data
-      (mcp-jde-setup (first data) (second data)))))
+  "Run the user-defined startup hook if it exists, or generically
+set up JDE for the current project"
+  (let* ((hook-name (concat mk-proj-name "-startup-hook"))
+         (hook-sym (intern hook-name)))
+    (if (functionp hook-sym)
+        (funcall hook-sym)
+      (let ((proj-dirs (mcp-proj-dir-get mk-proj-name)))
+        (when proj-dirs
+          (message "Running generic mcp-jde-setup for %s" mk-proj-name)
+          (mcp-jde-setup (first proj-dirs) (second proj-dirs)))))))
+
+(defun mcp-generic-shutdown-hook ()
+  "Run the user-defined shutdown hook if it exists"
+  (let* ((hook-name (concat mk-proj-name "-shutdown-hook"))
+         (hook-sym (intern hook-name)))
+    (when (functionp hook-sym)
+      (funcall hook-sym))))
 
 (defun mcp-auto-project-def (name)
   "Define a mk-project based on ~/.`name'.ant. Predefined Startup
@@ -219,12 +233,8 @@
                            (tags-file ,(concat homedir ".TAGS" name))
                            (file-list-cache ,(concat homedir "." name "-files"))
                            (compile-cmd ,(concat "mcpant " name))
-                           (startup-hook ,(if (functionp (intern startup-hook-name))
-                                              (intern startup-hook-name)
-                                            'mcp-generic-startup-hook))
-                           (shutdown-hook ,(if (functionp (intern shutdown-hook-name))
-                                                    (intern shutdown-hook-name)
-                                                  'nil))
+                           (startup-hook mcp-generic-startup-hook)
+                           (shutdown-hook mcp-generic-shutdown-hook)
                            (vcs git))) ;; TODO: assuming all mcp projects use git for now
             (message "Created MCP project %s. View is %s, work is %s." name viewdir workdir))
         (message "Sorry, can't parse %s MCP project file" proj-file)))))
