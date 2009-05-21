@@ -4,10 +4,17 @@
 (require 'mk-project)
 
 ;;; --------------------------------------------------------------------
-;;; MCP project utils
+;;; Utils
 ;;; --------------------------------------------------------------------
 
 (defun homedir () (concat (getenv "HOME") "/"))
+
+(defun mktop-p ()
+  (string-equal system-name "mktop"))
+
+;;; --------------------------------------------------------------------
+;;; MCP JDE utilities
+;;; --------------------------------------------------------------------
 
 (defvar mcp10-jars (mapcar '(lambda (j) (concat "mcp_3rdParty/java/" j))
                            '("database/oracle/oracle.zip"
@@ -26,19 +33,16 @@
                              "masSoapServices/masservice.jar"
                              "jazzlib/jazzlib.jar")))
 
-(defun mktop-p ()
-  (string-equal system-name "mktop"))
-
-(defvar mcp12-preferred-jdk (if (mktop-p) "1.6.0_13" "1.6.0_11")
+(defvar mcp-jde-preferred-jdk (if (mktop-p) "1.6.0_13" "1.6.0_11")
   "The preferred mcp12 jdk to use per machine")
 
-(defvar mcp-jdk-reg (if (mktop-p)
+(defvar mcp-jde-jdk-registry (if (mktop-p)
                         '(("1.6.0_13" . "/opt/jdk1.6.0_13"))
                       '(("1.5.0_11" . "/localdisk/jdk1.5.0_11")
                         ("1.6.0_05" . "/localdisk/jdk1.6.0_05")
                         ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11"))))
 
-(defun mcp-get-jars-from-build-xml (basedir)
+(defun mcp-jde-jars-from-build-xml (basedir)
   "Return the list of 'standard.jars' from build.xml"
   (let* ((jars nil)
          (root (with-temp-buffer
@@ -61,12 +65,12 @@
   (require 'jde)
   (let ((classpath (mapcar '(lambda (j)
                               (concat mk-proj-basedir j))
-                           (if (null jar-list) (mcp-get-jars-from-build-xml basedir) jar-list))))
+                           (if (null jar-list) (mcp-jde-jars-from-build-xml basedir) jar-list))))
     (setq jde-compile-option-directory classdir)
     (setq jde-compile-option-sourcepath (list (concat mk-proj-basedir "/mcp_core_root/src")))
     (setq jde-global-classpath (push  classdir classpath))
-    (setq jde-jdk-registry mcp-jdk-reg)
-    (setq jde-jdk (list (if (null jdk) mcp12-preferred-jdk jdk)))))
+    (setq jde-jdk-registry mcp-jde-jdk-registry)
+    (setq jde-jdk (list (if (null jdk) mcp-jde-preferred-jdk jdk)))))
 
 
 
@@ -91,7 +95,7 @@
   "Retreive (viewdir workdir) for project `name'"
   (gethash name mcp-proj-dirs))
 
-(defun mcp-generic-startup-hook ()
+(defun mcp-proj-generic-startup-hook ()
   "Run the user-defined startup hook if it exists, or generically
 set up JDE for the current project"
   (let* ((hook-name (concat mk-proj-name "-startup-hook"))
@@ -103,20 +107,20 @@ set up JDE for the current project"
           (message "Running generic mcp-jde-setup for %s" mk-proj-name)
           (mcp-jde-setup (first proj-dirs) (second proj-dirs)))))))
 
-(defun mcp-generic-shutdown-hook ()
+(defun mcp-proj-generic-shutdown-hook ()
   "Run the user-defined shutdown hook if it exists"
   (let* ((hook-name (concat mk-proj-name "-shutdown-hook"))
          (hook-sym (intern hook-name)))
     (when (functionp hook-sym)
       (funcall hook-sym))))
 
-(defun mcp-auto-project-def (name)
+(defun mcp-proj-auto-project-def (name)
   "Define a mk-project based on ~/.`name'.ant. Predefined Startup
   & shutdown hooks can be <name>-startup-hook and
   <name>-startup-hook."
   (interactive "sProject Name: ")
   (let* ((proj-file (concat (homedir) "." name ".ant"))
-         (lst (mcp-parse-project-file proj-file)))
+         (lst (mcp-proj-parse-project-file proj-file)))
     (let ((viewdir (first lst))
           (workdir (second lst)))
       (if (and workdir viewdir)
@@ -130,13 +134,13 @@ set up JDE for the current project"
                            (tags-file ,(concat (homedir) ".TAGS" name))
                            (file-list-cache ,(concat (homedir) "." name "-files"))
                            (compile-cmd ,(concat "mcpant " name))
-                           (startup-hook mcp-generic-startup-hook)
-                           (shutdown-hook mcp-generic-shutdown-hook)
+                           (startup-hook mcp-proj-generic-startup-hook)
+                           (shutdown-hook mcp-proj-generic-shutdown-hook)
                            (vcs git))) ;; TODO: assuming all mcp projects use git for now
             (message "Created MCP project %s. View is %s, work is %s." name viewdir workdir))
         (message "Sorry, can't parse %s MCP project file" proj-file)))))
 
-(defun mcp-parse-project-file (proj-file)
+(defun mcp-proj-parse-project-file (proj-file)
   "Given a mcp ant project file, return '(viewdir workdir)"
     (let ((viewdir nil)
           (workdir nil))
@@ -160,7 +164,7 @@ set up JDE for the current project"
           (forward-line)))
       (list viewdir workdir)))
 
-(defun mcp-load-all-projects ()
+(defun mcp-proj-load-all-projects ()
   "Load all projects we have ~/.*.ant files for"
   (interactive)
   (mapcar (lambda (f)
@@ -168,10 +172,10 @@ set up JDE for the current project"
               (setq f (replace-match "" nil nil f))
               (when (string-match "\\.ant" f)
                 (setq f (replace-match "" nil nil f))
-                  (mcp-auto-project-def f))))
+                  (mcp-proj-auto-project-def f))))
           (directory-files (getenv "HOME") nil ".*.ant" t)))
 
 ;; Load them all!
-(mcp-load-all-projects)
+(mcp-proj-load-all-projects)
 
 (provide 'mcp-projects)
