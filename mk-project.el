@@ -240,8 +240,14 @@ paths when greping or indexing the project.")
       (mk-proj-set-tags-file mk-proj-tags-file)
       (mk-proj-fib-init)
       (mk-proj-visit-saved-open-files)
+      (add-hook 'kill-emacs-hook 'mk-proj-kill-emacs-hook)
       (when mk-proj-startup-hook
         (run-hooks 'mk-proj-startup-hook)))))
+
+(defun mk-proj-kill-emacs-hook ()
+  "Ensure we save the open-files-cache info on emacs exit"
+  (when (and mk-proj-name mk-proj-open-files-cache)
+    (mk-proj-save-open-file-info)))
 
 (defun project-unload ()
   "Unload the current project's settings after runnin the shutdown hook."
