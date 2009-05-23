@@ -237,7 +237,7 @@ paths when greping or indexing the project.")
   (interactive)
   (when mk-proj-name
     (message "Unloading project %s" mk-proj-name)
-    (mk-proj-set-tags-file nil)
+    (mk-proj-clear-tags)
     (mk-proj-maybe-kill-buffer mk-proj-fib-name)
     (when (and (mk-proj-buffers)
                (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
@@ -292,11 +292,17 @@ paths when greping or indexing the project.")
 
 (defun mk-proj-set-tags-file (tags-file)
   "Setup TAGS file when given a valid file name; otherwise clean the TAGS"
-  (mk-proj-maybe-kill-buffer "TAGS")
-  (setq tags-file-name tags-file
+  (mk-proj-clear-tags)
+  (setq tags-file-name  tags-file
         tags-table-list nil)
   (when (and tags-file (file-readable-p tags-file))
     (visit-tags-table tags-file)))
+
+(defun mk-proj-clear-tags ()
+  (when (get-file-buffer mk-proj-tags-file)
+    (mk-proj-maybe-kill-buffer (get-file-buffer mk-proj-tags-file)))
+  (setq tags-file-name  nil
+        tags-table-list nil))
 
 (defun mk-proj-etags-cb (process event)
   "Visit tags table when the etags process finishes."
