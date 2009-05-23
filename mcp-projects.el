@@ -133,6 +133,7 @@ set up JDE for the current project"
                            (ignore-patterns ("*.class" "*.wsdl"))
                            (tags-file ,(concat (homedir) ".TAGS-" name))
                            (file-list-cache ,(concat (homedir) "." name "-files"))
+                           (open-files-cache ,(concat (homedir) "." name "-open-files"))
                            (compile-cmd ,(concat "mcpant " name))
                            (startup-hook mcp-proj-generic-startup-hook)
                            (shutdown-hook mcp-proj-generic-shutdown-hook)
