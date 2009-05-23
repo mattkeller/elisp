@@ -82,6 +82,8 @@
 (require 'thingatpt)
 (require 'cl)
 
+(defvar mk-proj-version "1.0.1" "Corresponds to tags in my git repository")
+
 ;; ---------------------------------------------------------------------
 ;; Project Variables
 ;;
