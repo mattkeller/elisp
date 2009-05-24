@@ -84,7 +84,6 @@
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 
 (load "mk-utils.el")
-(load "projects.el")
 
 ;;; Global keybindings -------------------------------------------------
 
@@ -270,13 +269,15 @@
 (when (file-directory-p "~/local/share/emacs/site-lisp/elib")
   (add-to-list 'load-path "~/local/share/emacs/site-lisp/elib"))
 
-(setq defer-loading-jde t)
+(require 'jde)
+(require 'jde-ant)
 
-(if defer-loading-jde
-    (progn
-      (autoload 'jde-mode "jde" "JDE mode." t)
-      (add-to-list 'auto-mode-alist '("\\.java\\'" . jde-mode)))
-  (require 'jde))
+(setq jde-jdk-registry (if (string-equal system-name "mktop")
+                           '(("1.6.0_13" . "/opt/jdk1.6.0_13/"))
+                         '(("1.5.0_11" . "/localdisk/jdk1.5.0_11/")
+                           ("1.6.0_05" . "/localdisk/jdk1.6.0_05/")
+                           ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11/")))
+      jde-jdk          (list (if (string-equal system-name "mktop") "1.6.0_13" "1.6.0_11")))
 
 (defun my-jde-mode-hook ()
   (local-set-key [f5] 'jde-compile))
@@ -394,4 +395,8 @@
         try-complete-file-name
         try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
+
+;;; mk-projects --------------------------------------------------------
+
+(load "projects.el") ; requires jde to be loaded, see defer-loading-jde
 
