@@ -50,7 +50,7 @@
 ;;         (ignore-patterns  ("*.class" "*.wsdl"))
 ;;         (tags-file        "/home/me/my-proj/TAGS")
 ;;         (file-list-cache  "/home/me/.my-proj-files")
-;;         (open-files-cache "/home/me.my-proj-open-files")
+;;         (open-files-cache "/home/me/.my-proj-open-files")
 ;;         (vcs              git)
 ;;         (compile-cmd      "ant")
 ;;         (startup-hook     myproj-startup-hook)
