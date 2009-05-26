@@ -398,5 +398,6 @@
 
 ;;; mk-projects --------------------------------------------------------
 
+(add-to-list 'load-path "~/elisp/mk-project")
 (load "projects.el") ; requires jde to be loaded, see defer-loading-jde
 
