@@ -82,7 +82,7 @@
 (require 'thingatpt)
 (require 'cl)
 
-(defvar mk-proj-version "1.0.1" "Corresponds to tags in my git repository")
+(defvar mk-proj-version "1.0.2" "Corresponds to tags in my git repository")
 
 ;; ---------------------------------------------------------------------
 ;; Project Variables
@@ -147,9 +147,10 @@ the files under the project's basedir - minus those matching ignore-patterns.
 The list is used by 'project-find-file' to quickly locate project files.")
 
 (defconst mk-proj-vcs-path '((git . "'*/.git/*'")
-                              (cvs . "'*/.CVS/*'")
-                              (svn . "'*/.svn/*'")
-                              (bzr . "'*/.bzr/*'"))
+                             (cvs . "'*/.CVS/*'")
+                             (svn . "'*/.svn/*'")
+                             (bzr . "'*/.bzr/*'")
+                             (hg  . "'*/.hg/*'"))
   "When mk-proj-vcs is one of the VCS types listed here, ignore the associated
 paths when greping or indexing the project.")
 
