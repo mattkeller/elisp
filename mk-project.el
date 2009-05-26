@@ -239,7 +239,7 @@ paths when greping or indexing the project.")
         (throw 'project-load t))
       (message "Loading project %s" name)
       (cd mk-proj-basedir)
-      (mk-proj-set-tags-file mk-proj-tags-file)
+      (mk-proj-tags-load)
       (mk-proj-fib-init)
       (mk-proj-visit-saved-open-files)
       (add-hook 'kill-emacs-hook 'mk-proj-kill-emacs-hook)
@@ -256,7 +256,7 @@ paths when greping or indexing the project.")
   (interactive)
   (when mk-proj-name
     (message "Unloading project %s" mk-proj-name)
-    (mk-proj-clear-tags)
+    (mk-proj-tags-clear)
     (mk-proj-maybe-kill-buffer mk-proj-fib-name)
     (mk-proj-save-open-file-info)
     (when (and (mk-proj-buffers)
@@ -341,16 +341,17 @@ paths when greping or indexing the project.")
 ;; Etags
 ;; ---------------------------------------------------------------------
 
-(defun mk-proj-set-tags-file (tags-file)
-  "Setup TAGS file when given a valid file name; otherwise clean the TAGS"
-  (mk-proj-clear-tags)
-  (setq tags-file-name  tags-file
+(defun mk-proj-tags-load ()
+  "Load TAGS file (if tags-file set)"
+  (mk-proj-tags-clear)
+  (setq tags-file-name  mk-proj-tags-file
         tags-table-list nil)
-  (when (and tags-file (file-readable-p tags-file))
-    (visit-tags-table tags-file)))
+  (when (and mk-proj-tags-file (file-readable-p mk-proj-tags-file))
+    (visit-tags-table mk-proj-tags-file)))
 
-(defun mk-proj-clear-tags ()
-  (when (get-file-buffer mk-proj-tags-file)
+(defun mk-proj-tags-clear ()
+  "Clear the TAGS file (if tags-file set)"
+  (when (and mk-proj-tags-file (get-file-buffer mk-proj-tags-file))
     (mk-proj-maybe-kill-buffer (get-file-buffer mk-proj-tags-file)))
   (setq tags-file-name  nil
         tags-table-list nil))
@@ -361,7 +362,7 @@ paths when greping or indexing the project.")
   (kill-buffer (get-buffer "*etags*"))
   (cond
    ((string= event "finished\n")
-    (mk-proj-set-tags-file mk-proj-tags-file)
+    (mk-proj-tags-load)
     (message "Refreshing TAGS file %s...done" mk-proj-tags-file))
    (t (message "Refreshing TAGS file %s...failed" mk-proj-tags-file))))
 
