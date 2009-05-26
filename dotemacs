@@ -83,7 +83,7 @@
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 
-(load "projects.el")
+(load "mk-utils.el")
 
 ;;; Global keybindings -------------------------------------------------
 
@@ -102,7 +102,7 @@
 (global-set-key (kbd "M-%") 'query-replace-regexp)    ; use regexp version
 
 (global-set-key [f1]  'ibuffer)
-(global-set-key [f2]  'shell-dwim)                           ; C-u F2 => start new shell
+(global-set-key [f2]  'mk-shell-dwim)                        ; C-u F2 => start new shell
 (global-set-key [f3]  'kmacro-start-macro-or-insert-counter) ; emacs std
 (global-set-key [f4]  'kmacro-end-or-call-macro)             ; emacs std
 (global-set-key [f5]  'compile)
@@ -239,7 +239,7 @@
        (define-key slime-mode-map      (kbd "C-j")     'newline)
        (define-key slime-mode-map      (kbd "<f5>")    'slime-selector)
        (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
-       (define-key slime-mode-map      (kbd "C-c r")   'goto-repl)
+       (define-key slime-mode-map      (kbd "C-c r")   'mk-goto-repl)
 
        (paredit-mode +1))))
 
@@ -269,13 +269,15 @@
 (when (file-directory-p "~/local/share/emacs/site-lisp/elib")
   (add-to-list 'load-path "~/local/share/emacs/site-lisp/elib"))
 
-(setq defer-loading-jde t)
+(require 'jde)
+(require 'jde-ant)
 
-(if defer-loading-jde
-    (progn
-      (autoload 'jde-mode "jde" "JDE mode." t)
-      (add-to-list 'auto-mode-alist '("\\.java\\'" . jde-mode)))
-  (require 'jde))
+(setq jde-jdk-registry (if (string-equal system-name "mktop")
+                           '(("1.6.0_13" . "/opt/jdk1.6.0_13/"))
+                         '(("1.5.0_11" . "/localdisk/jdk1.5.0_11/")
+                           ("1.6.0_05" . "/localdisk/jdk1.6.0_05/")
+                           ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11/")))
+      jde-jdk          (list (if (string-equal system-name "mktop") "1.6.0_13" "1.6.0_11")))
 
 (defun my-jde-mode-hook ()
   (local-set-key [f5] 'jde-compile))
@@ -394,90 +396,7 @@
         try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
 
-;;; my elisp functions -------------------------------------------------
+;;; mk-projects --------------------------------------------------------
 
-(defun iwb ()
-  "indent whole buffer"
-  (interactive)
-  (delete-trailing-whitespace)
-  (indent-region (point-min) (point-max) nil)
-  (untabify (point-min) (point-max)))
+(load "projects.el") ; requires jde to be loaded, see defer-loading-jde
 
-(defun tag-region (element)
-  "Reads element name from minibuffer and inserts start and end tags."
-  (interactive "sTag region with element: ")
-  (save-excursion
-    (when (and element (not (equal element "")))
-      (when (string-match "[ \t]*$" element)
-        (setq element (replace-match "" nil nil element))) ; trim whitespace
-      (when (string-match "^[ \t]*" element)
-        (setq element (replace-match "" nil nil element))) ; trim whitespace
-      (goto-char (region-end))
-      (insert "</" element ">")
-      (goto-char (region-beginning))
-      (insert "<" element ">"))))
-
-(defun vi-open-next-line (arg)
-  "Move to the next line (like vi) and then opens a line."
-  (interactive "p")
-  (end-of-line)
-  (open-line arg)
-  (next-line 1)
-  (indent-according-to-mode))
-
-(defun vi-open-prev-line (arg)
-  "Move to the prev line (like vi) and then opens a line."
-  (interactive "p")
-  (end-of-line)
-  (previous-line 1)
-  (open-line arg)
-  (next-line 1)
-  (indent-according-to-mode))
-
-(global-set-key [(control o)] 'vi-open-next-line)
-(global-set-key [(control O)] 'vi-open-prev-line)
-
-(defun occur-at-point()
-  "invokes occur with the thing-at-point"
-  (interactive)
-  (if (thing-at-point 'symbol)
-      (occur (thing-at-point 'symbol))
-    (call-interactively 'other-window)))
-
-(global-set-key "\C-cg" 'occur-at-point)
-
-(defun goto-repl ()
-  "Open the slime REPL buffer in the current window"
-  (interactive)
-  (when (get-buffer "*slime-repl sbcl*")
-    (switch-to-buffer "*slime-repl sbcl*")))
-
-(defun line-to-window-top ()
-  (interactive)
-  (recenter-top-bottom 1))
-
-(global-set-key (kbd "C-c z") 'line-to-window-top)
-
- (defun shell-dwim (&optional create)
-   "Start or switch to an inferior shell process, in a smart way.
-
- If a buffer with a running shell process exists, simply switch
- to that buffer. If a shell buffer exists, but the shell process
- is not running, restart the shell. If already in an active shell
- buffer, switch to the next one, if any. With prefix argument,
- CREATE a new shell."
-   (interactive "P")
-   (let* ((next-shell-buffer
-           (catch 'found
-             (dolist (buffer (reverse (buffer-list)))
-               (when (string-match "^\\*shell\\*" (buffer-name buffer))
-                 (throw 'found buffer)))))
-          (buffer (if create
-                      (generate-new-buffer-name "*shell*")
-                    next-shell-buffer)))
-     (shell buffer)))
-
-(defun grep-kill ()
-  "Alias for kill-grep"
-  (interactive)
-  (kill-grep))

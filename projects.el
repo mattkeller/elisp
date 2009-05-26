@@ -28,6 +28,7 @@
                (src-patterns (".lisp" "*.asd"))
                (ignore-patterns ("*.fasl"))
                (tags-file ,(concat sip-basedir "TAGS"))
+               (open-files-cache ,(concat homedir ".cl-sip-open-files"))
                (vcs git)
                (startup-hook cl-sip-startup-hook)))
 
@@ -44,6 +45,7 @@
              `((basedir ,(concat homedir "elisp/"))
                (src-patterns ("*.el"))
                (file-list-cache ,(concat homedir ".elisp-files"))
+               (open-files-cache ,(concat homedir ".elisp-open-files"))
                (ignore-patterns ("*.elc"))
                (tags-file ,(concat homedir "elisp/" "TAGS"))
                (vcs git)

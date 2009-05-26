@@ -26,8 +26,10 @@
 ;; documentation of the following project operation functions for
 ;; more details.
 ;;
-;; project-load        - set project variables, run startup hook
-;; project-unload      - run shutdown hook, unset project variables
+;; project-load        - set project variables, open files named in the
+;;                       open-files-cache, run startup hook
+;; project-unload      - save open files names to the open-files-cache, 
+;;                       run shutdown hook, unset project variables
 ;; project-status      - print values of project variables
 ;; project-close-files - close all files in this project
 ;; project-compile     - run the compile command
@@ -43,18 +45,19 @@
 ;; (require 'mk-project)
 ;;
 ;; (project-def "my-proj"
-;;       '((basedir "/home/me/my-proj/")
-;;         (src-patterns ("*.lisp" "*.c"))
-;;         (ignore-patterns ("*.elc" "*.o"))
-;;         (tags-file "/home/me/my-proj/TAGS")
-;;         (file-list-cache "/home/mk/.my-proj-files")
-;;         (vcs git)
-;;         (compile-cmd "make")
-;;         (startup-hook myproj-startup-hook)
-;;         (shutdown-hook nil)))
+;;       '((basedir          "/home/me/my-proj/")
+;;         (src-patterns     ("*.java" "*.jsp"))
+;;         (ignore-patterns  ("*.class" "*.wsdl"))
+;;         (tags-file        "/home/me/my-proj/TAGS")
+;;         (file-list-cache  "/home/me/.my-proj-files")
+;;         (open-files-cache "/home/me/.my-proj-open-files")
+;;         (vcs              git)
+;;         (compile-cmd      "ant")
+;;         (startup-hook     myproj-startup-hook)
+;;         (shutdown-hook    nil)))
 ;;
 ;; (defun myproj-startup-hook ()
-;;   (find-file "/home/me/my-proj/foo.el"))
+;;   (setq c-basic-offset 3))
 ;;
 ;; (global-set-key (kbd "C-c p c") 'project-compile)
 ;; (global-set-key (kbd "C-c p g") 'project-grep)
@@ -79,6 +82,8 @@
 (require 'thingatpt)
 (require 'cl)
 
+(defvar mk-proj-version "1.0.2" "Corresponds to tags in my git repository")
+
 ;; ---------------------------------------------------------------------
 ;; Project Variables
 ;;
@@ -95,11 +100,11 @@
 expand-file-name. Example: ~me/my-proj/.")
 
 (defvar mk-proj-src-patterns nil
-  "List of shell patterns to include in the TAGS file. Optional. Example: 
+  "List of shell patterns to include in the TAGS file. Optional. Example:
 '(\"*.java\" \"*.jsp\").")
 
 (defvar mk-proj-ignore-patterns nil
-  "List of shell patterns to avoid searching for with project-find-file and 
+  "List of shell patterns to avoid searching for with project-find-file and
 project-grep. Optional. Example: '(\"*.class\").")
 
 ; TODO: generalize this to ignore-paths variable
@@ -130,15 +135,22 @@ buffer will take its initial value from this file and updates to the buffer
 via 'project-index' will save to this file. Value is expanded with
 expand-file-name.")
 
+(defvar mk-proj-open-files-cache nil
+  "Cache the names of open project files in this file. Optional. If set,
+project-load will open all files listed in this file and project-unload will
+write all open project files to this file. Value is expanded with
+expand-file-name.")
+
 (defconst mk-proj-fib-name "*file-index*"
   "Buffer name of the file-list cache. This buffer contains a list of all
 the files under the project's basedir - minus those matching ignore-patterns.
 The list is used by 'project-find-file' to quickly locate project files.")
 
 (defconst mk-proj-vcs-path '((git . "'*/.git/*'")
-                              (cvs . "'*/.CVS/*'")
-                              (svn . "'*/.svn/*'")
-                              (bzr . "'*/.bzr/*'"))
+                             (cvs . "'*/.CVS/*'")
+                             (svn . "'*/.svn/*'")
+                             (bzr . "'*/.bzr/*'")
+                             (hg  . "'*/.hg/*'"))
   "When mk-proj-vcs is one of the VCS types listed here, ignore the associated
 paths when greping or indexing the project.")
 
@@ -204,7 +216,8 @@ paths when greping or indexing the project.")
                  startup-hook shutdown-hook))
       (maybe-set-var v))
     (maybe-set-var 'tags-file #'expand-file-name)
-    (maybe-set-var 'file-list-cache #'expand-file-name)))
+    (maybe-set-var 'file-list-cache #'expand-file-name)
+    (maybe-set-var 'open-files-cache #'expand-file-name)))
 
 (defun project-load ()
   "Load a project's settings."
@@ -227,18 +240,26 @@ paths when greping or indexing the project.")
         (throw 'project-load t))
       (message "Loading project %s" name)
       (cd mk-proj-basedir)
-      (mk-proj-set-tags-file mk-proj-tags-file)
+      (mk-proj-tags-load)
       (mk-proj-fib-init)
+      (mk-proj-visit-saved-open-files)
+      (add-hook 'kill-emacs-hook 'mk-proj-kill-emacs-hook)
       (when mk-proj-startup-hook
         (run-hooks 'mk-proj-startup-hook)))))
+
+(defun mk-proj-kill-emacs-hook ()
+  "Ensure we save the open-files-cache info on emacs exit"
+  (when (and mk-proj-name mk-proj-open-files-cache)
+    (mk-proj-save-open-file-info)))
 
 (defun project-unload ()
   "Unload the current project's settings after runnin the shutdown hook."
   (interactive)
   (when mk-proj-name
     (message "Unloading project %s" mk-proj-name)
-    (mk-proj-set-tags-file nil)
+    (mk-proj-tags-clear)
     (mk-proj-maybe-kill-buffer mk-proj-fib-name)
+    (mk-proj-save-open-file-info)
     (when (and (mk-proj-buffers)
                (y-or-n-p (concat "Close all " mk-proj-name " project files? "))
       (project-close-files)))
@@ -263,6 +284,36 @@ paths when greping or indexing the project.")
     (message "Closed %d buffers, %d modified buffers where left open"
              (length closed) (length dirty))))
 
+(defun mk-proj-save-open-file-info ()
+  "Write the list of `files' to a file"
+  (when mk-proj-open-files-cache
+    (with-temp-buffer
+      (dolist (f (mapcar (lambda (b) (buffer-file-name b)) (mk-proj-buffers)))
+        (unless (string-equal mk-proj-tags-file f)
+          (insert f "\n")))
+      (if (file-writable-p mk-proj-open-files-cache)
+          (progn
+            (write-region (point-min)
+                          (point-max)
+                          mk-proj-open-files-cache)
+            (message "Wrote open files to %s" mk-proj-open-files-cache))
+        (message "Cannot write to %s" mk-proj-open-files-cache)))))
+
+(defun mk-proj-visit-saved-open-files ()
+  (when mk-proj-open-files-cache
+    (when (file-readable-p mk-proj-open-files-cache)
+      (message "Reading open files from %s" mk-proj-open-files-cache)
+      (with-temp-buffer
+        (insert-file-contents mk-proj-open-files-cache)
+        (goto-char (point-min))
+        (while (not (eobp))
+          (let ((start (point)))
+            (while (not (eolp)) (forward-char)) ; goto end of line
+            (let ((line (buffer-substring start (point))))
+              (message "Attempting to open %s" line)
+              (find-file-noselect line t)))
+          (forward-line))))))
+
 (defun mk-proj-buffer-p (buf)
   "Is the given buffer in our project based on filename? Also detects dired buffers open to basedir/*"
   (let ((file-name (buffer-file-name buf)))
@@ -282,21 +333,29 @@ paths when greping or indexing the project.")
   "View project's variables."
   (interactive)
   (mk-proj-assert-proj)
-  (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; VCS=%s; Tags=%s; Compile=%s; File-Cache=%s; Startup=%s; Shutdown=%s"
+  (message "Name=%s; Basedir=%s; Src=%s; Ignore=%s; VCS=%s; Tags=%s; Compile=%s; File-Cache=%s; Open-Files-Cache=%s; Startup=%s; Shutdown=%s"
            mk-proj-name mk-proj-basedir mk-proj-src-patterns mk-proj-ignore-patterns mk-proj-vcs
-           mk-proj-tags-file mk-proj-compile-cmd mk-proj-file-list-cache mk-proj-startup-hook mk-proj-shutdown-hook))
+           mk-proj-tags-file mk-proj-compile-cmd mk-proj-file-list-cache mk-proj-open-files-cache
+           mk-proj-startup-hook mk-proj-shutdown-hook))
 
 ;; ---------------------------------------------------------------------
 ;; Etags
 ;; ---------------------------------------------------------------------
 
-(defun mk-proj-set-tags-file (tags-file)
-  "Setup TAGS file when given a valid file name; otherwise clean the TAGS"
-  (mk-proj-maybe-kill-buffer "TAGS")
-  (setq tags-file-name tags-file
+(defun mk-proj-tags-load ()
+  "Load TAGS file (if tags-file set)"
+  (mk-proj-tags-clear)
+  (setq tags-file-name  mk-proj-tags-file
         tags-table-list nil)
-  (when (and tags-file (file-readable-p tags-file))
-    (visit-tags-table tags-file)))
+  (when (and mk-proj-tags-file (file-readable-p mk-proj-tags-file))
+    (visit-tags-table mk-proj-tags-file)))
+
+(defun mk-proj-tags-clear ()
+  "Clear the TAGS file (if tags-file set)"
+  (when (and mk-proj-tags-file (get-file-buffer mk-proj-tags-file))
+    (mk-proj-maybe-kill-buffer (get-file-buffer mk-proj-tags-file)))
+  (setq tags-file-name  nil
+        tags-table-list nil))
 
 (defun mk-proj-etags-cb (process event)
   "Visit tags table when the etags process finishes."
@@ -304,7 +363,7 @@ paths when greping or indexing the project.")
   (kill-buffer (get-buffer "*etags*"))
   (cond
    ((string= event "finished\n")
-    (mk-proj-set-tags-file mk-proj-tags-file)
+    (mk-proj-tags-load)
     (message "Refreshing TAGS file %s...done" mk-proj-tags-file))
    (t (message "Refreshing TAGS file %s...failed" mk-proj-tags-file))))
 
