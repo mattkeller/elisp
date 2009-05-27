@@ -1,3 +1,3 @@
 [submodule "./mk-project"]
-	path = ./mk-project
+	path = mk-project
 	url = git://github.com/mattkeller/mk-project.git
