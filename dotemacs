@@ -82,6 +82,7 @@
 (autoload 'magit-status "magit" "Magit git helper" t)
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+(autoload 'ack "ack" "Ack is better than grep" t)
 
 (load "mk-utils.el")
 
