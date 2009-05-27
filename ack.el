@@ -35,6 +35,7 @@
 ;; your initialisation file. You can then M-x ack and you're off.
 
 (require 'compile)
+(require 'thingatp)
 
 (defvar ack-guess-type t
   "Setting this value to `t' will have `ack' do its best to fill
@@ -61,10 +62,12 @@ in the --type argument to the ack command")
         (throw 'found (cdr mode-type))))))
 
 (defun ack-build-command ()
-  (let ((type (ack-find-type-for-mode)))
+  (let ((type (ack-find-type-for-mode))
+        (thap (thing-at-point 'symbol)))
     (concat ack-command
             (when (and ack-guess-type type)
-              (concat "--type=" type)) " ")))
+              (concat "--type=" type)) " "
+            (if thap thap nil))))
 
 (defvar ack-command "ack --nocolor --nogroup "
   "The command to be run by the ack function.")
