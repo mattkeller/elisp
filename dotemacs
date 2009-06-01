@@ -253,6 +253,23 @@
 
 (require 'clojure-auto)
 
+;;; Elisp Setup --------------------------------------------------------
+
+(defun mk-remove-elc-on-save ()
+  "If saving an elisp file, remove the .elc file"
+  (make-local-variable 'after-save-ook)
+  (add-hook 'after-save-hook
+            (lambda ()
+              (let ((elc-file (concat buffer-file-name "c")))
+                (when (file-exists-p elc-file)
+                    (message "Removing %s" elc-file)
+                    (delete-file elc-file))))))
+
+(add-hook 'emacs-lisp-mode-hook 
+          (lambda ()
+            (turn-on-eldoc-mode)
+            (mk-remove-elc-on-save)))
+
 ;;; NXML Setup ---------------------------------------------------------
 
 (add-to-list 'load-path "~/elisp/nxml-mode")
