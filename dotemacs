@@ -83,6 +83,7 @@
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 (autoload 'ack "ack" "Ack is better than grep" t)
+(autoload 'mcp-trace-mode "mcp-trace" "" t)
 
 (load "mk-utils.el")
 
@@ -406,3 +407,4 @@
                        caml-mode lisp-mode))
   (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)" 
                                   1 font-lock-warning-face prepend))))
+
