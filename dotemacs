@@ -420,8 +420,12 @@
 (add-to-list 'load-path "~/elisp/mk-project")
 (load "projects.el") ; requires jde to be loaded, see defer-loading-jde
 
-(dolist (mode '(c-mode java-mode cperl-mode emacs-lisp-mode ruby-mode 
+(dolist (mode '(c-mode java-mode cperl-mode emacs-lisp-mode ruby-mode
                        caml-mode lisp-mode))
-  (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)" 
+  (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)"
                                   1 font-lock-warning-face prepend))))
 
+(add-hook 'mcp-trace-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-n") 'forward-page)
+            (local-set-key (kbd "M-p") 'backward-page)))
