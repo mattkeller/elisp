@@ -14,6 +14,8 @@
 ;; * Highlight keywords to aid readability:
 ;;    SIP users (bob@domain)
 ;; * Show that we are hiding (or not) transactor traces
+;; * Set view-read-only mode?
+;; * Toggle mcp-trace-mode to turn off customizations
 
 ;;; SIP font-lock ------------------------------------------------------
 
