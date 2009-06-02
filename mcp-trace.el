@@ -124,7 +124,7 @@
   ;; narrow to page: C-x n p
 
   (make-local-variable 'font-lock-defaults)
-  (setq font-lock-defaults '(mcp-trace-font-lock-keywords nil t))
+  (setq font-lock-defaults '(mcp-trace-font-lock-keywords nil nil))
 
   (setq major-mode 'mcp-trace-mode)
   (setq mode-name "mcp-trace")
