@@ -22,9 +22,10 @@
 
 (defvar mcp-trace-sip-methods '("INVITE" "ACK" "BYE" "CANCEL" "INFO" "UPDATE" "PING"  "OPTIONS" "REGISTER"))
 
-(defvar mcp-trace-sip-responses '("100 Trying" "180 Ringing" "183 Session Progress" "200 OK" "401 Unauthorized" 
-                                  "407 Proxy Authentication Required" "408 Request Timeout" "480 Temporarily not available"
-                                  "486 Busy Here"))
+(defvar mcp-trace-sip-responses '("100 Trying" "180 Ringing" "183 Session Progress" "200 OK"
+                                  "200 Registration Successful" "401 Unauthorized"
+                                  "407 Proxy Authentication Required" "408 Request Timeout"
+                                  "480 Temporarily not available" "486 Busy Here"))
 
 ;;; GCP font-lock ------------------------------------------------------
 
