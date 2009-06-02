@@ -1,15 +1,33 @@
 ;;;; mcp-trace.el -- major mode to aid reading & navigating mcp trace files
 
+;; Usage:
+;; (autoload 'mcp-trace-mode "mcp-trace" "" t)
+;;
+;; (add-hook 'mcp-trace-mode-hook
+;;           (lambda ()
+;;             (local-set-key (kbd "M-n") 'forward-page)
+;;             (local-set-key (kbd "M-p") 'backward-page)
+;;             (local-set-key (kbd "C-c t") 'mcp-trace-toggle-show-transactors)))
+
 ;; TODO:
 ;; * Move through trace by: next-msg, prev-msg
 ;; * Highlight keywords to aid readability:
 ;;    SIP users (bob@domain)
 ;; * Show that we are hiding (or not) transactor traces
 
-(defvar mcp-trace-mode-hook nil
-  "*List of functions to call when entering mcp-trace mode.")
-
 ;;; SIP font-lock ------------------------------------------------------
+
+(defvar mcp-trace-section-headers '("SIP Message Trace" "Incoming GCP Message"
+                                    "Outgoing GCP Message" "Transactor IDLE"
+                                    "Transactor PROCESS" "Transactor SUSPEND"))
+
+(defvar mcp-trace-sip-methods '("INVITE" "ACK" "BYE" "CANCEL" "INFO" "UPDATE"
+                                "PING"  "OPTIONS" "REGISTER"))
+
+(defvar mcp-trace-sip-responses '("100 Trying" "180 Ringing" "183 Session Progress"
+                                  "200 OK" "200 Registration Successful" "401 Unauthorized"
+                                  "407 Proxy Authentication Required" "408 Request Timeout"
+                                  "480 Temporarily not available" "486 Busy Here"))
 
 (make-face 'mcp-trace-sip-face)
 (copy-face 'default 'mcp-trace-sip-face)
@@ -17,21 +35,14 @@
 (set-face-attribute 'mcp-trace-sip-face nil :slant 'italic)
 (set-face-attribute 'mcp-trace-sip-face nil :foreground "dark green")
 
-(defvar mcp-trace-section-headers '("SIP Message Trace" "Incoming GCP Message" "Outgoing GCP Message"
-                                    "Transactor IDLE" "Transactor PROCESS" "Transactor SUSPEND"))
-
-(defvar mcp-trace-sip-methods '("INVITE" "ACK" "BYE" "CANCEL" "INFO" "UPDATE" "PING"  "OPTIONS" "REGISTER"))
-
-(defvar mcp-trace-sip-responses '("100 Trying" "180 Ringing" "183 Session Progress" "200 OK"
-                                  "200 Registration Successful" "401 Unauthorized"
-                                  "407 Proxy Authentication Required" "408 Request Timeout"
-                                  "480 Temporarily not available" "486 Busy Here"))
-
 ;;; GCP font-lock ------------------------------------------------------
 
-(defvar mcp-trace-gcp-methods '("LocalNewCall" "RemoteNewCall" "LocalAck" "RemoteAck" "LocalAlerting" "RemoteAlerting"
-                                "LocalAnswer" "RemoteAnswer" "LocalHold" "RemoteHold" "LocalApplySignal" "RemoteApplySignal"
-                                "LocalFeatureNotify" "RemoteFeatureNotify" "LocalRelease" "RemoteRelease" "LocalReleaseComp"
+(defvar mcp-trace-gcp-methods '("LocalNewCall" "RemoteNewCall" "LocalAck"
+                                "RemoteAck" "LocalAlerting" "RemoteAlerting"
+                                "LocalAnswer" "RemoteAnswer" "LocalHold"
+                                "RemoteHold" "LocalApplySignal" "RemoteApplySignal"
+                                "LocalFeatureNotify" "RemoteFeatureNotify"
+                                "LocalRelease" "RemoteRelease" "LocalReleaseComp"
                                 "RemoteReleaseComp" "LocalRestore" "RemoteRestore"))
 
 (make-face 'mcp-trace-gcp-face)
@@ -42,11 +53,14 @@
 
 ;;; Signal font-lock ---------------------------------------------------
 
-(defvar mcp-trace-signals '("SignalOpen" "SignalProgress" "SignalClose" "SignalResponse" "SignalFeature" "PersistenceResponseSignal"))
+(defvar mcp-trace-signals '("SignalOpen" "SignalProgress" "SignalClose"
+                            "SignalResponse" "SignalFeature" "PersistenceResponseSignal"))
 
-(defvar mcp-trace-sip-signals (mapcar (lambda (s) (concat "Sip" s)) mcp-trace-signals))
+(defvar mcp-trace-sip-signals (mapcar (lambda (s) (concat "Sip" s))
+                                      mcp-trace-signals))
 
-(defvar mcp-trace-gcp-signals (mapcar (lambda (s) (concat "GCP" s)) mcp-trace-signals))
+(defvar mcp-trace-gcp-signals (mapcar (lambda (s) (concat "GCP" s))
+                                      mcp-trace-signals))
 
 (make-face 'mcp-trace-signal-face)
 (copy-face 'default 'mcp-trace-signal-face)
@@ -68,7 +82,8 @@
 
 ;;; Transactor font-lock -----------------------------------------------
 
-(defvar mcp-trace-trans-keywords '("IPTelASE" "CallMgrASE" "IWCMSvcASE" "MODEL: OCM" "MODEL: TCM"))
+(defvar mcp-trace-trans-keywords '("IPTelASE" "CallMgrASE" "IWCMSvcASE"
+                                   "MODEL: OCM" "MODEL: TCM"))
 
 (make-face 'mcp-trace-trans-face)
 (copy-face 'default 'mcp-trace-trans-face)
@@ -76,6 +91,7 @@
 (set-face-attribute 'mcp-trace-trans-face nil :slant 'italic)
 (set-face-attribute 'mcp-trace-trans-face nil :foreground "midnight blue")
 
+;;; Assign faces to keywords -------------------------------------------
 
 (defvar mcp-trace-font-lock-keywords
   `((,(regexp-opt mcp-trace-sip-methods      'words) . 'mcp-trace-sip-face)
@@ -87,23 +103,26 @@
     (,(regexp-opt mcp-trace-trans-keywords   'words) . 'mcp-trace-trans-face)
     (,(regexp-opt mcp-trace-section-headers)         . 'bold)))
 
+(defvar mcp-trace-mode-hook nil
+  "*List of functions to call when entering mcp-trace mode.")
+
 (defun mcp-trace-mode ()
   "Major mode for editing mcp-trace files."
-   (interactive)
-   (kill-all-local-variables)
+  (interactive)
+  (kill-all-local-variables)
 
-   ;; define pages as indidual msgs or the transactor traces processing those msgs
+  ;; define pages as indidual msgs or the transactor traces processing those msgs
   (make-local-variable 'page-delimiter)
   (setq page-delimiter (concat "^" (regexp-opt mcp-trace-section-headers)))
   ;; move by page: C-x ], C-x [
   ;; narrow to page: C-x n p
-  
-   (make-local-variable 'font-lock-defaults)
-   (setq font-lock-defaults '(mcp-trace-font-lock-keywords nil t))
 
-   (setq major-mode 'mcp-trace-mode)
-   (setq mode-name "mcp-trace")
-   (run-hooks 'mcp-trace-mode-hook))
+  (make-local-variable 'font-lock-defaults)
+  (setq font-lock-defaults '(mcp-trace-font-lock-keywords nil t))
+
+  (setq major-mode 'mcp-trace-mode)
+  (setq mode-name "mcp-trace")
+  (run-hooks 'mcp-trace-mode-hook))
 
 (defun mcp-trace-hide-transactors ()
   "Hide all the transactor traces"
