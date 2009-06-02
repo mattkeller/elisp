@@ -2,10 +2,9 @@
 
 ;; TODO:
 ;; * Move through trace by: next-msg, prev-msg
-;; * Define shortcuts to move by block
-;; * Selectively hide transactor trace, leaving only msgs
 ;; * Highlight keywords to aid readability:
 ;;    SIP users (bob@domain)
+;; * Show that we are hiding (or not) transactor traces
 
 (defvar mcp-trace-mode-hook nil
   "*List of functions to call when entering mcp-trace mode.")
@@ -100,9 +99,36 @@
   
    (make-local-variable 'font-lock-defaults)
    (setq font-lock-defaults '(mcp-trace-font-lock-keywords nil t))
-   
+
    (setq major-mode 'mcp-trace-mode)
    (setq mode-name "mcp-trace")
    (run-hooks 'mcp-trace-mode-hook))
+
+(defun mcp-trace-hide-transactors ()
+  "Hide all the transactor traces"
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^Transactor " (point-max) t)
+      (let* ((start (- (point) 11))
+             (end (re-search-forward "\n \n" (point-max) t))) ; TODO: hope no one removes that extra space
+        (when (and start end)
+          (let ((ovl (make-overlay start end)))
+            (overlay-put ovl 'invisible t)))))))
+
+(defun mcp-trace-show-transactors ()
+  "Show all the transactor traces"
+  (interactive)
+  (dolist (ovl (overlays-in (point-min) (point-max)))
+    (overlay-put ovl 'invisible nil)
+    (delete-overlay ovl))
+  (setq mcp-trace-overlays nil))
+
+(defun mcp-trace-toggle-show-transactors ()
+  "Toggle transcator trace visibility"
+  (interactive)
+  (if (overlays-in (point-min) (point-max))
+      (mcp-trace-show-transactors)
+    (mcp-trace-hide-transactors)))
 
 (provide 'mcp-trace)

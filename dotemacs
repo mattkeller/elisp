@@ -428,4 +428,5 @@
 (add-hook 'mcp-trace-mode-hook
           (lambda ()
             (local-set-key (kbd "M-n") 'forward-page)
-            (local-set-key (kbd "M-p") 'backward-page)))
+            (local-set-key (kbd "M-p") 'backward-page)
+            (local-set-key (kbd "C-c t") 'mcp-trace-toggle-show-transactors)))
