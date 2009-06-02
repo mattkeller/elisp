@@ -29,11 +29,13 @@
                                   "407 Proxy Authentication Required" "408 Request Timeout"
                                   "480 Temporarily not available" "486 Busy Here"))
 
+(defvar mcp-trace-sip-color "dark green")
+
 (make-face 'mcp-trace-sip-face)
 (copy-face 'default 'mcp-trace-sip-face)
 (set-face-attribute 'mcp-trace-sip-face nil :weight 'bold)
 (set-face-attribute 'mcp-trace-sip-face nil :slant 'italic)
-(set-face-attribute 'mcp-trace-sip-face nil :foreground "dark green")
+(set-face-attribute 'mcp-trace-sip-face nil :foreground mcp-trace-sip-color)
 
 ;;; GCP font-lock ------------------------------------------------------
 
@@ -45,11 +47,13 @@
                                 "LocalRelease" "RemoteRelease" "LocalReleaseComp"
                                 "RemoteReleaseComp" "LocalRestore" "RemoteRestore"))
 
+(defvar mcp-trace-gcp-color "orange red")
+
 (make-face 'mcp-trace-gcp-face)
 (copy-face 'default 'mcp-trace-gcp-face)
 (set-face-attribute 'mcp-trace-gcp-face nil :weight 'bold)
 (set-face-attribute 'mcp-trace-gcp-face nil :slant 'italic)
-(set-face-attribute 'mcp-trace-gcp-face nil :foreground "orange red")
+(set-face-attribute 'mcp-trace-gcp-face nil :foreground mcp-trace-gcp-color)
 
 ;;; Signal font-lock ---------------------------------------------------
 
@@ -62,23 +66,25 @@
 (defvar mcp-trace-gcp-signals (mapcar (lambda (s) (concat "GCP" s))
                                       mcp-trace-signals))
 
+(defvar mcp-trace-trans-color "midnight blue")
+
 (make-face 'mcp-trace-signal-face)
 (copy-face 'default 'mcp-trace-signal-face)
 (set-face-attribute 'mcp-trace-signal-face nil :weight 'normal)
 (set-face-attribute 'mcp-trace-signal-face nil :slant 'italic)
-(set-face-attribute 'mcp-trace-signal-face nil :foreground "midnight blue")
+(set-face-attribute 'mcp-trace-signal-face nil :foreground mcp-trace-trans-color)
 
 (make-face 'mcp-trace-sip-signal-face)
 (copy-face 'default 'mcp-trace-sip-signal-face)
 (set-face-attribute 'mcp-trace-sip-signal-face nil :weight 'normal)
 (set-face-attribute 'mcp-trace-sip-signal-face nil :slant 'italic)
-(set-face-attribute 'mcp-trace-sip-signal-face nil :foreground "dark green")
+(set-face-attribute 'mcp-trace-sip-signal-face nil :foreground mcp-trace-sip-color)
 
 (make-face 'mcp-trace-gcp-signal-face)
 (copy-face 'default 'mcp-trace-gcp-signal-face)
 (set-face-attribute 'mcp-trace-gcp-signal-face nil :weight 'normal)
 (set-face-attribute 'mcp-trace-gcp-signal-face nil :slant 'italic)
-(set-face-attribute 'mcp-trace-gcp-signal-face nil :foreground "orange red")
+(set-face-attribute 'mcp-trace-gcp-signal-face nil :foreground mcp-trace-gcp-color)
 
 ;;; Transactor font-lock -----------------------------------------------
 
@@ -89,7 +95,7 @@
 (copy-face 'default 'mcp-trace-trans-face)
 (set-face-attribute 'mcp-trace-trans-face nil :weight 'bold)
 (set-face-attribute 'mcp-trace-trans-face nil :slant 'italic)
-(set-face-attribute 'mcp-trace-trans-face nil :foreground "midnight blue")
+(set-face-attribute 'mcp-trace-trans-face nil :foreground mcp-trace-trans-color)
 
 ;;; Assign faces to keywords -------------------------------------------
 
