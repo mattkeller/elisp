@@ -368,9 +368,9 @@
 
 ;;; Yet Another Snippet extension --------------------------------------
 
-(require 'yasnippet)
-(yas/initialize)
-(yas/load-directory "~/elisp/snippets")
+;; (require 'yasnippet)
+;; (yas/initialize)
+;; (yas/load-directory "~/elisp/snippets")
 
 ;;; Browse Kill Ring ---------------------------------------------------
 
