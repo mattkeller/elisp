@@ -1,3 +1,6 @@
 [submodule "./mk-project"]
 	path = mk-project
 	url = git://github.com/mattkeller/mk-project.git
+[submodule "./egg"]
+	path = egg
+	url = git://github.com/bogolisk/egg.git

@@ -80,6 +80,8 @@
 (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
 (autoload 'typing-of-emacs "typing" "The Typing-Of-Emacs, a game" t)
 (autoload 'magit-status "magit" "Magit git helper" t)
+(add-to-list 'load-path "~/elisp/egg")
+(autoload 'egg-minor-mode "egg" "" t)
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 (autoload 'ack "ack" "Ack is better than grep" t)
