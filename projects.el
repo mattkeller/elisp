@@ -50,11 +50,20 @@
                (ignore-patterns ("*.elc"))
                (tags-file ,(concat homedir "elisp/" "TAGS"))
                (vcs git)
-               (startup-hook mk-project-startup-hook)))
+               (startup-hook elisp-startup-hook)))
 
-(defun mk-project-startup-hook ()
-  (find-file (concat mk-proj-basedir "dotemacs"))
-  (find-file (concat mk-proj-basedir "mk-project.el")))
+(defun elisp-startup-hook ()
+  (find-file (concat mk-proj-basedir "dotemacs")))
+
+(project-def "mk-project"
+             `((basedir ,(concat homedir "code/mk-project/"))
+               (src-patterns ("*.el"))
+               (ignore-patterns ("*.elc"))
+               (file-list-cache ,(concat homedir ".mk-project-files"))
+               (open-files-cache ,(concat homedir ".mk-project-open-files"))
+               (tags-file ,(concat homedir ".mk-project-tags"))
+               (ack-args "-i")
+               (vcs git)))
 
 ;;; --------------------------------------------------------------------
 ;;; Qrev
