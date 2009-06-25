@@ -30,6 +30,8 @@
 (put 'downcase-region 'disabled nil)     ; allow downcase-region
 (put 'set-goal-column 'disabled nil)     ; allow set-goal-column
 (setenv "PAGER" "/bin/cat")              ; for git in shell
+(setq large-file-warning-threshold       ; tired of warning messages opening large TAGS files
+      20000000)
 
 (setq iswitchb-buffer-ignore '("^ " "*Buffer" "*Messages*" "*Help*"))
 (set-background-color "gray97")
