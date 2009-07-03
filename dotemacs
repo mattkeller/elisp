@@ -224,6 +224,8 @@
 
   (eval-after-load "slime"
     '(progn
+       (add-to-list 'slime-lisp-implementations '(sbcl ("/opt/bin/sbcl" "--noinform")))
+
        (slime-setup '(slime-fancy slime-asdf slime-banner slime-highlight-edits))
 
        (setq slime-complete-symbol*-fancy t
@@ -256,7 +258,24 @@
                                    (normal-mode)))
 			    (modify-syntax-entry ?- "w")))
 
-(require 'clojure-auto)
+;;; Clojure ------------------------------------------------------------
+
+(add-to-list 'load-path "~/elisp/swank-clojure")
+(require 'clojure-mode)
+(require 'swank-clojure)
+
+(eval-after-load "slime"
+  '(progn
+     (require 'swank-clojure)
+     (add-to-list 'slime-lisp-implementations `(clojure ,(swank-clojure-cmd) :init swank-clojure-init) t)
+     (add-hook 'slime-indentation-update-hooks 'swank-clojure-update-indentation)
+     (add-hook 'slime-repl-mode-hook 'swank-clojure-slime-repl-modify-syntax t)
+     (add-hook 'clojure-mode-hook 'swank-clojure-slime-mode-hook t)))
+
+(setq swank-clojure-jar-path "/opt/clojure/clojure-1.0.0.jar")
+(add-to-list 'swank-clojure-extra-classpaths "/opt/src/clojure-contrib/src/")
+
+;; Sbcl is still the default slime target. Launch clojure with M-- M-x slime clojure
 
 ;;; Elisp Setup --------------------------------------------------------
 
