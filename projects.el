@@ -66,6 +66,23 @@
                (vcs git)))
 
 ;;; --------------------------------------------------------------------
+;;; sipbotc
+;;; --------------------------------------------------------------------
+
+(project-def "sipbotc"
+             `((basedir "~mk/code/sipbotc/")
+               (src-patterns "*.clj")
+               (file-list-cache ,(concat homedir ".sipbotc-files"))
+               (open-files-cache ,(concat homedir ".sipbotc-fopen-files"))
+               (tags-file ,(concat homedir ".sipbotc-tags"))
+               (ack-args "-i")
+               (vcs git)
+               (startup-hook sipbotc-hook)))
+
+(defun sipbotc-hook ()
+  (add-to-list 'swank-clojure-extra-classpaths "/home/mk/code/sipbotc/target/classes"))
+
+;;; --------------------------------------------------------------------
 ;;; Qrev
 ;;; --------------------------------------------------------------------
 
