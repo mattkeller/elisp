@@ -149,12 +149,8 @@
   (interactive "sServer Name: ")
   (setq server-name name)
   (setq mk-server-socket-file (concat server-socket-dir "/" name))
-  (unless (file-exists-p mk-server-socket-file)
-    (server-start)
-    (add-hook 'kill-emacs-hook
-              (lambda ()
-                (when (file-exists-p mk-server-socket-file)
-                  (delete-file mk-server-socket-file))))))
+  (unless (server-running-p name)
+    (server-start)))
 
 (start-named-server "server") ; default server-name
 
