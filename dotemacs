@@ -268,10 +268,33 @@
      (add-hook 'slime-repl-mode-hook 'swank-clojure-slime-repl-modify-syntax t)
      (add-hook 'clojure-mode-hook 'swank-clojure-slime-mode-hook t)))
 
-(setq swank-clojure-jar-path "/opt/clojure/clojure-1.0.0.jar")
-(add-to-list 'swank-clojure-extra-classpaths "/opt/src/clojure-contrib/src/")
+(setq mk-clojure-jar "/opt/clojure/clojure-1.0.0.jar")
+(setq mk-clojure-contrib-jar "/opt/src/clojure-contrib/clojure-contrib.jar")
+
+(setq swank-clojure-jar-path mk-clojure-jar)
+(add-to-list 'swank-clojure-extra-classpaths mk-clojure-contrib-jar)
 
 ;; Sbcl is still the default slime target. Launch clojure with M-- M-x slime clojure
+
+(defun clojure-project (path clojure-jar clojure-contrib-jar class-dir classpath-dirs)
+  "Sets up classpath for a clojure project and starts a new SLIME session."
+  (when (get-buffer "*inferior-lisp*")
+    (kill-buffer "*inferior-lisp*"))
+  (setq swank-clojure-binary nil
+        swank-clojure-jar-path (or clojure-jar mk-clojure-jar)
+        swank-clojure-extra-classpaths
+        (cons (or clojure-contrib-jar mk-clojure-contrib-jar)
+              classpath-dirs)
+        swank-clojure-extra-vm-args
+        (list (format "-Dclojure.compile.path=%s"
+                      (expand-file-name class-dir path)))
+        ;; moves clojure to the front (default) position in the list
+        slime-lisp-implementations
+        (cons `(clojure ,(swank-clojure-cmd) :init swank-clojure-init)
+              (remove-if '(lambda (x) (eq (car x) 'clojure))
+                         slime-lisp-implementations)))
+  (save-window-excursion
+    (slime)))
 
 ;;; Elisp Setup --------------------------------------------------------
 

@@ -80,7 +80,18 @@
                (startup-hook sipbotc-hook)))
 
 (defun sipbotc-hook ()
-  (add-to-list 'swank-clojure-extra-classpaths "/home/mk/code/sipbotc/target/classes"))
+  (defun clojure ()
+    (interactive)
+    (require 'slime)
+    (let ((basedir "/home/mk/code/sipbotc"))
+      (clojure-project basedir
+                     (expand-file-name "lib/clojure-1.0.0.jar" basedir)
+                     (expand-file-name "lib/clojure-contrib.jar" basedir)
+                     (expand-file-name "build/classes" basedir)
+                     (mapcar (lambda (f) (expand-file-name f basedir))
+                             (list "src" "build/classes" "lib")))))
+  (find-file "/home/mk/code/sipbotc/src/com/nortelnetworks/sipbotc/sipbotc.clj"))
+
 
 ;;; --------------------------------------------------------------------
 ;;; Qrev
