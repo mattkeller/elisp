@@ -260,6 +260,10 @@
 (require 'clojure-mode)
 (require 'swank-clojure)
 
+(autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
+(autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
+(add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
+
 (eval-after-load "slime"
   '(progn
      (require 'swank-clojure)
