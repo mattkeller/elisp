@@ -260,9 +260,9 @@
 (require 'clojure-mode)
 (require 'swank-clojure)
 
-(autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
-(autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
-(add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
+;; (autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
+;; (autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
+;; (add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
 
 (eval-after-load "slime"
   '(progn
@@ -290,8 +290,10 @@
         (cons (or clojure-contrib-jar mk-clojure-contrib-jar)
               classpath-dirs)
         swank-clojure-extra-vm-args
-        (list (format "-Dclojure.compile.path=%s"
-                      (expand-file-name class-dir path)))
+        (list "-server"
+              "-Xdebug"
+              "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+              (format "-Dclojure.compile.path=%s" (expand-file-name class-dir path)))
         ;; moves clojure to the front (default) position in the list
         slime-lisp-implementations
         (cons `(clojure ,(swank-clojure-cmd) :init swank-clojure-init)
