@@ -110,4 +110,12 @@
 
 (global-set-key (kbd "C-a") 'mk-smart-home) ; was 'move-beginning-of-line
 
-
+;; from http://www.emacswiki.org/emacs/WThreeMHintsAndTips
+(defun mk-w3m-browse-current-buffer ()
+  (interactive)
+  (let ((filename (concat (make-temp-file "w3m-") ".html")))
+    (unwind-protect
+        (progn
+          (write-region (point-min) (point-max) filename)
+          (w3m-find-file filename))
+      (delete-file filename))))

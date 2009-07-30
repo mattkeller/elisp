@@ -479,3 +479,11 @@
             (local-set-key (kbd "M-n") 'forward-page)
             (local-set-key (kbd "M-p") 'backward-page)
             (local-set-key (kbd "C-c t") 'mcp-trace-toggle-show-transactors)))
+
+;;;; w3m ---------------------------------------------------------------
+
+(add-to-list 'load-path "~/elisp/emacs-w3m")
+(setq browse-url-browser-function 'w3m-browse-url)
+(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+(global-set-key "\C-xm" 'browse-url-at-point)
+(setq w3m-use-cookies t)
