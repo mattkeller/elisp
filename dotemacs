@@ -466,10 +466,11 @@
 ;;; mk-projects --------------------------------------------------------
 
 (add-to-list 'load-path "~/elisp/mk-project")
+;(add-to-list 'load-path "~/code/mk-project")
 (load "projects.el") ; requires jde to be loaded, see defer-loading-jde
 
 (dolist (mode '(c-mode java-mode cperl-mode emacs-lisp-mode ruby-mode
-                       caml-mode lisp-mode))
+                       caml-mode lisp-mode clojure-mode))
   (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)"
                                   1 font-lock-warning-face prepend))))
 
