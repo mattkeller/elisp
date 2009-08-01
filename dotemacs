@@ -152,8 +152,8 @@
   (unless (server-running-p name)
     (server-start)))
 
-;; Using emacs23 --daemon now
-;; (start-named-server "server") ; default server-name
+(when (< emacs-major-version 23) ; Using emacs23 --daemon now
+  (start-named-server "server")) ; default server-name
 
 ;;; Emacs Code Browser -------------------------------------------------
 
