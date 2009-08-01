@@ -76,7 +76,7 @@
 
 (add-to-list 'load-path "~/elisp")
 (autoload 'find-file-recursively "find-recursive" "" t)
-(autoload 'linum "linum" "" t)
+(when (< emacs-major-version 23) (autoload 'linum "linum" "" t))
 (autoload 'light-symbol-mode "light-symbol" "" t)
 (autoload 'htmlize-buffer "htmlize" "" t)
 (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
