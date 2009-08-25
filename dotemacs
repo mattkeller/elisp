@@ -409,16 +409,16 @@
 ;;(global-set-key "\C-ca" 'org-agenda)
 
 (org-remember-insinuate)
-(setq org-directory "~/proj/org")
+(setq org-directory (concat "/home/" user-login-name "/proj/org"))
 (setq org-default-notes-file (concat org-directory "/todo.org"))
 (setq org-startup-folded nil)
 (define-key global-map "\C-cr" 'org-remember)
 (run-at-time "00:59" 3600 'org-save-all-org-buffers) ; git commits at top of hour
 
 (setq org-remember-templates
-      '(("Todo"    ?t "* %?\n  %i\n"        (concat org-directory "/todo.org") "Inbox")
-        ("Journal" ?j "* %U %?\n\n  %i\n"   (concat org-directory "/journal.org"))
-        ("Idea"    ?i "* %^{Title}\n  %i\n" (concat org-directory "/ideas.org"))))
+      `(("Todo"    ?t "* %?\n  %i\n"        ,(concat org-directory "/todo.org") "Inbox")
+        ("Journal" ?j "* %U %?\n\n  %i\n"   ,(concat org-directory "/journal.org"))
+        ("Idea"    ?i "* %^{Title}\n  %i\n" ,(concat org-directory "/ideas.org"))))
 
 (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
 
