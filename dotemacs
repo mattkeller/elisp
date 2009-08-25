@@ -401,7 +401,7 @@
 
 ;;; org-mode -----------------------------------------------------------
 
-(add-to-list 'load-path "~/elisp/org-mode")
+(add-to-list 'load-path "~/elisp/org-6.29c/lisp")
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 ;;(global-set-key "\C-cl" 'org-store-link)
