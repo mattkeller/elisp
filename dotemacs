@@ -98,7 +98,6 @@
 
 (global-set-key (kbd "C-x C-b") 'bs-show)
 (global-set-key (kbd "M-g")     'goto-line)
-(global-set-key (kbd "C-c t")   'line-to-window-top)
 (global-set-key (kbd "C-x C-f") 'ido-find-file)
 (global-set-key (kbd "C-x C-p") 'ffap)
 (global-set-key (kbd "<C-tab>") 'other-window)
@@ -405,8 +404,25 @@
 (add-to-list 'load-path "~/elisp/org-mode")
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
+;;(global-set-key "\C-cl" 'org-store-link)
+;;(global-set-key "\C-ca" 'org-agenda)
+
+(org-remember-insinuate)
+(setq org-directory "~/org")
+(setq org-default-notes-file (concat org-directory "/todo.org"))
+(setq org-startup-folded nil)
+(define-key global-map "\C-cr" 'org-remember)
+
+(setq org-remember-templates
+      '(("Todo" ?t "* %?\n  %i\n" "~/org/todo.org" "Inbox")
+        ("Journal" ?j "* %U %?\n\n  %i\n" "~/org/journal.org")
+        ("Idea" ?i "* %^{Title}\n  %i\n" "~/org/ideas.org")))
+
+(add-hook 'org-mode-hook (flyspell-mode 1))
+
+(setq org-todo-keywords
+           '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
+                       "|" "DONE(d)" "DEFERRED(f)" "CANCELED(c)")))
 
 ;;; file-local bookmarks from bm.el ------------------------------------
 
