@@ -405,20 +405,25 @@
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
-;;(global-set-key "\C-cl" 'org-store-link)
-;;(global-set-key "\C-ca" 'org-agenda)
-
 (org-remember-insinuate)
-(setq org-directory (concat "/home/" user-login-name "/proj/org"))
-(setq org-default-notes-file (concat org-directory "/todo.org"))
-(setq org-startup-folded nil)
-(define-key global-map "\C-cr" 'org-remember)
-(run-at-time "00:59" 3600 'org-save-all-org-buffers) ; git commits at top of hour
+
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cr" 'org-remember)
+
+(setq org-directory          (concat "/home/" user-login-name "/proj/org")
+      org-default-notes-file (concat org-directory "/todo.org")
+      org-agenda-files       (file-expand-wildcards (concat org-directory "/*.org"))
+      org-startup-folded     nil
+      org-log-done           'time)
+
+(run-at-time "00:59" 3600 'org-save-all-org-buffers) ; git-auto-commit runs at top of hour
 
 (setq org-remember-templates
-      `(("Todo"    ?t "* %?\n  %i\n"        ,(concat org-directory "/todo.org") "Inbox")
-        ("Journal" ?j "* %U %?\n\n  %i\n"   ,(concat org-directory "/journal.org"))
-        ("Idea"    ?i "* %^{Title}\n  %i\n" ,(concat org-directory "/ideas.org"))))
+      `(("Todo"    ?t "* TODO %?\n  %i\n" ,(concat org-directory "/todo.org")    "Inbox")
+        ("Maybe"   ?m "* %?\n  %i\n"      ,(concat org-directory "/maybe.org")   "Misc")
+        ("Journal" ?j "* %U %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
+        ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/ideas.org")   bottom)))
 
 (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
 
