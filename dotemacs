@@ -129,6 +129,15 @@
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 
+(global-set-key (kbd "M-<down>") (lambda () (interactive) (scroll-up 1)))
+(global-set-key (kbd "M-<up>") (lambda () (interactive) (scroll-down 1)))
+
+
+;; not respecting .Xresources - why?
+(when (string-equal system-name "wnc0h0t5.us.nortel.com")
+  (set-default-font "Bitstream Vera Sans Mono-9"))
+
+
 ;;; Backups in ~/.backups ----------------------------------------------
 
 (defconst use-backup-dir t)
@@ -209,7 +218,7 @@
 
 ;;; SLIME & Lisp(s) Setup --------------------------------------------------------
 
-(when (string-equal system-name "mktop")
+;;(when (string-equal system-name "mktop")
   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
   (add-to-list 'load-path "/home/mk/.sbcl/site/slime")
   (add-to-list 'load-path "/home/mk/.sbcl/site/slime/contrib")
@@ -245,7 +254,7 @@
        (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
        (define-key slime-mode-map      (kbd "C-c r")   'mk-goto-repl)
 
-       (paredit-mode +1))))
+       (paredit-mode +1)));)
 
 ; do slime mode for all lisp files
 (add-hook 'lisp-mode-hook (lambda ()
