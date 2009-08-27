@@ -420,11 +420,14 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cr" 'org-remember)
 
-(setq org-directory          (concat "/home/" user-login-name "/proj/org")
-      org-default-notes-file (concat org-directory "/todo.org")
-      org-agenda-files       (file-expand-wildcards (concat org-directory "/*.org"))
-      org-startup-folded     nil
-      org-log-done           'time)
+(setq org-directory                     (concat "/home/" user-login-name "/proj/org")
+      org-default-notes-file            (concat org-directory "/todo.org")
+      org-agenda-files                  (file-expand-wildcards (concat org-directory "/*.org"))
+      org-startup-folded                nil
+      org-log-done                      'time
+      org-return-follows-link           t
+      org-agenda-skip-scheduled-if-done t
+      org-agenda-skip-deadline-if-done  t)
 
 (run-at-time "00:59" 3600 'org-save-all-org-buffers) ; git-auto-commit runs at top of hour
 
@@ -434,7 +437,9 @@
         ("Journal" ?j "* %U %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
         ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/ideas.org")   bottom)))
 
-(add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
+(add-hook 'org-mode-hook (lambda ()
+                           (org-indent-mode)
+                           (flyspell-mode 1)))
 
 (setq org-todo-keywords
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
