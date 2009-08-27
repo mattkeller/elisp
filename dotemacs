@@ -428,7 +428,9 @@
         ("Journal" ?j "* %U %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
         ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/ideas.org")   bottom)))
 
-(add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
+(add-hook 'org-mode-hook (lambda ()
+                           (org-indent-mode)
+                           (flyspell-mode 1)))
 
 (setq org-todo-keywords
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
