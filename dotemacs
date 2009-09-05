@@ -425,8 +425,8 @@
 (setq org-remember-templates
       `(("Todo"    ?t "* TODO %?\n  %i\n" ,(concat org-directory "/todo.org")    "Inbox")
         ("Maybe"   ?m "* %?\n  %i\n"      ,(concat org-directory "/maybe.org")   "Misc")
-        ("Journal" ?j "* %U %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
-        ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/ideas.org")   bottom)))
+        ("Journal" ?j "* %T %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
+        ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/maybe.org")   "Ideas")))
 
 (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
 
