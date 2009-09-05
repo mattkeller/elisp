@@ -119,3 +119,19 @@
           (write-region (point-min) (point-max) filename)
           (w3m-find-file filename))
       (delete-file filename))))
+
+(defun mk-arrow-keys-off ()
+  (interactive)
+  (global-unset-key (kbd "<left>"))
+  (global-unset-key (kbd "<right>"))
+  (global-unset-key (kbd "<up>"))
+  (global-unset-key (kbd "<down>")))
+
+(defun mk-arrow-keys-on ()
+  (interactive)
+  (global-set-key (kbd "<left>")  'backward-char)
+  (global-set-key (kbd "<right>") 'forward-char)
+  (global-set-key (kbd "<up>")    'previous-line)
+  (global-set-key (kbd "<down>")  'next-line))
+
+
