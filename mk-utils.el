@@ -134,4 +134,4 @@
   (global-set-key (kbd "<up>")    'previous-line)
   (global-set-key (kbd "<down>")  'next-line))
 
-
+(provide 'mk-utils)

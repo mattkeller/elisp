@@ -75,6 +75,7 @@
 ;;; Load utility libs --------------------------------------------------
 
 (add-to-list 'load-path "~/elisp")
+(require 'mk-utils)
 (autoload 'find-file-recursively "find-recursive" "" t)
 (when (< emacs-major-version 23) (autoload 'linum "linum" "" t))
 (autoload 'light-symbol-mode "light-symbol" "" t)
@@ -88,8 +89,6 @@
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 (autoload 'ack "ack" "Ack is better than grep" t)
 (autoload 'mcp-trace-mode "mcp-trace" "" t)
-
-(load "mk-utils.el")
 
 ;;; Global keybindings -------------------------------------------------
 
@@ -531,3 +530,10 @@
   (let ((file (dired-get-filename)))
     (if (y-or-n-p (format "Open 'w3m' %s " (file-name-nondirectory file)))
 	(w3m-find-file file))))
+
+;;;; Utils --------------------------------------------------------------
+
+(eval-after-load "mk-utils.el"
+  '(progn
+     (message "Arrow keys are off!")
+     (mk-arrow-keys-off)))
