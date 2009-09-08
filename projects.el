@@ -17,81 +17,84 @@
 (global-set-key (kbd "C-c p t") 'project-tags)
 
 (defvar homedir (concat (getenv "HOME") "/"))
+(defvar projdir (concat homedir ".mk-project/"))
 
 ;;; --------------------------------------------------------------------
 ;;; cl-sip
 ;;; --------------------------------------------------------------------
 
-(defvar sip-basedir (concat homedir "code/lisp/cl-sip/"))
+(let ((bd (concat homedir "code/lisp/cl-sip/"))
+      (pd (concat projdir "cl-sip/")))
+  (project-def "cl-sip"
+               `((basedir ,bd)
+                 (src-patterns (".lisp" "*.asd"))
+                 (ignore-patterns ("*.fasl"))
+                 (tags-file ,(concat bd "TAGS"))
+                 (open-files-cache ,(concat pd "open-files"))
+                 (vcs git)
+                 (startup-hook cl-sip-startup-hook)))
 
-(project-def "cl-sip"
-             `((basedir ,sip-basedir)
-               (src-patterns (".lisp" "*.asd"))
-               (ignore-patterns ("*.fasl"))
-               (tags-file ,(concat sip-basedir "TAGS"))
-               (open-files-cache ,(concat homedir ".cl-sip-open-files"))
-               (vcs git)
-               (startup-hook cl-sip-startup-hook)))
-
-(defun cl-sip-startup-hook ()
-  (slime)
-  (dolist (file (directory-files sip-basedir t "\.lisp$" t))
-    (find-file file)))
+  (defun cl-sip-startup-hook ()
+    (slime)
+    (dolist (file (directory-files bd t "\.lisp$" t))
+      (find-file file))))
 
 ;;; --------------------------------------------------------------------
 ;;; elisp
 ;;; --------------------------------------------------------------------
 
-(project-def "elisp"
-             `((basedir ,(concat homedir "elisp/"))
-               (src-patterns ("*.el"))
-               (file-list-cache ,(concat homedir ".elisp-files"))
-               (open-files-cache ,(concat homedir ".elisp-open-files"))
-               (ignore-patterns ("*.elc"))
-               (tags-file ,(concat homedir "elisp/" "TAGS"))
-               (vcs git)
-               (startup-hook elisp-startup-hook)))
+(let ((pd (concat projdir "elisp/")))
+  (project-def "elisp"
+               `((basedir ,(concat homedir "elisp/"))
+                 (src-patterns ("*.el"))
+                 (file-list-cache ,(concat pd "files"))
+                 (open-files-cache ,(concat pd "open-files"))
+                 (ignore-patterns ("*.elc"))
+                 (tags-file ,(concat pd "TAGS"))
+                 (vcs git)
+                 (startup-hook elisp-startup-hook))))
 
 (defun elisp-startup-hook ()
   (find-file (concat mk-proj-basedir "dotemacs")))
 
-(project-def "mk-project"
-             `((basedir ,(concat homedir "code/mk-project/"))
-               (src-patterns ("*.el"))
-               (ignore-patterns ("*.elc"))
-               (file-list-cache ,(concat homedir ".mk-project-files"))
-               (open-files-cache ,(concat homedir ".mk-project-open-files"))
-               (tags-file ,(concat homedir ".mk-project-tags"))
-               (ack-args "-i")
-               (vcs git)))
+(let ((pd (concat projdir "mk-project/")))
+  (project-def "mk-project"
+               `((basedir ,(concat homedir "code/mk-project/"))
+                 (src-patterns ("*.el"))
+                 (ignore-patterns ("*.elc"))
+                 (file-list-cache ,(concat pd "files"))
+                 (open-files-cache ,(concat pd "open-files"))
+                 (tags-file ,(concat pd "TAGS"))
+                 (ack-args "-i")
+                 (vcs git))))
 
 ;;; --------------------------------------------------------------------
 ;;; sipbotc
 ;;; --------------------------------------------------------------------
 
-(project-def "sipbotc"
-             `((basedir "~mk/code/sipbotc/")
-               (src-patterns "*.clj")
-               (file-list-cache ,(concat homedir ".sipbotc-files"))
-               (open-files-cache ,(concat homedir ".sipbotc-fopen-files"))
-               (tags-file ,(concat homedir ".sipbotc-tags"))
-               (ack-args "-i")
-               (vcs git)
-               (startup-hook sipbotc-hook)))
+(let ((bd (concat homedir "code/sipbotc/"))
+      (pd (concat projdir "sipbotc/")))
+  (project-def "sipbotc"
+               `((basedir ,bd)
+                 (src-patterns "*.clj")
+                 (file-list-cache ,(concat pd "files"))
+                 (open-files-cache ,(concat pd "open-files"))
+                 (tags-file ,(concat pd "tags"))
+                 (ack-args "-i")
+                 (vcs git)
+                 (startup-hook sipbotc-hook)))
 
-(defun sipbotc-hook ()
-  (defun clojure ()
-    (interactive)
-    (require 'slime)
-    (let ((basedir "/home/mk/code/sipbotc"))
-      (clojure-project basedir
-                     (expand-file-name "lib/clojure-1.0.0.jar" basedir)
-                     (expand-file-name "lib/clojure-contrib.jar" basedir)
-                     (expand-file-name "build/classes" basedir)
-                     (mapcar (lambda (f) (expand-file-name f basedir))
-                             (list "src" "build/classes" "lib")))))
-  (find-file "/home/mk/code/sipbotc/src/com/nortelnetworks/sipbotc/sipbotc.clj"))
-
+  (defun sipbotc-hook ()
+    (defun clojure ()
+      (interactive)
+      (require 'slime)
+      (clojure-project bd
+                       (expand-file-name "lib/clojure-1.0.0.jar" bd)
+                       (expand-file-name "lib/clojure-contrib.jar" bd)
+                       (expand-file-name "build/classes" bd)
+                       (mapcar (lambda (f) (expand-file-name f bd))
+                               (list "src" "build/classes" "lib")))))
+    (find-file (concat bd "src/com/nortelnetworks/sipbotc/sipbotc.clj")))
 
 ;;; --------------------------------------------------------------------
 ;;; Qrev
@@ -121,14 +124,15 @@
 ;;; Scplite (MCS)
 ;;; --------------------------------------------------------------------
 
-(project-def "scplite.mcs"
-             '((basedir "/home/matthewk/git/scplite.mcs.git")
-               (src-patterns ("*.C" "*.H" "*.c" "*.h"))
-               (ignore-patterns ("*.o"))
-               (tags-file "/home/matthewk/git/scplite.mcs.git/TAGS")
-               (file-list-cache "/home/matthewk/.scplite.mcs.files")
-               (compile-cmd "./buildphx.sh")
-               (vcs git)))
+(let ((pd (concat projdir "scplite.mcs/")))
+      (project-def "scplite.mcs"
+                   `((basedir "/home/matthewk/git/scplite.mcs.git")
+                     (src-patterns ("*.C" "*.H" "*.c" "*.h"))
+                     (ignore-patterns ("*.o"))
+                     (tags-file "/home/matthewk/git/scplite.mcs.git/TAGS")
+                     (file-list-cache ,(concat pd "files"))
+                     (compile-cmd "./buildphx.sh")
+                     (vcs git))))
 
 
 ;;; MCP Projects are 'auto' defined based on their mcpant config files.

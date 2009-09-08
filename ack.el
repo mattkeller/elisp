@@ -35,7 +35,7 @@
 ;; your initialisation file. You can then M-x ack and you're off.
 
 (require 'compile)
-(require 'thingatp)
+(require 'thingatpt)
 
 (defvar ack-guess-type t
   "Setting this value to `t' will have `ack' do its best to fill

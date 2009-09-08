@@ -75,6 +75,7 @@
 ;;; Load utility libs --------------------------------------------------
 
 (add-to-list 'load-path "~/elisp")
+(require 'mk-utils)
 (autoload 'find-file-recursively "find-recursive" "" t)
 (when (< emacs-major-version 23) (autoload 'linum "linum" "" t))
 (autoload 'light-symbol-mode "light-symbol" "" t)
@@ -88,8 +89,6 @@
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 (autoload 'ack "ack" "Ack is better than grep" t)
 (autoload 'mcp-trace-mode "mcp-trace" "" t)
-
-(load "mk-utils.el")
 
 ;;; Global keybindings -------------------------------------------------
 
@@ -434,12 +433,10 @@
 (setq org-remember-templates
       `(("Todo"    ?t "* TODO %?\n  %i\n" ,(concat org-directory "/todo.org")    "Inbox")
         ("Maybe"   ?m "* %?\n  %i\n"      ,(concat org-directory "/maybe.org")   "Misc")
-        ("Journal" ?j "* %U %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
-        ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/ideas.org")   bottom)))
+        ("Journal" ?j "* %T %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
+        ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/maybe.org")   "Ideas")))
 
-(add-hook 'org-mode-hook (lambda ()
-                           (org-indent-mode)
-                           (flyspell-mode 1)))
+(add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
 
 (setq org-todo-keywords
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
@@ -542,3 +539,11 @@
   (let ((file (dired-get-filename)))
     (if (y-or-n-p (format "Open 'w3m' %s " (file-name-nondirectory file)))
 	(w3m-find-file file))))
+
+;;;; Utils --------------------------------------------------------------
+
+(eval-after-load "mk-utils.el"
+  '(progn
+     (message "Arrow keys are off!")
+     (mk-arrow-keys-off)
+     (define-key ctl-x-4-map "t" 'mk-toggle-window-split)))
