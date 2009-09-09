@@ -92,6 +92,7 @@
 
 ;;; Global keybindings -------------------------------------------------
 
+;; See the smex section at the end...
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; = meta-x
 (global-set-key (kbd "C-c C-m") 'execute-extended-command) ; = meta-x
 
@@ -442,19 +443,6 @@
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
                        "|" "DONE(d)" "DEFERRED(f)" "CANCELED(c)")))
 
-;;; file-local bookmarks from bm.el ------------------------------------
-
-; (require 'bm)
-; (global-set-key (kbd "<M-f2>") 'bm-toggle)
-; (global-set-key (kbd "<f2>")   'bm-next)
-; (global-set-key (kbd "<S-f2>") 'bm-previous)
-
-;;; Yet Another Snippet extension --------------------------------------
-
-;; (require 'yasnippet)
-;; (yas/initialize)
-;; (yas/load-directory "~/elisp/snippets")
-
 ;;; Browse Kill Ring ---------------------------------------------------
 
 (require 'browse-kill-ring)
@@ -544,6 +532,21 @@
 
 (eval-after-load "mk-utils.el"
   '(progn
-     (message "Arrow keys are off!")
      (mk-arrow-keys-off)
      (define-key ctl-x-4-map "t" 'mk-toggle-window-split)))
+
+;;;; smex (keep at bottom of .emacs) ------------------------------------
+
+(require 'smex)
+(setq smex-save-file "~/.smex.save"
+      ido-enable-flex-matching t) ;; see also ido-enable-regexp
+(smex-initialize)
+
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-x C-m") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-x C-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)     ;; This is your old M-x.
+(global-set-key (kbd "C-c C-c C-x C-m") 'execute-extended-command) ;; This is your old M-x.
+;; (global-set-key (kbd "C-c M-x") 'smex-update-and-run)
+

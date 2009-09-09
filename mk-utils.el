@@ -125,14 +125,16 @@
   (global-unset-key (kbd "<left>"))
   (global-unset-key (kbd "<right>"))
   (global-unset-key (kbd "<up>"))
-  (global-unset-key (kbd "<down>")))
+  (global-unset-key (kbd "<down>"))
+  (message "Arrow keys are off"))
 
 (defun mk-arrow-keys-on ()
   (interactive)
   (global-set-key (kbd "<left>")  'backward-char)
   (global-set-key (kbd "<right>") 'forward-char)
   (global-set-key (kbd "<up>")    'previous-line)
-  (global-set-key (kbd "<down>")  'next-line))
+  (global-set-key (kbd "<down>")  'next-line)
+  (message "Arrow keys are on"))
 
 (defun mk-toggle-window-split ()
   "Horizontal split to vertical and back again."
