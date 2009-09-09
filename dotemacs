@@ -92,6 +92,7 @@
 
 ;;; Global keybindings -------------------------------------------------
 
+;; See the smex section at the end...
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; = meta-x
 (global-set-key (kbd "C-c C-m") 'execute-extended-command) ; = meta-x
 
@@ -524,3 +525,19 @@
   '(progn
      (mk-arrow-keys-off)
      (define-key ctl-x-4-map "t" 'mk-toggle-window-split)))
+
+;;;; smex (keep at bottom of .emacs) ------------------------------------
+
+(require 'smex)
+(setq smex-save-file "~/.smex.save"
+      ido-enable-flex-matching t) ;; see also ido-enable-regexp
+(smex-initialize)
+
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-x C-m") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-x C-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)     ;; This is your old M-x.
+(global-set-key (kbd "C-c C-c C-x C-m") 'execute-extended-command) ;; This is your old M-x.
+;; (global-set-key (kbd "C-c M-x") 'smex-update-and-run)
+
