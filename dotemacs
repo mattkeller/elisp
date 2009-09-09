@@ -535,6 +535,5 @@
 
 (eval-after-load "mk-utils.el"
   '(progn
-     (message "Arrow keys are off!")
      (mk-arrow-keys-off)
      (define-key ctl-x-4-map "t" 'mk-toggle-window-split)))
