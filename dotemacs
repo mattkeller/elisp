@@ -533,7 +533,8 @@
 (eval-after-load "mk-utils.el"
   '(progn
      (mk-arrow-keys-off)
-     (define-key ctl-x-4-map "t" 'mk-toggle-window-split)))
+     (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
+     (defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")))
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
