@@ -4,12 +4,15 @@
 (require 'mcp-projects)
 (require 'cl)
 
+(setq mk-proj-use-ido-selection t)
+
 (global-set-key (kbd "C-c p c") 'project-compile)
 (global-set-key (kbd "C-c p g") 'project-grep)
 (global-set-key (kbd "C-c p a") 'project-ack)
 (global-set-key (kbd "C-c p l") 'project-load)
 (global-set-key (kbd "C-c p u") 'project-unload)
-(global-set-key (kbd "C-c p f") 'project-find-file)
+(global-set-key (kbd "C-c p f") 'project-find-file-ido)
+(global-set-key (kbd "C-c p F") 'project-find-file)
 (global-set-key (kbd "C-c p i") 'project-index)
 (global-set-key (kbd "C-c p s") 'project-status)
 (global-set-key (kbd "C-c p h") 'project-home)
@@ -77,6 +80,7 @@
   (project-def "sipbotc"
                `((basedir ,bd)
                  (src-patterns "*.clj")
+                 (ignore-patterns ("*.class"))
                  (file-list-cache ,(concat pd "files"))
                  (open-files-cache ,(concat pd "open-files"))
                  (tags-file ,(concat pd "tags"))
