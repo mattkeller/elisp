@@ -433,19 +433,6 @@
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
                        "|" "DONE(d)" "DEFERRED(f)" "CANCELED(c)")))
 
-;;; file-local bookmarks from bm.el ------------------------------------
-
-; (require 'bm)
-; (global-set-key (kbd "<M-f2>") 'bm-toggle)
-; (global-set-key (kbd "<f2>")   'bm-next)
-; (global-set-key (kbd "<S-f2>") 'bm-previous)
-
-;;; Yet Another Snippet extension --------------------------------------
-
-;; (require 'yasnippet)
-;; (yas/initialize)
-;; (yas/load-directory "~/elisp/snippets")
-
 ;;; Browse Kill Ring ---------------------------------------------------
 
 (require 'browse-kill-ring)
