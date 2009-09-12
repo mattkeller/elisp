@@ -537,6 +537,11 @@
      (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
      (defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")))
 
+;;;; Aliases ------------------------------------------------------------
+
+(defalias 'qrr 'query-replace-regexp)
+(defalias 'rvt 'revert-buffer)
+
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
 (require 'smex)
