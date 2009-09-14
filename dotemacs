@@ -541,6 +541,10 @@
 
 (defalias 'qrr 'query-replace-regexp)
 (defalias 'rvt 'revert-buffer)
+(defalias 'dtw 'delete-trailing-whitespace)
+(defalias 'bml 'bookmark-bmenu-list)
+(defalias 'bmj 'bookmark-jump)
+(defalias 'bms 'bookmark-set)
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
