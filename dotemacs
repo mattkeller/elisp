@@ -546,6 +546,8 @@
 (defalias 'bml 'bookmark-bmenu-list)
 (defalias 'bmj 'bookmark-jump)
 (defalias 'bms 'bookmark-set)
+(defalias 'ptr 'point-to-register)
+(defalias 'jtr 'jump-to-register)
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
