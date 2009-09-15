@@ -88,7 +88,7 @@
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 (autoload 'ack "ack" "Ack is better than grep" t)
-(autoload 'mcp-trace-mode "mcp-trace" "" t)
+(autoload 'mcp-hl-mode "mcp-hl" "" t)
 
 ;;; Global keybindings -------------------------------------------------
 
