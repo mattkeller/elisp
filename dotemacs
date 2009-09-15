@@ -536,6 +536,7 @@
   '(progn
      (mk-arrow-keys-off)
      (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
+     (define-key ctl-x-4-map "s" 'mk-swap-windows)
      (defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")))
 
 ;;;; Aliases ------------------------------------------------------------
