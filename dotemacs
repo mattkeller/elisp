@@ -88,7 +88,8 @@
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 (autoload 'ack "ack" "Ack is better than grep" t)
-(autoload 'mcp-trace-mode "mcp-trace" "" t)
+(autoload 'mcp-hl-mode "mcp-hl" "" t)
+(autoload 'list-register "list-register" "" t)
 
 ;;; Global keybindings -------------------------------------------------
 
@@ -544,12 +545,19 @@
   '(progn
      (mk-arrow-keys-off)
      (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
+     (define-key ctl-x-4-map "s" 'mk-swap-windows)
      (defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")))
 
 ;;;; Aliases ------------------------------------------------------------
 
 (defalias 'qrr 'query-replace-regexp)
 (defalias 'rvt 'revert-buffer)
+(defalias 'dtw 'delete-trailing-whitespace)
+(defalias 'bml 'bookmark-bmenu-list)
+(defalias 'bmj 'bookmark-jump)
+(defalias 'bms 'bookmark-set)
+(defalias 'ptr 'point-to-register)
+(defalias 'jtr 'jump-to-register)
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
