@@ -97,8 +97,8 @@
                        (expand-file-name "lib/clojure-contrib.jar" bd)
                        (expand-file-name "build/classes" bd)
                        (mapcar (lambda (f) (expand-file-name f bd))
-                               (list "src" "build/classes" "lib")))))
-    (find-file (concat bd "src/com/nortelnetworks/sipbotc/sipbotc.clj")))
+                               (list "src" "build/classes" "lib"))))
+    (find-file (concat bd "src/com/nortelnetworks/sipbotc/sipbotc.clj"))))
 
 ;;; --------------------------------------------------------------------
 ;;; Qrev
