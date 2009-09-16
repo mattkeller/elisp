@@ -402,7 +402,7 @@
 
 ;;; org-mode -----------------------------------------------------------
 
-(add-to-list 'load-path "~/elisp/org-6.29c/lisp")
+(add-to-list 'load-path "~/elisp/org-6.30e/lisp")
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
