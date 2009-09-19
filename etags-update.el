@@ -3,20 +3,27 @@
 ;; Minor mode to update the TAGS file when a file is saved
 ;;
 ;; TODO:
-;; - Hook allowing user to decide to add a file to TAGS
-;;   programtically.
 ;; - Don't offer to add a non-code file to TAGS
-;; - Don't repeatedly prompt to add a file to TAGS if user
-;;   has answer 'no' once before
 
 (defgroup etags-update nil
   "Minor mode to update the TAGS file when a file is saved"
   :group 'tools)
 
 (defcustom etu/append-file-prompt 'prompt
-  "Add file not already in TAGS to TAGS?"
-  :type '(choice (const always) (const prompt) (const never))
+  "Add file not already in TAGS to TAGS?
+If `never', do not add the file.
+If `always', add the file.
+If `prompt', ask if this file should be added.
+If set to a function, the function should return one of 'always, 'prompt, or 'never."
+  :type '(choice (const always)
+                 (const prompt)
+                 (const never)
+                 (function))
   :group 'etags-update)
+
+(defvar etu/files-not-to-prompt-for nil
+  "Once we prompt to add a file to TAGS and the answer is 'no',
+do not ask again for this file.")
 
 (defun etu/tags-file-dir ()
   "Return full directory of the TAGS file"
@@ -98,18 +105,27 @@ the file is not already in TAGS, maybe add it."
              (cmd               (concat "etags-update.pl " tags-file-name " " file-in-tags))
              (proc-name         "etags-update")
              (default-directory (etu/tags-file-dir)))
+        (if (string= file tags-file-name) (throw 'etu/update-for-file nil))
         (unless file-in-tags
           ;; TODO use relative or absolute path? For now, we'll use
           ;; absolute paths. How often do you move your source code OR
           ;; your TAGS file and not completely rebuild TAGS?
           (setq cmd (concat "etags -o " tags-file-name " -a " file))
-          (cond
-           ((eq etu/append-file-prompt 'prompt)
-            (unless (y-or-n-p (concat "Add " file " to the TAGS file? "))
-              (throw 'etu/update-for-file nil)))
-           ((eq etu/append-file-prompt 'never)
-            (throw 'etu/update-for-file nil))
-           (t (message "Ok, not adding this file to TAGS"))))
+          (let ((action etu/append-file-prompt))
+            (when (functionp etu/append-file-prompt)
+              (setq action (funcall etu/append-file-prompt file)))
+            (cond
+             ((eq action 'prompt)
+              (when (member file etu/files-not-to-prompt-for)
+                (throw 'etu/update-for-file nil))
+              (unless (y-or-n-p (concat "Add " file " to the TAGS file? "))
+                (add-to-list 'etu/files-not-to-prompt-for file)
+                (throw 'etu/update-for-file nil)))
+             ((eq action 'never)
+              (throw 'etu/update-for-file nil))
+             ((eq action 'always)
+              (message "Ok, adding this file to TAGS"))
+             (t (error "Invalid etu/append-file-prompt action: %s" action)))))
         (message "Refreshing TAGS file for %s..." file)
         (start-process-shell-command proc-name "*etags-update*" cmd)
         (set-process-sentinel (get-process proc-name) 'etu/update-cb)))))
