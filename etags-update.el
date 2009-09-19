@@ -6,6 +6,8 @@
 ;; - Hook allowing user to decide to add a file to TAGS
 ;;   programtically.
 ;; - Don't offer to add a non-code file to TAGS
+;; - Don't repeatedly prompt to add a file to TAGS if user
+;;   has answer 'no' once before
 
 (defgroup etags-update nil
   "Minor mode to update the TAGS file when a file is saved"
@@ -18,9 +20,9 @@
 
 (defun etu/tags-file-dir ()
   "Return full directory of the TAGS file"
-  (assert (get-file-buffer tags-file-name))
-  (with-current-buffer (get-file-buffer tags-file-name)
-    (expand-file-name default-directory)))
+  (when tags-file-name
+      (with-current-buffer (get-file-buffer tags-file-name)
+        (expand-file-name default-directory))))
 
 (defun etu/file-pattern-in-tags-buffer (buffer pattern)
   "Search for `pattern' in a 'file' line of a given TAGS
@@ -87,6 +89,10 @@ the file is not already in TAGS, maybe add it."
   (interactive)
   (catch 'etu/update-for-file
     (when tags-file-name
+      (let ((tags-file-full-name (expand-file-name tags-file-name)))
+        (unless (get-file-buffer tags-file-full-name)
+          (visit-tags-table tags-file-full-name))
+        (assert (get-file-buffer tags-file-full-name)))
       (let* ((file              (buffer-file-name (current-buffer)))
              (file-in-tags      (etu/file-in-tags file))
              (cmd               (concat "etags-update.pl " tags-file-name " " file-in-tags))
