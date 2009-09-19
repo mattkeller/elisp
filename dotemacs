@@ -90,6 +90,7 @@
 (autoload 'ack "ack" "Ack is better than grep" t)
 (autoload 'mcp-hl-mode "mcp-hl" "" t)
 (autoload 'list-register "list-register" "" t)
+(autoload 'etags-update-mode "etags-update" "sweet!" t)
 
 ;;; Global keybindings -------------------------------------------------
 
