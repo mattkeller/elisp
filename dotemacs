@@ -91,7 +91,6 @@
 (autoload 'ack "ack" "Ack is better than grep" t)
 (autoload 'mcp-hl-mode "mcp-hl" "" t)
 (autoload 'list-register "list-register" "" t)
-(autoload 'etags-update-mode "etags-update" "sweet!" t)
 
 ;;; Global keybindings -------------------------------------------------
 
@@ -550,6 +549,8 @@
      (define-key ctl-x-4-map "s" 'mk-swap-windows)
      (defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")))
 
+(autoload 'etags-update-mode "etags-update" "sweet!" t)
+
 (eval-after-load "etags-update.el"
   '(progn
      (defun mk-etags-update-append-file-p (file)
@@ -559,7 +560,7 @@
               (string= mk-proj-basedir (substring file 0 (length mk-proj-basedir)))) ; eg, file *in* project
          ;; TODO (match mk-proj-src-patterns)
          ;; TODO (not-match mk-proj-ignore-patterns))
-         'always)
+         'add)
         (t 'prompt)))
 
      (setq etu/append-file-prompt 'mk-etags-update-append-file-p)))
