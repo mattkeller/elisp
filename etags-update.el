@@ -26,6 +26,9 @@ If set to a function, the function should return one of 'add, 'prompt, or 'nil."
                  (function))
   :group 'etags-update)
 
+(defvar etu/proc-buf "*etags-update*"
+  "Buffer where etags-update.pl will write stdout")
+
 (defvar etu/no-prompt-files (make-hash-table :test 'equal)
   "A collection of files not to be prompted for in file append situations")
 
@@ -99,9 +102,28 @@ the match or nil."
     ;; to add the file.
     (visit-tags-table (expand-file-name tags-file-name))
     (message "Refreshing TAGS file ...done")
-    (when (get-buffer  "*etags-update*")
-      (kill-buffer (get-buffer "*etags-update*"))))
-   (t (message "Refreshing TAGS file failed. Event was %s. See buffer *etags-update*." event))))
+    (when (get-buffer  etu/proc-buf)
+      (kill-buffer (get-buffer etu/proc-buf))))
+   (t (message "Refreshing TAGS file failed. Event was %s. See buffer %s." event etu/proc-buf))))
+
+(defun etu/append-file-p (file)
+  "Should we add this file to TAGS?"
+  (let ((action etu/append-file-action))
+    (when (functionp etu/append-file-action)
+      (setq action (funcall etu/append-file-action file)))
+    (cond
+     ((eq action 'nil) nil)
+     ((eq action 'add) t)
+     ((eq action 'prompt)
+      (cond
+       ((gethash file etu/no-prompt-files) nil)
+       ((and etu/append-using-font-lock (null font-lock-defaults)) nil)
+       ((y-or-n-p (concat "Add " file " to the TAGS file? "))
+        (progn
+          (puthash file 1 etu/no-prompt-files)
+          t))
+       (t nil)))
+     (t (error "Invalid etu/append-file-action action: %s" action)))))
 
 (defun etu/update-tags-for-file ()
   "Update the TAGS file for the file of the current buffer. If
@@ -118,31 +140,17 @@ the file is not already in TAGS, maybe add it."
              (cmd               (concat "etags-update.pl " tags-file-name " " file-in-tags))
              (proc-name         "etags-update")
              (default-directory (etu/tags-file-dir)))
-        (if (string= file tags-file-name) (throw 'etu/update-tags-for-file nil))
+        (if (string= file tags-file-name)
+            (throw 'etu/update-tags-for-file nil))
         (unless file-in-tags
+          (unless (etu/append-file-p file)
+            (throw 'etu/update-tags-for-file nil))
           ;; TODO use relative or absolute path? For now, we'll use
           ;; absolute paths. How often do you move your source code OR
           ;; your TAGS file and not completely rebuild TAGS?
-          (setq cmd (concat "etags -o " tags-file-name " -a " file))
-          (let ((action etu/append-file-action))
-            (when (functionp etu/append-file-action)
-              (setq action (funcall etu/append-file-action file)))
-            (cond
-             ((eq action 'prompt)
-              (when (gethash file etu/no-prompt-files)
-                (throw 'etu/update-tags-for-file nil))
-              (when (and etu/append-using-font-lock (null font-lock-defaults))
-                (throw 'etu/update-tags-for-file nil))
-              (unless (y-or-n-p (concat "Add " file " to the TAGS file? "))
-                (puthash file 1 etu/no-prompt-files)
-                (throw 'etu/update-tags-for-file nil)))
-             ((eq action 'nil)
-              (throw 'etu/update-tags-for-file nil))
-             ((eq action 'add)
-              (message "Ok, adding this file to TAGS"))
-             (t (error "Invalid etu/append-file-action action: %s" action)))))
+          (setq cmd (concat "etags -o " tags-file-name " -a " file)))
         (message "Refreshing TAGS file for %s..." file)
-        (start-process-shell-command proc-name "*etags-update*" cmd)
+        (start-process-shell-command proc-name etu/proc-buf cmd)
         (set-process-sentinel (get-process proc-name) 'etu/update-cb)))))
 
 (define-minor-mode etags-update-mode
