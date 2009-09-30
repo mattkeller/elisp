@@ -1,7 +1,34 @@
 ;;;; etags-update.el
 ;;
-;; Minor mode to update the TAGS file when a file is saved
+;; Minor mode to update TAGS when a file is saved
+
+;; Copyright (C) 2009  Matt Keller <mattkeller at gmail dot com>
 ;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+
+;;; Commentary:
+;;
+;; See the README at http://github.com/mattkeller/etags-update/
+;;
+;; Note: etags-update.el requires etags-update.pl in your PATH.
+
+;;; Code:
+
+(defvar etu/etags-update-version "0.1"
+  "As tagged at http://github.com/mattkeller/etags-update/tree/master")
 
 (defgroup etags-update nil
   "Minor mode to update the TAGS file when a file is saved"
@@ -27,7 +54,7 @@ If set to a function, the function should return one of 'add, 'prompt, or 'nil."
   :group 'etags-update)
 
 (defvar etu/proc-buf "*etags-update*"
-  "Buffer where etags-update.pl will write stdout")
+  "Buffer where etags-update.pl will write its stdout")
 
 (defvar etu/no-prompt-files (make-hash-table :test 'equal)
   "A collection of files not to be prompted for in file append situations")
@@ -46,37 +73,46 @@ If set to a function, the function should return one of 'add, 'prompt, or 'nil."
       (with-current-buffer (get-file-buffer tags-file-name)
         (expand-file-name default-directory))))
 
+(defun etu/file-at-line ()
+  "Capture the filename on this line. May return nil."
+  (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
+      ;; TODO this regex doesn't just match 'file' lines
+      (if (string-match "^\\(.*\\),[0-9]+$" line)
+          (match-string 1 line)
+        nil)))
+
+;; TODO: use this as a heuristic?
+(defun etu/absolute-filenames-p ()
+  "Does the TAGS file use relative or absolute filenames?"
+  (let ((absolute 0)
+        (relative 0))
+    (when tags-file-name
+      (with-current-buffer (get-file-buffer tags-file-name)
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward "^$" nil t)
+            (forward-line 1)
+            (let ((file (etu/file-at-line)))
+              (when file
+                (if (file-name-absolute-p file)
+                    (incf absolute)
+                  (incf relative))))))))
+    (message "TAGS: %s relative, %s absolute" relative absolute)
+    (> absolute 0)))
+
 (defun etu/file-str-in-tags-buffer (buffer file-str)
   "Given a file-str which is a relative or absolute filename,
 find a matching file in the given TAGS buffer. Return the
 matching filename or nil."
   (with-current-buffer buffer
-    (save-excursion ; useful only for debugging, can remove later
+    (save-excursion
       (goto-char (point-min))
       (let ((match))
-        (catch 'loop-exit
           (while (and (search-forward file-str nil t) (not match))
-            (beginning-of-line)
-            ;; Capture the whole filename on this line. The regex also
-            ;; ensures we're on a 'file' line
-            (if (re-search-forward "^\\(.*\\),[0-9]+$" nil t)
-                (let ((file-in-tags (buffer-substring (match-beginning 1) (match-end 1))))
-                  (when (string= file-str file-in-tags)
-                    (setq match file-in-tags)))))
-          (throw 'loop-exit nil))
-        match))))
-
-(defun etu/file-in-tags (file)
-  "Given a absolute filename, search for it, or its filename
-relative to the TAGS file directory, in the TAGS buffer. Return
-the match or nil."
-  (assert (file-name-absolute-p file))
-  (let* ((tags-buffer (get-file-buffer tags-file-name))
-         (tags-dir    (etu/tags-file-dir))
-         (file-rel    (substring file (length tags-dir))))
-    (or (etu/file-str-in-tags-buffer tags-buffer file)
-        (and (string= file (concat tags-dir file-rel)) ; ensure file-rel is in tags-dir
-             (etu/file-str-in-tags-buffer tags-buffer file-rel)))))
+            (let ((file-in-tags (etu/file-at-line)))
+              (when (and file-in-tags (string= file-str file-in-tags))
+                (setq match file-in-tags))))
+          match))))
 
 (defun etu/test-file-str-in-tags-buffer ()
   "Testing utu/file-str-in-tags-buffer"
@@ -92,6 +128,18 @@ the match or nil."
     (assert (null (etu/file-str-in-tags-buffer (current-buffer) "bcd")))
     (assert (null (etu/file-str-in-tags-buffer (current-buffer) "mk/abcdefg")))
     (assert (null (etu/file-str-in-tags-buffer (current-buffer) "junkline")))))
+
+(defun etu/file-in-tags (file)
+  "Given a absolute filename, search for it, or its filename
+relative to the TAGS file directory, in the TAGS buffer. Return
+the match or nil."
+  (assert (file-name-absolute-p file))
+  (let* ((tags-buffer (get-file-buffer tags-file-name))
+         (tags-dir    (etu/tags-file-dir))
+         (file-rel    (substring file (length tags-dir))))
+    (or (etu/file-str-in-tags-buffer tags-buffer file)
+        (and (string= file (concat tags-dir file-rel)) ; ensure file-rel is in tags-dir
+             (etu/file-str-in-tags-buffer tags-buffer file-rel)))))
 
 (defun etu/update-cb (process event)
   "Callback fn to handle etags-update.pl termination"
@@ -118,10 +166,9 @@ the match or nil."
       (cond
        ((gethash file etu/no-prompt-files) nil)
        ((and etu/append-using-font-lock (null font-lock-defaults)) nil)
-       ((y-or-n-p (concat "Add " file " to the TAGS file? "))
-        (progn
-          (puthash file 1 etu/no-prompt-files)
-          t))
+       ((not (y-or-n-p (concat "Add " file " to the TAGS file? ")))
+        (puthash file 1 etu/no-prompt-files)
+        nil)
        (t nil)))
      (t (error "Invalid etu/append-file-action action: %s" action)))))
 
