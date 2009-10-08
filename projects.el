@@ -26,7 +26,7 @@
 ;;; cl-sip
 ;;; --------------------------------------------------------------------
 
-(let ((bd (concat homedir "code/lisp/cl-sip/"))
+(lexical-let ((bd (concat homedir "code/lisp/cl-sip/"))
       (pd (concat projdir "cl-sip/")))
   (project-def "cl-sip"
                `((basedir ,bd)
@@ -75,7 +75,7 @@
 ;;; sipbotc
 ;;; --------------------------------------------------------------------
 
-(let ((bd (concat homedir "code/sipbotc/"))
+(lexical-let ((bd (concat homedir "code/sipbotc/"))
       (pd (concat projdir "sipbotc/")))
   (project-def "sipbotc"
                `((basedir ,bd)
