@@ -565,6 +565,12 @@
 
      (setq etu/append-file-prompt 'mk-etags-update-append-file-p)))
 
+;;;; Uniqify ------------------------------------------------------------
+
+(require 'uniquify) 
+(setq uniquify-buffer-name-style 'post-forward ;; unique buffer names using 
+      uniquify-separator         ":")          ;; part of file's path
+
 ;;;; Aliases ------------------------------------------------------------
 
 (defalias 'qrr 'query-replace-regexp)
