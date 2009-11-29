@@ -150,6 +150,14 @@
       delete-old-versions t            ; Ask to delete excess backup versions?
       backup-by-copying-when-linked t) ; Copy linked files, don't rename.
 
+;;; Dired --------------------------------------------------------------
+
+(defun turn-on-auto-revert-mode ()
+  (interactive)
+  (auto-revert-mode 1))
+ 
+(add-hook 'dired-mode-hook 'turn-on-auto-revert-mode)
+
 ;;; Emacs server -------------------------------------------------------
 
 (require 'server)
