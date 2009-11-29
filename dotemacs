@@ -411,6 +411,8 @@
                  ("scp" "znc0y0n8.*" "matthewk")
                  ("scp" "deb" "matthewk")))
 
+(setq tramp-auto-save-directory "~/.tramp-autosave")
+
 ;;; Git VC backend setup -----------------------------------------------
 
 (require 'vc-git)
