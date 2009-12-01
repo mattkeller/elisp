@@ -4,3 +4,6 @@
 [submodule "./egg"]
 	path = egg
 	url = git://github.com/bogolisk/egg.git
+[submodule "org-mode-dev"]
+	path = org-mode-dev
+	url = git://repo.or.cz/org-mode.git
