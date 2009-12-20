@@ -243,6 +243,4 @@
       ;; allow some user customization
       (run-hooks 'find-file-root-hook))))
 
-(global-set-key [(control x) (control r)] 'find-file-root)
-
 (provide 'mk-utils)
