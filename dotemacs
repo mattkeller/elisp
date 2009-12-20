@@ -482,9 +482,11 @@
   (interactive)
   (ecase (intern (completing-read "Theme: " '("light" "dark" "gray" "reset")))
     (light (color-theme-emacs-21))
-    (dark  (color-theme-arjen))
+    (dark  (color-theme-dark-laptop))
     (gray  (color-theme-jedit-grey))
     (reset (color-theme-snapshot))))
+
+(color-theme-dark-laptop)
 
 ;;; hippie-expand fun --------------------------------------------------
 
