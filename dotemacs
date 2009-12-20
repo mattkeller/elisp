@@ -170,7 +170,8 @@
   (unless (server-running-p name)
     (server-start)))
 
-(when (< emacs-major-version 23) ; Using emacs23 --daemon now
+(when (or (< emacs-major-version 23)               ; Using emacs23 --daemon now
+          (string-equal system-type "windows-nt"))
   (start-named-server "server")) ; default server-name
 
 ;;; Emacs Code Browser -------------------------------------------------
