@@ -228,7 +228,7 @@
 
 ;;; SLIME & Lisp(s) Setup --------------------------------------------------------
 
-;;(when (string-equal system-name "mktop")
+(when (string-equal system-type "gnu/linux")
   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
   (add-to-list 'load-path "/home/mk/.sbcl/site/slime")
   (add-to-list 'load-path "/home/mk/.sbcl/site/slime/contrib")
@@ -264,7 +264,7 @@
        (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
        (define-key slime-mode-map      (kbd "C-c r")   'mk-goto-repl)
 
-       (paredit-mode +1)));)
+       (paredit-mode +1))))
 
 ; do slime mode for all lisp files
 (add-hook 'lisp-mode-hook (lambda ()
