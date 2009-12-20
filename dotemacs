@@ -230,8 +230,8 @@
 
 (when (string-equal system-type "gnu/linux")
   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
-  (add-to-list 'load-path "/home/mk/.sbcl/site/slime")
-  (add-to-list 'load-path "/home/mk/.sbcl/site/slime/contrib")
+  (add-to-list 'load-path (expand-file-name "~/.sbcl/site/slime"))
+  (add-to-list 'load-path (expand-file-name "~/.sbcl/site/slime/contrib"))
   (autoload 'slime "slime" "Start and connect to the inferior lisp image" t)
   (autoload 'slime-mode "slime" "Start slime-mode for this buffer" t)
   (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
@@ -432,7 +432,7 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cr" 'org-remember)
 
-(setq org-directory                     (concat "/home/" user-login-name "/proj/org")
+(setq org-directory                     (expand-file-name "~/proj/org")
       org-default-notes-file            (concat org-directory "/todo.org")
       org-agenda-files                  (file-expand-wildcards (concat org-directory "/*.org"))
       org-startup-folded                nil
