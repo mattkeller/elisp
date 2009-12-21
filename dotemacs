@@ -585,6 +585,13 @@
 (setq uniquify-buffer-name-style 'post-forward ;; unique buffer names using 
       uniquify-separator         ":")          ;; part of file's path
 
+
+;;;; Recent Files -------------------------------------------------------
+
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+
 ;;;; Aliases ------------------------------------------------------------
 
 (defalias 'qrr 'query-replace-regexp)
@@ -595,6 +602,7 @@
 (defalias 'bms 'bookmark-set)
 (defalias 'ptr 'point-to-register)
 (defalias 'jtr 'jump-to-register)
+(defalias 'rct 'recentf-open-files)
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
