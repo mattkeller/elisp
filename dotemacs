@@ -134,12 +134,6 @@
 (global-set-key (kbd "M-<down>") (lambda () (interactive) (scroll-up 1)))
 (global-set-key (kbd "M-<up>") (lambda () (interactive) (scroll-down 1)))
 
-
-;; not respecting .Xresources - why?
-(when (string-equal system-name "wnc0h0t5.us.nortel.com")
-  (set-default-font "Bitstream Vera Sans Mono-9"))
-
-
 ;;; Backups in ~/.backups ----------------------------------------------
 
 (defconst use-backup-dir t)
@@ -407,10 +401,7 @@
 (setq tramp-default-user user-login-name)
 (setq tramp-default-user-alist
                '(("scp" ".*\\.littleredbat\\.net\\" "mk")
-                 ("scp" "lrb" "mk")
-                 ("scp" ".*\\.nortel\\.com\\" "matthewk")
-                 ("scp" "znc0y0n8.*" "matthewk")
-                 ("scp" "deb" "matthewk")))
+                 ("scp" "lrb" "mk")))
 
 (setq tramp-auto-save-directory "~/.tramp-autosave")
 
