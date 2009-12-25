@@ -562,7 +562,10 @@ menu-elements (no sub-menu)."
 (defun recentf-clear-data ()
   "Clear data used to build the recentf menu.
 This force a rebuild of the menu."
-  (easy-menu-remove-item nil recentf-menu-path recentf-menu-title)
+  (condition-case err
+      (easy-menu-remove-item nil recentf-menu-path recentf-menu-title)
+    (error 
+     (message "recentf failed to clear its menu: %s" (error-message-string err))))
   (setq recentf-data-cache nil))
 
 ;;; Predefined menu filters
