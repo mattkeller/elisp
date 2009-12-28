@@ -243,4 +243,19 @@
       ;; allow some user customization
       (run-hooks 'find-file-root-hook))))
 
+(defun mk-agenda-to-html (html-file)
+  "Write our org-agenda TODOs and 2 weeks of agenda to the given file"
+  (interactive)
+  (let* ((org-agenda-buffer-name "*mk-org-agenda*"))
+    ;; open our agenda in a buffer with our private name
+    (org-agenda-list t nil 14)
+    (condition-case err
+        (htmlize-buffer)
+      (error (message "Failed to htmlize agenda: %s" (error-message-string err))))
+    (when (get-buffer "*html*")
+      (with-current-buffer "*html*"
+        (write-file html-file)
+        (kill-this-buffer)))
+    (kill-buffer org-agenda-buffer-name)))
+
 (provide 'mk-utils)

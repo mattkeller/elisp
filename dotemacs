@@ -447,6 +447,8 @@
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
                        "|" "DONE(d)" "DEFERRED(f)" "CANCELED(c)")))
 
+(run-at-time "00:58" 300 'mk-agenda-to-html "/home/mk/.agenda.html")
+
 ;;; Browse Kill Ring ---------------------------------------------------
 
 (require 'browse-kill-ring)
