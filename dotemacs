@@ -523,6 +523,10 @@
 (global-set-key mk-browse-key 'browse-url-at-point)
 (setq w3m-use-cookies t)
 
+;; firefox.exe must be in the PATH
+(if (string-equal system-type "windows-nt")
+    (setq browse-url-firefox-program (executable-find "firefox.exe")))
+
 (defun mk-choose-browser (url &rest args)
   (interactive "sURL: ")
   (if (y-or-n-p "Use firefox? ")
