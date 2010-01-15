@@ -258,4 +258,15 @@
         (kill-this-buffer)))
     (kill-buffer org-agenda-buffer-name)))
 
+
+;; etags.el used to define this very useful function (according to
+;; http://www.emacswiki.org/emacs/HippieExpand)
+
+(defun tags-complete-tag (string predicate what)
+     (save-excursion
+     ;; If we need to ask for the tag table, allow that.
+     (if (eq what t)
+	(all-completions string (tags-completion-table) predicate)
+      (try-completion string (tags-completion-table) predicate))))
+
 (provide 'mk-utils)
