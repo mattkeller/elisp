@@ -130,6 +130,7 @@
 (global-set-key (kbd "M-+") 'enlarge-window)
 
 (global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "M-?") 'ispell-complete-word)
 
 (global-set-key (kbd "M-<down>") (lambda () (interactive) (scroll-up 1)))
 (global-set-key (kbd "M-<up>") (lambda () (interactive) (scroll-down 1)))
@@ -585,6 +586,12 @@
 (require 'uniquify) 
 (setq uniquify-buffer-name-style 'post-forward ;; unique buffer names using 
       uniquify-separator         ":")          ;; part of file's path
+
+;;;; Dictionary completion ----------------------------------------------
+
+(when (string-equal system-type "windows-nt")
+  (setq ispell-complete-word-dict "C:/Program Files/words/american.2")
+  (setq ispell-grep-command "C:/cygwin/bin/grep"))
 
 
 ;;;; Recent Files -------------------------------------------------------
