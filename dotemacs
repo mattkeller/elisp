@@ -414,7 +414,7 @@
 
 ;;; org-mode -----------------------------------------------------------
 
-(add-to-list 'load-path "~/elisp/org-mode-dev/lisp")
+(add-to-list 'load-path "~/elisp/org-mode/lisp")
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
@@ -496,7 +496,6 @@
 
 ;;; mk-projects --------------------------------------------------------
 
-(add-to-list 'load-path "~/elisp/mk-project")
 ;(add-to-list 'load-path "~/code/mk-project")
 (load "projects.el") ; requires jde to be loaded, see defer-loading-jde
 
