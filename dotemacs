@@ -433,7 +433,9 @@
       org-agenda-skip-scheduled-if-done t
       org-agenda-skip-deadline-if-done  t)
 
-(run-at-time "00:59" 3600 'org-save-all-org-buffers) ; git-auto-commit runs at top of hour
+(defvar mk-org-save-timer
+  ; git-auto-commit runs at top of hour
+  (run-at-time "00:59" 3600 'org-save-all-org-buffers))
 
 (setq org-remember-templates
       `(("Todo"    ?t "* TODO %?\n  %i\n" ,(concat org-directory "/todo.org")    "Inbox")
@@ -447,7 +449,10 @@
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
                        "|" "DONE(d)" "DEFERRED(f)" "CANCELED(c)")))
 
-(run-at-time "00:58" 300 'mk-agenda-to-html "/home/mk/.agenda.html")
+(defvar mk-agenda-timer 
+  (if (string-equal system-name "mktop")
+      (run-at-time "00:58" 300 'mk-agenda-to-html "~/.agenda.html")
+    nil))
 
 ;;; Browse Kill Ring ---------------------------------------------------
 
