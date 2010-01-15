@@ -194,11 +194,9 @@
 (defun soasm-shutdown-hook
   (global-set-key (kbd "C-c p t") 'project-tags))
 
-; dynamic views
-(mapcar (lambda (n) (soasm-project-def n nil)) '("kelma12-r12.5"))
-
-; static views
-(mapcar (lambda (n) (soasm-project-def n t)) '())
+(when (string-equal system-type "windows-nt")
+  (mapcar (lambda (n) (soasm-project-def n nil)) '("kelma12-r12.5"))
+  (mapcar (lambda (n) (soasm-project-def n t)) '()))
 
 ;;; --------------------------------------------------------------------
 ;;; SOASM Utils
