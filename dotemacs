@@ -451,10 +451,11 @@
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)" 
                        "|" "DONE(d)" "DEFERRED(f)" "CANCELED(c)")))
 
-(defvar mk-agenda-timer 
-  (if (string-equal system-name "mktop")
-      (run-at-time "00:58" 300 'mk-agenda-to-html "~/.agenda.html")
-    nil))
+(when nil ; TODO mk-agenda-to-html is f*cking up the rest of org somehow
+  (defvar mk-agenda-timer
+    (if (string-equal system-name "mktop")
+        (run-at-time "00:58" 300 'mk-agenda-to-html "~/.agenda.html")
+      nil)))
 
 ;;; Browse Kill Ring ---------------------------------------------------
 
