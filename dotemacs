@@ -1,5 +1,7 @@
 ;;; -*- Mode: Emacs-Lisp; -*-
 
+(defvar emacs-start-time (float-time))
+
 ;;; Keep Custom settings out of .emacs ---------------------------------
 
 (setq custom-file "~/.emacs-custom.el")
@@ -171,9 +173,10 @@
 
 ;;; Emacs Code Browser -------------------------------------------------
 
-(add-to-list 'load-path "~/elisp/ecb-2.32")
+(add-to-list 'load-path "~/elisp/ecb-2.40")
 (require 'ecb-autoloads)
 (setq ecb-layout-name "left10")
+(add-hook 'ecb-before-activate-hook '(lambda () (require 'cedet)))
 
 ;;; Programming Style: Java and C++ pick up c-mode-hook ----------------
 
@@ -342,18 +345,20 @@
 
 ;;; Java Setup ---------------------------------------------------------
 
-(add-to-list 'auto-mode-alist '("\\.java$" . java-mode))
-(setq semantic-load-turn-useful-things-on t)
-(setq semanticdb-default-save-directory "~/.semantic.cache")
-(setq semanticdb-persistent-path nil)
-(load "~/elisp/cedet-1.0pre3/common/cedet")
-(add-to-list 'load-path "~/elisp/jde-2.3.5.1/lisp")
-(when (file-directory-p "~/local/share/emacs/site-lisp/elib")
-  (add-to-list 'load-path "~/local/share/emacs/site-lisp/elib"))
+(add-to-list 'load-path "~/elisp/elib-1.0")
+(add-to-list 'load-path "~/elisp/cedet-1.0pre6/common/")
+(add-to-list 'load-path "~/elisp/jdee-2.4.0/lisp")
 
-(require 'jde)
-(require 'jde-ant)
+(setq semantic-load-turn-useful-things-on t
+      semanticdb-default-save-directory   "~/.semantic.cache"
+      semanticdb-persistent-path          nil)
 
+;; Load JDE (and prereqs, like cedet) when we first load a java file,
+;; not on startup
+(autoload 'jde-mode "jde" "JDE mode." t)
+(add-to-list 'auto-mode-alist '("\\.java$" . jde-mode))
+
+; TODO: pickup JAVA_HOME
 (setq jde-jdk-registry (if (string-equal system-name "mktop")
                            '(("1.6.0_13" . "/opt/jdk1.6.0_13/"))
                          '(("1.5.0_11" . "/localdisk/jdk1.5.0_11/")
@@ -361,10 +366,11 @@
                            ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11/")))
       jde-jdk          (list (if (string-equal system-name "mktop") "1.6.0_13" "1.6.0_11")))
 
-(defun my-jde-mode-hook ()
-  (local-set-key [f5] 'jde-compile))
+(add-hook 'jde-mode-hook '(lambda () 
+                            (require 'jde-ant)
+                            (message "jde-mode time")
+                            (local-set-key [f5] 'jde-compile)))
 
-(add-hook 'jde-mode-hook 'my-jde-mode-hook)
 
 (add-hook 'java-mode-hook '(lambda ()
                              (c-set-style "java")
@@ -505,7 +511,7 @@
 ;;; mk-projects --------------------------------------------------------
 
 ;(add-to-list 'load-path "~/code/mk-project")
-(load "projects.el") ; requires jde to be loaded, see defer-loading-jde
+(load "projects.el")
 
 (dolist (mode '(c-mode java-mode cperl-mode emacs-lisp-mode ruby-mode
                        caml-mode lisp-mode clojure-mode))
@@ -653,3 +659,4 @@
 (global-set-key (kbd "C-c C-c C-x C-m") 'execute-extended-command) ;; This is your old M-x.
 ;; (global-set-key (kbd "C-c M-x") 'smex-update-and-run)
 
+(message "Emacs took %s seconds to start" (- (float-time) emacs-start-time))
