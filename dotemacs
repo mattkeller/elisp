@@ -358,13 +358,9 @@
 (autoload 'jde-mode "jde" "JDE mode." t)
 (add-to-list 'auto-mode-alist '("\\.java$" . jde-mode))
 
-; TODO: pickup JAVA_HOME
-(setq jde-jdk-registry (if (string-equal system-name "mktop")
-                           '(("1.6.0_13" . "/opt/jdk1.6.0_13/"))
-                         '(("1.5.0_11" . "/localdisk/jdk1.5.0_11/")
-                           ("1.6.0_05" . "/localdisk/jdk1.6.0_05/")
-                           ("1.6.0_11" . "/localdisk/data/matthewk/local/jdk1.6.0_11/")))
-      jde-jdk          (list (if (string-equal system-name "mktop") "1.6.0_13" "1.6.0_11")))
+(when (getenv "JAVA_HOME")
+  (setq jde-jdk-registry `(("default" . ,(getenv "JAVA_HOME")))
+        jde-jdk           "default"))
 
 (add-hook 'jde-mode-hook '(lambda () 
                             (require 'jde-ant)
