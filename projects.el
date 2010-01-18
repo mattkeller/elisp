@@ -1,7 +1,6 @@
 ;;;; projects.el --- my mk-project settings
 
 (require 'mk-project)
-(require 'mcp-projects)
 (require 'cl)
 
 (setq mk-proj-use-ido-selection t)
@@ -123,45 +122,6 @@
 (defun qrev-shutdown-hook ()
   (when (y-or-n-p "Close slime? ")
     (slime-quit-lisp)))
-
-;;; --------------------------------------------------------------------
-;;; Scplite (MCS)
-;;; --------------------------------------------------------------------
-
-(let ((pd (concat projdir "scplite.mcs/")))
-      (project-def "scplite.mcs"
-                   `((basedir "/home/matthewk/git/scplite.mcs.git")
-                     (src-patterns ("*.C" "*.H" "*.c" "*.h"))
-                     (ignore-patterns ("*.o"))
-                     (tags-file "/home/matthewk/git/scplite.mcs.git/TAGS")
-                     (file-list-cache ,(concat pd "files"))
-                     (compile-cmd "./buildphx.sh")
-                     (vcs git))))
-
-
-;;; MCP Projects are 'auto' defined based on their mcpant config files.
-;;; Only startup and shutdown hooks need to be defined here
-
-;;; --------------------------------------------------------------------
-;;; mcp12 projects
-;;; --------------------------------------------------------------------
-
-(defun mcp-12dyn-startup-hook ()
-  (mcp-jde-setup "/mcp"
-                 "/localdisk/data/matthewk/ant/matthewk_mcp_core_12.0_3/work/classes")
-  (find-file "~/proj/geol3/NOTES")
-  (find-file "/mcp/mcp_core_ims/ims/foundation/url/CommonURL.java")
-  (find-file "/mcp/mcp_core_ims/ims/cap/svc/iptel/eventhandler/IPTelHandlerNullAuthOrig.java"))
-
-;;; --------------------------------------------------------------------
-;;; AGCF projects
-;;; --------------------------------------------------------------------
-
-(defun agcf-git-startup-hook ()
-  (message "Hi from agcf-git-startup-hook")
-  (mcp-jde-setup "/localdisk/data/matthewk/git/agcf-static.git/mcp"
-                 "/localdisk/data/matthewk/ant/agcf-git/work/classes")
-  (find-file "/localdisk/data/matthewk/git/agcf-static.git/mcp/mcp_labs/common/test_tools/agcf/configureSuite.pl"))
 
 ;;; --------------------------------------------------------------------
 ;;; SOA SM Views
