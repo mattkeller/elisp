@@ -359,8 +359,10 @@
 (add-to-list 'auto-mode-alist '("\\.java$" . jde-mode))
 
 (when (getenv "JAVA_HOME")
-  (setq jde-jdk-registry `(("default" . ,(getenv "JAVA_HOME")))
-        jde-jdk           "default"))
+  (let* ((path (getenv "JAVA_HOME"))
+         (version (file-name-nondirectory path)))
+    (setq jde-jdk-registry `((,version . ,(getenv "JAVA_HOME")))
+          jde-jdk           version)))
 
 (add-hook 'jde-mode-hook '(lambda () 
                             (require 'jde-ant)
