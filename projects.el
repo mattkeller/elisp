@@ -162,7 +162,7 @@
 ;;; SOASM Utils
 ;;; --------------------------------------------------------------------
 
-(defun soasm-tags () 
+(defun soasm-tags ()
   (interactive)
   (mk-proj-assert-proj)
   (if mk-proj-tags-file
@@ -170,11 +170,12 @@
              (tags-dir (file-name-directory mk-proj-tags-file))
              (dev-dir (concat mk-proj-basedir "/devel"))
              (not-dev-dir (concat dev-dir "/thirdparty"))
-             (custom-find-cmd (concat "find '" dev-dir "' -path '" not-dev-dir "' -prune -o "
-                                      "\\( -name '*.java' -type f -print \\) "
-                                      "| etags -l java -o '" tags-name "' - "))
+             (custom-find-cmd (concat "find '" dev-dir "' \\( -path '" not-dev-dir "' -prune \\) -o "
+                                      "\\( -type -f \\( -name '*.cpp' -o -name '*.[cChH]' -o -name '*.java' \\) -print \\) "
+                                      "| etags -o '" tags-name "' - "))
              (default-directory tags-dir)
              (proc-name "etags-process"))
+        (message "Custom tags cmd: %s" custom-find-cmd)
         (message "Refreshing TAGS file %s..." mk-proj-tags-file)
         (start-process-shell-command proc-name "*etags*" custom-find-cmd)
         (set-process-sentinel (get-process proc-name) 'mk-proj-etags-cb))
