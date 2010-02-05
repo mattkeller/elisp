@@ -130,7 +130,7 @@
 (defun soasm-project-def (name static-p)
   (let* ((bd (if static-p (concat "C:/cc-views/" name)
                           (concat "M:/" name)))         
-         (pd (concat "C:/My Documents/mk-project/" name "/")))
+         (pd (concat "~/mk-project/" name "/")))
     (unless (file-readable-p pd)
       (make-directory pd))
     (if (and static-p (not (file-readable-p bd)))
@@ -138,45 +138,83 @@
     (message "Defining soasm project %s at basedir %s" name bd)
     (project-def name
                  `((basedir ,bd)
-                   (src-patterns ("*.java$" "*.xml$" "*.properties$"))
-                   (ignore-patterns ("*.wsdl" "*.class" "*.obj" "*.o" ".so" 
-                                     ,(concat bd "/devel/thirdparty")))
+                   (src-patterns ("*.java$" "*.cpp" "*.[cChH]"))
+                   (ignore-patterns ("*.wsdl" "*.class" "*.obj" "*.o" ".so"))
+                   (src-find-cmd   soasm-find-cmd)
+                   (grep-find-cmd  soasm-find-cmd)
+                   (index-find-cmd soasm-find-cmd)
                    (tags-file ,(concat pd "TAGS"))
                    (open-files-cache ,(concat pd "open-files"))
                    (file-list-cache ,(concat pd "file-list-cache"))
                    (ack-args "--java")
-                   (startup-hook soasm-startup-hook)
-                   (shutdown-hook soasm-shutdown-hook)))))
+                   (startup-hook nil)
+                   (shutdown-hook nil)))))
 
-(defun soasm-startup-hook ()
-  (global-set-key (kbd "C-c p t") 'soasm-tags))
-
-(defun soasm-shutdown-hook
-  (global-set-key (kbd "C-c p t") 'project-tags))
+(defun soasm-find-cmd (context)
+  (assert mk-proj-basedir)
+  (let* ((dev-dir      (concat mk-proj-basedir "/devel"))
+         (prune-clause (concat "\\( -path '" dev-dir "/thirdparty' -prune \\)"))
+         (src-clause   "\\( -type f \\( -name '*.cpp' -o -name '*.[cChH]' -o -name '*.java' \\) -print \\)"))
+    (ecase context
+      ('src   (concat "find '" dev-dir "' " prune-clause " -o " src-clause))
+      ('index (concat "find '" dev-dir "' " prune-clause " -o -print"))
+      ('grep  (if (string= (expand-file-name default-directory) mk-proj-basedir)
+                  ; custom find cmd
+                  (replace-regexp-in-string "print" "print0" (soasm-find-cmd 'src))
+                ; default grep args
+                nil)))))
 
 (when (string-equal system-type "windows-nt")
   (mapcar (lambda (n) (soasm-project-def n nil)) '("kelma12-r12.5"))
-  (mapcar (lambda (n) (soasm-project-def n t)) '()))
+  (mapcar (lambda (n) (soasm-project-def n t)) '("kelma12-r12.5-soa-svc")))
 
 ;;; --------------------------------------------------------------------
 ;;; SOASM Utils
 ;;; --------------------------------------------------------------------
 
-(defun soasm-tags ()
+(defun soasm-build ()
+  "Write and run a bat file to compile our SOA view"
   (interactive)
   (mk-proj-assert-proj)
-  (if mk-proj-tags-file
-      (let* ((tags-name (file-name-nondirectory mk-proj-tags-file))
-             (tags-dir (file-name-directory mk-proj-tags-file))
-             (dev-dir (concat mk-proj-basedir "/devel"))
-             (not-dev-dir (concat dev-dir "/thirdparty"))
-             (custom-find-cmd (concat "find '" dev-dir "' \\( -path '" not-dev-dir "' -prune \\) -o "
-                                      "\\( -type -f \\( -name '*.cpp' -o -name '*.[cChH]' -o -name '*.java' \\) -print \\) "
-                                      "| etags -o '" tags-name "' - "))
-             (default-directory tags-dir)
-             (proc-name "etags-process"))
-        (message "Custom tags cmd: %s" custom-find-cmd)
-        (message "Refreshing TAGS file %s..." mk-proj-tags-file)
-        (start-process-shell-command proc-name "*etags*" custom-find-cmd)
-        (set-process-sentinel (get-process proc-name) 'mk-proj-etags-cb))
-    (message "mk-proj-tags-file is not set")))
+  (let* ((build-script (expand-file-name "~/soa-build.bat"))
+         (basedir-tmp (shell-command-to-string (concat "cygpath -w '" mk-proj-basedir "'")))
+         (basedir (substring basedir-tmp 0 (- (length basedir-tmp) 1)))
+         (develdir (concat basedir "\\devel"))
+         (go-home (concat "cd " develdir "\n"))
+         (static-view-p (string-match "cc-views" basedir)))
+    
+    ;; write our build script to disk
+    (with-temp-file build-script
+      (if (not static-view-p)
+          (insert (concat
+               "call set PS_BUILD_VIEW=" basedir "\n"
+               "call set PS_VIEW_PREFIX=%PS_BUILD_VIEW%\\devel\n"
+               "call set WA_BUILD_VIEW=" basedir "\n"
+               "call set WA_VIEW_PREFIX=%WA_BUILD_VIEW%\\devel\n"
+               "call set TM_BUILD_VIEW=" basedir "\n"
+               "call set TM_VIEW_PREFIX=%TM_BUILD_VIEW%\\devel\n"
+               "\n")))
+      (insert go-home)
+      (insert (concat
+               "cd tools\\bin\n"
+               "call buildenv\n"))
+      (insert go-home)
+      (dolist (d ;'("common" "sdk" "xps" "policy-server" "agentcommon"
+                 ;  "agentframework" "affl-minder/policy-server"
+                   '("transactionminder"))
+        (insert (concat "cd " d "\ncall clearmake -VF\n" go-home)))
+      (dolist (d '("app-server\was\scripts" "app-server\sspi\scripts"))
+        (insert (concat "cd " d "\ncall build-all.cmd\n" go-home)))
+      (dolist (d '("soamgr"))
+        (insert (concat "cd " d "\ncall clearmake -VF\n" go-home))))
+    (assert (file-readable-p build-script))
+
+    ;; run the build script in compile mode
+    ;; TODO: issues cmd before the shell is ready? Just sits at the prompt...
+    (let* ((shell-file-name "cmd.exe")
+           (explicit-shell-file-name shell-file-name)
+           (default-directory (file-name-directory build-script))
+           (bat-script (file-name-nondirectory build-script)))
+      (compile bat-script t))))
+    
+
