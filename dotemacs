@@ -360,9 +360,12 @@
 
 (when (getenv "JAVA_HOME")
   (let* ((path (getenv "JAVA_HOME"))
-         (version (file-name-nondirectory path)))
-    (setq jde-jdk-registry `((,version . ,(getenv "JAVA_HOME")))
-          jde-jdk           version)))
+         (match-start (string-match "1.[34567]" path))
+         (match-end (if match-start (match-end 0) 0))
+         (version (if match-start (substring path match-start match-end) nil)))
+    (when version
+      (setq jde-jdk-registry `((,version . ,(getenv "JAVA_HOME")))
+            jde-jdk           version))))
 
 (add-hook 'jde-mode-hook '(lambda () 
                             (require 'jde-ant)
