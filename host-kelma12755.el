@@ -60,3 +60,14 @@
         (set-process-sentinel (get-process proc-name) 'mk-proj-etags-cb))
     (message "mk-proj-tags-file is not set")))
 
+;;; Javadoc-help --------------------------------------------------------
+
+(require 'javadoc-help)
+
+;; What an ugly hack this is! This pkg needs some love.
+(let ((refreshed t)
+      (enabled t)
+      (predefined t))
+  (setq *jdh-javadocs* (mapcar (lambda (url) (jdh-javadoc-new url refreshed enabled predefined))
+                               '("c:/Documents and Settings/kelma12/My Documents/apidocs/jdk1.6.0-api"
+                                 "c:/Program Files/Java/Glassfish/glassfish/docs/api"))))
