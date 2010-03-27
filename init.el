@@ -43,6 +43,7 @@
 (autoload 'ack "ack" "Ack is better than grep" t)
 (autoload 'mcp-hl-mode "mcp-hl" "" t)
 (autoload 'list-register "list-register" "" t)
+(autoload 'rainbow-paren-mode "rainbow-parens" "" t)
 
 (when (< emacs-major-version 23) 
   (autoload 'linum-mode "linum" "" t))
