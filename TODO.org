@@ -10,3 +10,6 @@
 ** TODO Move org-mode save-all stuff to host file
 ** TODO www config has per-system stuff
 ** TODO put all recentf stuff in init.el
+** TODO cmd to list all aliases?
+** STARTED log4j-mode
+   Added pkg. Needs some love. Can't disable mode?

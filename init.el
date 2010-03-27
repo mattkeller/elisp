@@ -44,6 +44,7 @@
 (autoload 'mcp-hl-mode "mcp-hl" "" t)
 (autoload 'list-register "list-register" "" t)
 (autoload 'rainbow-paren-mode "rainbow-parens" "" t)
+(autoload 'log4j-mode "log4j-mode" "Major mode for viewing log files." t)
 
 (when (< emacs-major-version 23) 
   (autoload 'linum-mode "linum" "" t))
