@@ -24,10 +24,7 @@
 (require 'lisp)
 (require 'lang)
 (require 'www)
-
-(maybe-load (concat "system-" (downcase (symbol-name system-type))))
-(maybe-load (concat "host-" (downcase system-name)))
-;; (when (string-equal system-name "kelma12*") (maybe-load "work"))
+(require 'projects)
 
 ;;; Various libs and autoloads -----------------------------------------
 
@@ -139,16 +136,6 @@
 
   (color-theme-dark-laptop))
 
-;;; mk-projects --------------------------------------------------------
-
-;(add-to-list 'load-path "~/code/mk-project")
-(load "projects.el")
-
-(dolist (mode '(c-mode java-mode cperl-mode emacs-lisp-mode ruby-mode
-                       caml-mode lisp-mode clojure-mode))
-  (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)"
-                                  1 font-lock-warning-face prepend))))
-
 ;;;; Utils --------------------------------------------------------------
 
 ;; using mk-utils
@@ -179,6 +166,12 @@
 (require 'uniquify) 
 (setq uniquify-buffer-name-style 'post-forward ;; unique buffer names using 
       uniquify-separator         ":")          ;; part of file's path
+
+;;; Host and System specific config -------------------------------------
+
+(maybe-load (concat "system-" (downcase (symbol-name system-type))))
+(maybe-load (concat "host-" (downcase system-name)))
+;; (when (string-equal system-name "kelma12*") (maybe-load "work"))
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 

@@ -1,5 +1,10 @@
 ;;;; lang.el -- misc lang setup
 
+(dolist (mode '(c-mode java-mode cperl-mode emacs-lisp-mode ruby-mode
+                       caml-mode lisp-mode clojure-mode))
+  (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)"
+                                  1 font-lock-warning-face prepend))))
+
 ;;; Perl setup ---------------------------------------------------------
 
 (when (maybe-load "cperl-mode")
