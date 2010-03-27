@@ -1,8 +1,8 @@
 ;;;; java.el -- java coding config
 
-(add-to-list 'load-path "~/elisp/elib-1.0")
-(add-to-list 'load-path "~/elisp/cedet-1.0pre6/common/")
-(add-to-list 'load-path "~/elisp/jdee-2.4.0/lisp")
+(add-to-list 'load-path (concat dotfiles-dir "lib/elib-1.0"))
+(add-to-list 'load-path (concat dotfiles-dir "lib/cedet-1.0pre6/common/"))
+(add-to-list 'load-path (concat dotfiles-dir "lib/jdee-2.4.0/lisp"))
 
 (setq semantic-load-turn-useful-things-on t
       semanticdb-default-save-directory   "~/.semantic.cache"

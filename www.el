@@ -1,7 +1,7 @@
 ;;;; www.el -- Web Browsing
 
 (setq mk-browse-key "\C-cb")
-(add-to-list 'load-path "~/elisp/emacs-w3m")
+(add-to-list 'load-path (concat dotfiles-dir "lib/emacs-w3m"))
 (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
 (global-set-key mk-browse-key 'browse-url-at-point)
 (setq w3m-use-cookies t)
