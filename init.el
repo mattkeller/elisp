@@ -170,9 +170,14 @@
 
 ;;; Host and System specific config -------------------------------------
 
-(maybe-load (concat "system-" (downcase (symbol-name system-type))))
-(maybe-load (concat "host-" (downcase system-name)))
-;; (when (string-equal system-name "kelma12*") (maybe-load "work"))
+(let ((hostname (downcase system-name))
+      (systype  (downcase (symbol-name system-type))))
+  (maybe-load (concat "system-" systype))
+  (maybe-load (concat "host-" hostname))
+
+  (when (and (>= (length hostname) (length "kelma12"))
+             (string= "kelma12" (substring hostname 0 (length "kelma12"))))
+    (maybe-load "work")))
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 

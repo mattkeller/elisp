@@ -1,0 +1,4 @@
+;;;; work.el
+
+(message "Nuts")
+
