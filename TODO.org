@@ -8,9 +8,11 @@
    CLOSED: [2010-03-26 Fri 22:40]
 ** TODO .emacs softlink throws off the 'dotfiles-dir' value
 ** TODO Move org-mode save-all stuff to host file
-** TODO www config has per-system stuff
+** DONE www config has per-system stuff
+   CLOSED: [2010-03-27 Sat 12:29]
 ** DONE put all recentf stuff in init.el
    CLOSED: [2010-03-27 Sat 12:15]
 ** TODO cmd to list all aliases?
 ** STARTED log4j-mode
    Added pkg. Needs some love. Can't disable mode?
+** TODO Advice autoload to run smex update?

@@ -177,7 +177,12 @@
 
 (let ((hostname (downcase system-name))
       (systype  (downcase (symbol-name system-type))))
-  (maybe-load (concat "system-" systype))
+
+  (cond ((string= "windowsnt" systype)
+         (maybe-load (concat "system-windows")))
+        ((string= "gnu/linux" systype)
+         (maybe-load (concat "system-linux"))))
+
   (maybe-load (concat "host-" hostname))
 
   (when (and (>= (length hostname) (length "kelma12"))

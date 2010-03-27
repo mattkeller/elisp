@@ -1,24 +1,7 @@
 ;;;; www.el -- Web Browsing
 
 (setq mk-browse-key "\C-cb")
-(add-to-list 'load-path (concat dotfiles-dir "lib/emacs-w3m"))
-(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
 (global-set-key mk-browse-key 'browse-url-at-point)
-(setq w3m-use-cookies t)
-
-;; firefox.exe must be in the PATH
-(if (string-equal system-type "windows-nt")
-    (setq browse-url-firefox-program (executable-find "firefox.exe")))
-
-(defun mk-choose-browser (url &rest args)
-  (interactive "sURL: ")
-  (if (y-or-n-p "Use firefox? ")
-      (browse-url-firefox url)
-    (w3m-browse-url url)))
-
-(setq browse-url-browser-function '(("hyperspec" . w3m-browse-url)
-				    ("javase"    . w3m-browse-url)
-				    ("."         . mk-choose-browser)))
 
 (add-hook 'dired-mode-hook
 	  (lambda ()
