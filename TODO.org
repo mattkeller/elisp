@@ -1,0 +1,6 @@
+
+** TODO Move projects into host-x.el files
+** TODO Write README
+** TODO Add untracked .el files
+** TODO Add javadoc-help, config with JAVA_HOME
+** TODO test non ~/elisp startup
