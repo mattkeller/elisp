@@ -37,7 +37,7 @@
                  (startup-hook elisp-startup-hook))))
 
 (defun elisp-startup-hook ()
-  (find-file (concat mk-proj-basedir "dotemacs")))
+  (find-file (concat mk-proj-basedir "init.el")))
 
 
 (provide 'projects)
