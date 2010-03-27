@@ -30,6 +30,7 @@
                              (setq c-basic-offset 3)
                              (setq-default indent-tabs-mode nil
                                            tab-width 4)
-                             (linum-mode)))
+                             (linum-mode)
+                             (local-set-key (kbd "C-.") 'javadoc-lookup)))
 
 (provide 'java)

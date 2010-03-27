@@ -7,3 +7,6 @@
 ** DONE test non ~/elisp startup
    CLOSED: [2010-03-26 Fri 22:40]
 ** TODO .emacs softlink throws off the 'dotfiles-dir' value
+** TODO Move org-mode save-all stuff to host file
+** TODO www config has per-system stuff
+** TODO put all recentf stuff in init.el

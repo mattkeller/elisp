@@ -1,11 +1,13 @@
+;;;; system-windowsnt.el -- windows-specific config
 
-;;;; Dictionary completion ----------------------------------------------
+
+;;; Dictionary completion ----------------------------------------------
 
 (setq ispell-complete-word-dict "C:/Program Files/words/american.2")
 (setq ispell-grep-command "C:/cygwin/bin/grep")
 
 
-;;;; Cygwin as our shell -----------------------------------------------
+;;; Cygwin as our shell -----------------------------------------------
 
 (let* ((cygwin-root "c:/cygwin")
        (cygwin-bin (concat cygwin-root "/bin")))
@@ -25,3 +27,12 @@
     ;; This removes unsightly ^M characters that would otherwise
     ;; appear in the output of java applications.
     (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
+
+;;; TODO: setup a cmd shell w/ ORIGINAL env (PATH) ---------------------
+
+;; (defun cmdexe-shell ()
+;;   "Run cmd.exe as our shell"
+;;   (interactive)
+;;   (let ((process-environment orig-env)
+;;         (explicit-shell-file-name "cmd.exe"))
+;;     (shell))))
