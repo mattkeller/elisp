@@ -58,19 +58,26 @@
 
 ;;; Emacs server -------------------------------------------------------
 
+;; no servers *started* from here, leave that to the host- files
 (require 'server)
+
+(defun is-server-running (name)
+  "Check is an emacs-server process is already running"
+  (interactive)
+  (let ((socket-path (concat server-socket-dir "/" name)))
+    ;; server-running-p defined only in emacs23
+    (if (functionp 'server-running-p)
+        (server-running-p socket-path)
+      ;; fall back, not as reliable
+      (file-exists-p socket-path))))
 
 (defun start-named-server (name)
   "Start a server named 'name' - ensure only 1 server of that name is running"
   (interactive "sServer Name: ")
   (setq server-name name)
   (setq mk-server-socket-file (concat server-socket-dir "/" name))
-  (unless (server-running-p name)
+  (unless (is-server-running name)
     (server-start)))
-
-(when (or (< emacs-major-version 23)               ; Using emacs23 --daemon now
-          (string-equal system-type "windows-nt"))
-  (start-named-server "server")) ; default server-name
 
 ;;; Emacs Code Browser -------------------------------------------------
 
@@ -181,7 +188,9 @@
   (cond ((string= "windowsnt" systype)
          (maybe-load (concat "system-windows")))
         ((string= "gnu/linux" systype)
-         (maybe-load (concat "system-linux"))))
+         (maybe-load (concat "system-linux")))
+        ((string= "berkeley-unix" systype)
+         (maybe-load (concat "system-bsd"))))
 
   (maybe-load (concat "host-" hostname))
 
