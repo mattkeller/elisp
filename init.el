@@ -134,7 +134,11 @@
 
 ;;; color-theme -------------------------------------------------------
 
-(when window-system
+(defun is-daemonized () 
+  (and (functionp 'daemonp) 
+       (daemonp)))
+
+(when (or window-system (is-daemonized))
   (add-to-list 'load-path (concat dotfiles-dir "lib/color-theme"))
   (require 'color-theme)
   (color-theme-initialize)
