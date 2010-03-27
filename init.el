@@ -15,36 +15,34 @@
 (message "Loading from %s" dotfiles-dir)
 
 (add-to-list 'load-path dotfiles-dir)
-
 (require 'basic)
 
-(require 'mk-utils)
-
 (add-to-list 'load-path (concat dotfiles-dir "lib"))
-
+(require 'mk-utils)
 (require 'org-init)
-
 (require 'java)
-
 (require 'lisp)
 (require 'lang)
 (require 'www)
 
 (maybe-load (concat "system-" (downcase (symbol-name system-type))))
-
 (maybe-load (concat "host-" (downcase system-name)))
+;; (when (string-equal system-name "kelma12*") (maybe-load "work"))
 
-;;; Autoloads ----------------------------------------------------------
+;;; Various libs and autoloads -----------------------------------------
 
 (autoload 'find-file-recursively "find-recursive" "" t)
 (autoload 'light-symbol-mode "light-symbol" "" t)
 (autoload 'htmlize-buffer "htmlize" "" t)
 (autoload 'typing-of-emacs "typing" "The Typing-Of-Emacs, a game" t)
 (autoload 'magit-status "magit" "Magit git helper" t)
+
 (add-to-list 'load-path (concat dotfiles-dir "lib/egg"))
 (autoload 'egg-minor-mode "egg" "" t)
+
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+
 (autoload 'ack "ack" "Ack is better than grep" t)
 (autoload 'mcp-hl-mode "mcp-hl" "" t)
 (autoload 'list-register "list-register" "" t)
@@ -108,7 +106,6 @@
 (require 'git)
 (autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t)
 
-
 ;;; Browse Kill Ring ---------------------------------------------------
 
 (require 'browse-kill-ring)
@@ -123,7 +120,6 @@
 
 (autoload 'twitter-get-friends-timeline "twitter" nil t)
 (autoload 'twitter-status-edit "twitter" nil t)
-;;(global-set-key "\C-xt" 'twitter-get-friends-timeline)
 (add-hook 'twitter-status-edit-mode-hook 'longlines-mode)
 
 ;;; color-theme -------------------------------------------------------
@@ -155,13 +151,12 @@
 
 ;;;; Utils --------------------------------------------------------------
 
-(eval-after-load "mk-utils.el"
-  '(progn
-     (mk-arrow-keys-off)
-     (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
-     (define-key ctl-x-4-map "s" 'mk-swap-windows)
-     (defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")
-     (global-set-key (kbd "C-x C-r") 'find-file-root)))
+;; using mk-utils
+(mk-arrow-keys-off)
+(define-key ctl-x-4-map "t" 'mk-toggle-window-split)
+(define-key ctl-x-4-map "s" 'mk-swap-windows)
+(defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")
+(global-set-key (kbd "C-x C-r") 'find-file-root)
 
 (autoload 'etags-update-mode "etags-update" "sweet!" t)
 
