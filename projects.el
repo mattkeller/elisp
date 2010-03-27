@@ -61,7 +61,7 @@
 
 (let ((pd (concat projdir "mk-project/")))
   (project-def "mk-project"
-               `((basedir ,(concat homedir "code/mk-project/"))
+               `((basedir ,(concat homedir "code/mk-project"))
                  (src-patterns ("*.el"))
                  (ignore-patterns ("*.elc"))
                  (file-list-cache ,(concat pd "files"))
@@ -122,6 +122,15 @@
 (defun qrev-shutdown-hook ()
   (when (y-or-n-p "Close slime? ")
     (slime-quit-lisp)))
+
+(project-def "compojure"
+             `((basedir "~/code/compojure")
+               (src-patterns ("*.clj" "*.java"))
+               (ignore-patterns ("*.class"))
+               (tags-file "~/code/compojure/TAGS")
+               (file-list-cache "~/code/compojure/.file-index")
+               (vcs git)
+               (compile-cmd "ant")))
 
 ;;; --------------------------------------------------------------------
 ;;; SOA SM Views
