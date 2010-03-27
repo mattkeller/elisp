@@ -45,9 +45,6 @@
 
 (when window-system (set-background-color "gray97"))
 
-(require 'recentf)
-(recentf-mode 1)
-
 ;;; Global keybindings -------------------------------------------------
 
 ;; these are overridden smex config

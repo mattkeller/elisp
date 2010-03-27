@@ -49,6 +49,10 @@
 (when (< emacs-major-version 23) 
   (autoload 'linum-mode "linum" "" t))
 
+;;; Recent files -------------------------------------------------------
+
+(require 'recentf)
+(recentf-mode 1)
 (require 'recentf-ext)
 (setq recentf-max-menu-items 25)
 
