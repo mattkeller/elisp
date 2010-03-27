@@ -21,4 +21,6 @@
 ** DONE Advice autoload to run smex update?
    CLOSED: [2010-03-27 Sat 16:06]
    New version of smex auto-updates
-** TODO Test on freebsd
+** DONE Test on freebsd
+   CLOSED: [2010-03-27 Sat 17:12]
+** TODO merge to master
