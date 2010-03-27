@@ -96,6 +96,8 @@
 
 ;;; org-mode -----------------------------------------------------------
 
+(add-to-list 'org-agenda-files (concat dotfiles-dir "TODO-elisp.org"))
+
 ;; git-auto-commit runs at top of hour
 (defvar mk-org-save-timer
   (run-at-time "00:59" 3600 'org-save-all-org-buffers))

@@ -1,13 +1,16 @@
 
 ** DONE Move projects into host-x.el files
    CLOSED: [2010-03-26 Fri 22:36]
-** TODO Write README
-** TODO Add untracked .el files
+** DONE Write README
+   CLOSED: [2010-03-27 Sat 12:41]
+** DONE Add untracked .el files
+   CLOSED: [2010-03-27 Sat 12:36]
 ** TODO Add javadoc-help, config with JAVA_HOME
 ** DONE test non ~/elisp startup
    CLOSED: [2010-03-26 Fri 22:40]
 ** TODO .emacs softlink throws off the 'dotfiles-dir' value
-** TODO Move org-mode save-all stuff to host file
+** DONE Move org-mode save-all stuff to host file
+   CLOSED: [2010-03-27 Sat 12:36]
 ** DONE www config has per-system stuff
    CLOSED: [2010-03-27 Sat 12:29]
 ** DONE put all recentf stuff in init.el
@@ -16,3 +19,4 @@
 ** STARTED log4j-mode
    Added pkg. Needs some love. Can't disable mode?
 ** TODO Advice autoload to run smex update?
+** TODO Test on freebsd

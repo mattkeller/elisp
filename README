@@ -1,1 +1,16 @@
-tbd
+
+Load init.el first. It loads everything else. Launch emacs like: 
+
+  emacs -q -l ~/elisp/init.el
+
+basic.el has all my must-have configuration and does not rely on any
+thirdparty libraries. It should work fine in emacs 22 and 23. It can
+be used a simple, portable .emacs file.
+
+All thirdparty libraries are in ./lib. All files directly in this
+directory are config files.
+
+The system-<x>.el files are specific to a particular OS. The
+host-<x>.el files are specific to a particular machine. work.el is
+loaded when it detects I am at work (by testing the hostname).
+
