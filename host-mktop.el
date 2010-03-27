@@ -94,3 +94,15 @@
                (vcs git)
                (compile-cmd "ant")))
 
+;;; org-mode -----------------------------------------------------------
+
+;; git-auto-commit runs at top of hour
+(defvar mk-org-save-timer
+  (run-at-time "00:59" 3600 'org-save-all-org-buffers))
+
+;; TODO mk-agenda-to-html is f*cking up the rest of org somehow
+(when nil
+  (defvar mk-agenda-timer
+    (run-at-time "00:58" 300 'mk-agenda-to-html "~/.agenda.html")))
+
+
