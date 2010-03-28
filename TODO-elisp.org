@@ -15,7 +15,10 @@
    CLOSED: [2010-03-27 Sat 12:29]
 ** DONE put all recentf stuff in init.el
    CLOSED: [2010-03-27 Sat 12:15]
-** TODO cmd to list all aliases?
+** DONE cmd to list all aliases?
+   CLOSED: [2010-03-28 Sun 10:52] Not going to happen. defalias just
+   sets symbol value to the function def. There is no table of
+   aliases.
 ** STARTED log4j-mode
    Added pkg. Needs some love. Can't disable mode?
 ** DONE Advice autoload to run smex update?
@@ -23,4 +26,14 @@
    New version of smex auto-updates
 ** DONE Test on freebsd
    CLOSED: [2010-03-27 Sat 17:12]
-** TODO merge to master
+** STARTED merge to master
+   Merged to local master. Push to lrb failed.
+** TODO setup load path thusly?:
+(add-to-list 'load-path "~/.emacs.d")
+;Add all top-level subdirectories of .emacs.d to the load path
+(progn (cd "~/.emacs.d")
+       (normal-top-level-add-subdirs-to-load-path))
+;I like to keep third party libraries seperate in ~/.emacs.d/vendor
+(add-to-list 'load-path "~/.emacs.d/vendor")
+(progn (cd "~/.emacs.d/vendor")
+       (normal-top-level-add-subdirs-to-load-path))
