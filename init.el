@@ -90,7 +90,7 @@
 
 (add-to-list 'load-path (concat dotfiles-dir "lib/nxml-mode"))
 (autoload 'nxml-mode "nxml-mode" "" t)
-(add-to-list 'auto-mode-alist '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\)\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\|pom\\)\\'" . nxml-mode))
 
 ;;; etags-select -------------------------------------------------------
 
