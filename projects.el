@@ -44,6 +44,8 @@
 ;;; mk-project / ibuffer integration
 ;;; --------------------------------------------------------------------
 
+(require 'ibuffer-git) ; git-status-mini, git-status columns
+
 (defun mk/proj-buffer-p (b)
   "Is the buffer `b' part of the project?"
   (and mk-proj-name
@@ -70,6 +72,13 @@
               filename-and-process)
         (mark modified read-only
               (mk-proj-col 2 2 :left :elide) " "
+              filename-and-process)
+        (mark modified read-only
+              mk-proj-col
+              git-status-mini " "
+              (name 30 30 :left :elide) " "
+              (mode 16 16 :left :elide) " "
+              (git-status 8 8 :left) " "
               filename-and-process)))
 
 (define-key ibuffer-mode-map (kbd "C-c C-c") 'ibuffer-switch-format)
