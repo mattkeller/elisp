@@ -72,7 +72,7 @@
 (global-set-key [f9]  'split-window-vertically)
 (global-set-key [f10] 'split-window-horizontally)
 (global-set-key [f11] 'delete-window)
-(global-set-key [f12] 'delete-other-windows)
+(global-set-key [f12] 'mk-ecb-toggle)
 
 (global-set-key (kbd "C-x <down>")  'windmove-down)
 (global-set-key (kbd "C-x <up>")    'windmove-up)

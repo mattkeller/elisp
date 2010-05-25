@@ -269,4 +269,12 @@
 	(all-completions string (tags-completion-table) predicate)
       (try-completion string (tags-completion-table) predicate))))
 
+(defun mk-ecb-toggle ()
+  "Toggle ECB windows on/foo. Activate ECB if needed."
+  (interactive)
+  (require 'ecb)
+  (if ecb-minor-mode
+      (ecb-toggle-ecb-windows)
+    (ecb-activate)))
+
 (provide 'mk-utils)
