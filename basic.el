@@ -160,9 +160,10 @@
 
 (setq hippie-expand-try-functions-list 
       '(try-expand-dabbrev-visible
-        try-expand-dabbrev-from-kill
         try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
         try-expand-line
+        try-expand-list
         try-complete-file-name-partially
         try-complete-file-name
         try-complete-lisp-symbol-partially
