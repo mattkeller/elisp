@@ -65,8 +65,8 @@
      (add-hook 'slime-repl-mode-hook 'swank-clojure-slime-repl-modify-syntax t)
      (add-hook 'clojure-mode-hook 'swank-clojure-slime-mode-hook t)))
 
-(setq mk-clojure-jar "/opt/clojure/clojure-1.0.0.jar")
-(setq mk-clojure-contrib-jar "/opt/src/clojure-contrib/clojure-contrib.jar")
+(setq mk-clojure-jar "/opt/src/clojure/clojure-1.2.0-master-SNAPSHOT.jar")
+(setq mk-clojure-contrib-jar "/opt/src/clojure-contrib/target/clojure-contrib-1.2.0-SNAPSHOT.jar")
 
 (setq swank-clojure-jar-path mk-clojure-jar)
 (add-to-list 'swank-clojure-extra-classpaths mk-clojure-contrib-jar)
