@@ -45,6 +45,7 @@
 ;;; --------------------------------------------------------------------
 
 (require 'ibuffer-git) ; git-status-mini, git-status columns
+(require 'ibuf-ext)
 
 (defun mk/proj-buffer-p (b)
   "Is the buffer `b' part of the project?"
