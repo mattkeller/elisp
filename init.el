@@ -45,6 +45,7 @@
 (autoload 'list-register "list-register" "" t)
 (autoload 'rainbow-paren-mode "rainbow-parens" "" t)
 (autoload 'log4j-mode "log4j-mode" "Major mode for viewing log files." t)
+(autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
 
 (when (< emacs-major-version 23) 
   (autoload 'linum-mode "linum" "" t))
