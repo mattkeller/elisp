@@ -204,6 +204,8 @@
              (string= "kelma12" (substring hostname 0 (length "kelma12"))))
     (maybe-load "work")))
 
+(maybe-load "~/.emacs-local.el")
+
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
 (require 'smex)
