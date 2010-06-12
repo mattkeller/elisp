@@ -91,9 +91,9 @@
 
 (define-key ibuffer-mode-map (kbd "/ k") 'ibuffer-filter-by-project)
 
-;; (define-ibuffer-column mk-proj-name-col
-;;   (:name "Project")
-;;   (if (mk-proj-proj-buffer-p buffer) mk-proj-name ""))
+(define-ibuffer-column mk-proj-name-col
+  (:name "Project")
+  (if (mk-proj-proj-buffer-p buffer) mk-proj-name ""))
 
 (provide 'projects)
 
