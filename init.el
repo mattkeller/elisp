@@ -105,10 +105,6 @@
 
 (setq tramp-default-method "scp")
 (setq tramp-default-user user-login-name)
-(setq tramp-default-user-alist
-               '(("scp" ".*\\.littleredbat\\.net\\" "mk")
-                 ("scp" "lrb" "mk")))
-
 (setq tramp-auto-save-directory "~/.tramp-autosave")
 
 ;;; Git VC backend setup -----------------------------------------------
