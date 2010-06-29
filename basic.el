@@ -16,6 +16,7 @@
 (menu-bar-mode 0)                        ; keyboard only, please
 (tool-bar-mode 0)                        ; no tool bar
 (which-func-mode t)                      ; show current fn in mode-line
+(global-hl-line-mode 1)                  ; highlight current line
 (setq-default indent-tabs-mode nil)      ; by default, insert spaces, not a full tab
 (setq visible-bell t)                    ; no beeping!
 (fset 'yes-or-no-p 'y-or-n-p)            ; query with y or n always
@@ -71,7 +72,7 @@
 (global-set-key [f8]  'pop-tag-mark)
 (global-set-key [f9]  'split-window-vertically)
 (global-set-key [f10] 'split-window-horizontally)
-(global-set-key [f11] 'delete-window)
+(global-set-key [f11] 'global-hl-line-mode)
 (global-set-key [f12] 'mk-ecb-toggle)
 
 (global-set-key (kbd "C-x <down>")  'windmove-down)
