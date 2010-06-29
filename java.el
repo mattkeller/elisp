@@ -31,6 +31,14 @@
                              (setq-default indent-tabs-mode nil
                                            tab-width 4)
                              (linum-mode)
+                             (mk-maybe-hide-imports)
                              (local-set-key (kbd "C-.") 'javadoc-lookup)))
+
+(defun mk-maybe-hide-imports ()
+  (save-excursion
+    (goto-char (point-min))
+    (when (>= (count-matches "^import ") 5)
+    (message "Lotsa import statements, let's hide them")
+    (mk-hide-java-imports))))
 
 (provide 'java)

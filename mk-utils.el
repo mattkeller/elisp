@@ -297,4 +297,24 @@ by using nxml's indentation rules."
   (interactive)
   (mk-pretty-print-xml-region (point-min) (point-max)))
 
+(defun mk-hide-java-imports ()
+  "Hide the Java import statements in this file. Use
+`hs-show-all' to show them again."
+  (interactive)
+  (hs-minor-mode 1)
+  (let ((b -1)
+        (e -1))
+    (save-excursion
+      (goto-char (point-min))
+      (when (re-search-forward "^import " nil t)
+        (beginning-of-line)
+        (setq b (point)))
+      (goto-char (point-max))
+      (when (re-search-backward "^import " nil t)
+        (end-of-line)
+        (setq e (point))))
+    (when (and (not (= b -1))
+               (not (= e -1)))
+      (hs-make-overlay b e 'code))))
+
 (provide 'mk-utils)
