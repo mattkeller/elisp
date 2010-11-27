@@ -317,4 +317,14 @@ by using nxml's indentation rules."
                (not (= e -1)))
       (hs-make-overlay b e 'code))))
 
+;; from https://github.com/nakkaya/emacs/blob/master/prog.el
+(defun mk-bounce-sexp ()
+  "Will bounce between matching parens just like % in vi"
+  (interactive)
+  (let ((prev-char (char-to-string (preceding-char)))
+        (next-char (char-to-string (following-char))))
+    (cond ((string-match "[[{(<]" next-char) (forward-sexp 1))
+          ((string-match "[\]})>]" prev-char) (backward-sexp 1))
+          (t (error "%s" "Not on a paren, brace, or bracket")))))
+
 (provide 'mk-utils)
