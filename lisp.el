@@ -95,6 +95,30 @@
   (save-window-excursion
     (slime)))
 
+(defun mk-clojure-mk-project (name dir)
+  (interactive "sProject Name: \nDDirectory: ")
+  (let ((pd (file-name-as-directory (concat (getenv "HOME") "/.mk-project/" name)))
+        (bd (file-name-as-directory dir)))
+    (unless (file-exists-p pd)
+      (mkdir pd))
+    (unless (file-exists-p (concat bd "/project.clj"))
+      (mk-lein-new-project name dir)
+      (message "Created lein project"))
+    (project-def name `((basedir ,bd)
+                        (src-patterns ("*.clj"))
+                        (ignore-patterns ("*.class"))
+                        (compile-cmd "lein compile")
+                        (tags-file ,(concat pd "/TAGS"))
+                        (file-list-cache ,(concat pd "/file-index"))
+                        (open-files-cache ,(concat pd "/open-files"))
+                        (vcs git)))
+    (message (concat "Created project " name " in " dir))))
+
+(defun mk-lein-new-project (name dir)
+  (interactive "sProject Name: \nDDirectory: ")
+  (let ((default-directory dir))
+    (shell-command (concat "lein new " name " ."))))
+
 ;;; Elisp Setup --------------------------------------------------------
 
 (defun mk-remove-elc-on-save ()

@@ -2,6 +2,7 @@
 
 (require 'mk-project)
 (require 'cl)
+(require 'lisp)
 
 ;;; cl-sip -------------------------------------------------------------
 
@@ -108,3 +109,6 @@
     (run-at-time "00:58" 300 'mk-agenda-to-html "~/.agenda.html")))
 
 
+;;; new lrb ------------------------------------------------------------
+
+(mk-clojure-mk-project "newlrb" "~/code/newlrb")
