@@ -132,6 +132,7 @@
                         (tags-file ,(concat pd "/TAGS"))
                         (file-list-cache ,(concat pd "/file-index"))
                         (open-files-cache ,(concat pd "/open-files"))
+                        (startup-hook ,(intern-soft (concat "mk-" name "-project-startup")))
                         (vcs git)))
     (message (concat "Created project " name " in " dir))))
 

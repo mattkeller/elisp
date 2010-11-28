@@ -111,4 +111,10 @@
 
 ;;; new lrb ------------------------------------------------------------
 
+(defun mk-newlrb-project-startup ()
+  (unless (get-buffer "*inferior-lisp*")
+    (mk-lein-swank)
+    (message "You've been swanked!")))
+
 (mk-clojure-mk-project "newlrb" "~/code/newlrb")
+
