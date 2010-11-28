@@ -65,16 +65,19 @@
      (add-hook 'slime-repl-mode-hook 'swank-clojure-slime-repl-modify-syntax t)
      (add-hook 'clojure-mode-hook 'swank-clojure-slime-mode-hook t)))
 
-(setq mk-clojure-jar "/opt/src/clojure/clojure-1.2.0-master-SNAPSHOT.jar")
-(setq mk-clojure-contrib-jar "/opt/src/clojure-contrib/target/clojure-contrib-1.2.0-SNAPSHOT.jar")
+(setq mk-clojure-jar "/opt/clojure/lib/clojure.jar")
+(setq mk-clojure-contrib-jar "/opt/clojure/lib/clojure-contrib.jar")
 
 (setq swank-clojure-jar-path mk-clojure-jar)
 (add-to-list 'swank-clojure-extra-classpaths mk-clojure-contrib-jar)
+
+(add-hook 'slime-repl-mode-hook 'clojure-mode-font-lock-setup)
 
 ;; Sbcl is still the default slime target. Launch clojure with M-- M-x slime clojure
 
 (defun clojure-project (path clojure-jar clojure-contrib-jar class-dir classpath-dirs)
   "Sets up classpath for a clojure project and starts a new SLIME session."
+  (interactive)
   (when (get-buffer "*inferior-lisp*")
     (kill-buffer "*inferior-lisp*"))
   (setq swank-clojure-binary nil
@@ -94,6 +97,24 @@
                          slime-lisp-implementations)))
   (save-window-excursion
     (slime)))
+
+(defun mk-lein-repl ()
+  "Launch a clojure REPL with lein in the project's root"
+  (interactive)
+  (if (and mk-proj-basedir
+           (file-exists-p (concat mk-proj-basedir "project.clj")))
+      (let ((default-directory mk-proj-basedir))
+        (inferior-lisp "lein repl"))
+    (message "Sorry, no project.clj at the project basedir")))
+
+(defun mk-lein-swank ()
+  "Launch a swank server with lein in the project's root"
+  (interactive)
+  (if (and mk-proj-basedir
+           (file-exists-p (concat mk-proj-basedir "project.clj")))
+      (let ((default-directory mk-proj-basedir))
+        (inferior-lisp "lein swank"))
+    (message "Sorry, no project.clj at the project basedir")))
 
 (defun mk-clojure-mk-project (name dir)
   (interactive "sProject Name: \nDDirectory: ")
