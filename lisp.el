@@ -2,43 +2,48 @@
 
 ;;; SBCL/Slime Setup --------------------------------------------------------
 
-(when (string-equal (symbol-name system-type) "gnu/linux")
-  (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
-  (add-to-list 'load-path (expand-file-name "~/.sbcl/site/slime"))
-  (add-to-list 'load-path (expand-file-name "~/.sbcl/site/slime/contrib"))
-  (autoload 'slime "slime" "Start and connect to the inferior lisp image" t)
-  (autoload 'slime-mode "slime" "Start slime-mode for this buffer" t)
-  (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
-  (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
+(setq slime-base (expand-file-name "~/tmp/slime-2010-11-28"))
+(add-to-list 'load-path slime-base)
+(add-to-list 'load-path (concat slime-base "contrib"))
+(require 'slime-autoloads)
+(eval-after-load "slime"
+  (slime-setup '(slime-repl)))
 
-  (eval-after-load "slime"
-    '(progn
-       (add-to-list 'slime-lisp-implementations '(sbcl ("/opt/bin/sbcl" "--noinform")))
+;; (when (string-equal (symbol-name system-type) "gnu/linux")
+;;   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")
+;;   (autoload 'slime "slime" "Start and connect to the inferior lisp image" t)
+;;   (autoload 'slime-mode "slime" "Start slime-mode for this buffer" t)
+;;   (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+;;   (autoload 'paredit-mode "paredit" "Minor mode for pseudo-structurally editing Lisp code." t)
 
-       (slime-setup '(slime-fancy slime-asdf slime-banner slime-highlight-edits))
+;;   (eval-after-load "slime"
+;;     '(progn
+;;        (add-to-list 'slime-lisp-implementations '(sbcl ("/opt/bin/sbcl" "--noinform")))
 
-       (setq slime-complete-symbol*-fancy t
-             slime-complete-symbol-function 'slime-fuzzy-complete-symbol
-             slime-when-complete-filename-expand t
-             slime-truncate-lines nil
-             slime-autodoc-use-multiline-p t
-             slime-startup-animation nil)
+;;        (slime-setup '(slime-fancy slime-asdf slime-banner slime-highlight-edits))
 
-       (define-key slime-mode-map      (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
-       (define-key slime-repl-mode-map (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
-       (define-key slime-mode-map      (kbd "TAB")     'slime-indent-and-complete-symbol)
-       (define-key slime-mode-map      (kbd "C-c ;")   'slime-insert-balanced-comments)
-       (define-key slime-repl-mode-map (kbd "C-c ;")   'slime-insert-balanced-comments)
-       (define-key slime-mode-map      (kbd "C-c M-;") 'slime-remove-balanced-comments)
-       (define-key slime-repl-mode-map (kbd "C-c M-;") 'slime-remove-balanced-comments)
-       (define-key slime-mode-map      (kbd "RET")     'newline-and-indent)
-       (define-key slime-mode-map      (kbd "")        'newline-and-indent)
-       (define-key slime-mode-map      (kbd "C-j")     'newline)
-       (define-key slime-mode-map      (kbd "<f5>")    'slime-selector)
-       (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
-       (define-key slime-mode-map      (kbd "C-c r")   'mk-goto-repl)
+;;        (setq slime-complete-symbol*-fancy t
+;;              slime-complete-symbol-function 'slime-fuzzy-complete-symbol
+;;              slime-when-complete-filename-expand t
+;;              slime-truncate-lines nil
+;;              slime-autodoc-use-multiline-p t
+;;              slime-startup-animation nil)
 
-       (paredit-mode +1))))
+;;        (define-key slime-mode-map      (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
+;;        (define-key slime-repl-mode-map (kbd "C-TAB")   'slime-fuzzy-complete-symbol)
+;;        (define-key slime-mode-map      (kbd "TAB")     'slime-indent-and-complete-symbol)
+;;        (define-key slime-mode-map      (kbd "C-c ;")   'slime-insert-balanced-comments)
+;;        (define-key slime-repl-mode-map (kbd "C-c ;")   'slime-insert-balanced-comments)
+;;        (define-key slime-mode-map      (kbd "C-c M-;") 'slime-remove-balanced-comments)
+;;        (define-key slime-repl-mode-map (kbd "C-c M-;") 'slime-remove-balanced-comments)
+;;        (define-key slime-mode-map      (kbd "RET")     'newline-and-indent)
+;;        (define-key slime-mode-map      (kbd "")        'newline-and-indent)
+;;        (define-key slime-mode-map      (kbd "C-j")     'newline)
+;;        (define-key slime-mode-map      (kbd "<f5>")    'slime-selector)
+;;        (define-key slime-repl-mode-map (kbd "<f5>")    'slime-selector)
+;;        (define-key slime-mode-map      (kbd "C-c r")   'mk-goto-repl)
+
+;;       (paredit-mode +1))))
 
 ; do slime mode for all lisp files
 (add-hook 'lisp-mode-hook (lambda ()
@@ -49,27 +54,27 @@
 
 ;;; Clojure ------------------------------------------------------------
 
-(add-to-list 'load-path (concat dotfiles-dir "lib/swank-clojure"))
+;(add-to-list 'load-path (concat dotfiles-dir "lib/swank-clojure"))
 (require 'clojure-mode)
-(require 'swank-clojure)
+;(require 'swank-clojure) ; start swank from lein or whatever, not emacs
 
 ;; (autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
 ;; (autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
 ;; (add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
 
-(eval-after-load "slime"
-  '(progn
-     (require 'swank-clojure)
-     (add-to-list 'slime-lisp-implementations `(clojure ,(swank-clojure-cmd) :init swank-clojure-init) t)
-     (add-hook 'slime-indentation-update-hooks 'swank-clojure-update-indentation)
-     (add-hook 'slime-repl-mode-hook 'swank-clojure-slime-repl-modify-syntax t)
-     (add-hook 'clojure-mode-hook 'swank-clojure-slime-mode-hook t)))
+;; (eval-after-load "slime"
+;;   '(progn
+;;      (require 'swank-clojure)
+;;      (add-to-list 'slime-lisp-implementations `(clojure ,(swank-clojure-cmd) :init swank-clojure-init) t)
+;;      (add-hook 'slime-indentation-update-hooks 'swank-clojure-update-indentation)
+;;      (add-hook 'slime-repl-mode-hook 'swank-clojure-slime-repl-modify-syntax t)
+;;      (add-hook 'clojure-mode-hook 'swank-clojure-slime-mode-hook t)))
 
-(setq mk-clojure-jar "/opt/clojure/lib/clojure.jar")
-(setq mk-clojure-contrib-jar "/opt/clojure/lib/clojure-contrib.jar")
+;;(setq mk-clojure-jar "/opt/clojure/lib/clojure.jar")
+;; (setq mk-clojure-contrib-jar "/opt/clojure/lib/clojure-contrib.jar")
 
-(setq swank-clojure-jar-path mk-clojure-jar)
-(add-to-list 'swank-clojure-extra-classpaths mk-clojure-contrib-jar)
+;; (setq swank-clojure-jar-path mk-clojure-jar)
+;; (add-to-list 'swank-clojure-extra-classpaths mk-clojure-contrib-jar)
 
 (add-hook 'slime-repl-mode-hook 'clojure-mode-font-lock-setup)
 
@@ -116,14 +121,30 @@
         (inferior-lisp "lein swank"))
     (message "Sorry, no project.clj at the project basedir")))
 
-(defun mk-clojure-mk-project (name dir)
+(defun mk-lein-new-project (name dir)
+  "Create a new clojure project with 'lein new'"
   (interactive "sProject Name: \nDDirectory: ")
+  (let ((default-directory dir))
+    (shell-command (concat "lein new " name " ."))))
+
+(defun mk-lein-test ()
+  "Run 'lein test' in the project's basedir"
+  (interactive)
+  (when (and mk-proj-basedir 
+             (file-exists-p (concat mk-proj-basedir "project.clj")))
+    (let ((default-directory mk-proj-basedir))
+      (shell-command "lein test"))))
+
+(defun mk-clojure-mk-project (name dir)
+  "Create a new clojure project in `dir' with lein and add a mk-project for it."
+  (interactive "sProject Name: \nFDirectory: ")
   (let ((pd (file-name-as-directory (concat (getenv "HOME") "/.mk-project/" name)))
         (bd (file-name-as-directory dir)))
-    (unless (file-exists-p pd)
-      (mkdir pd))
+    (unless (file-exists-p pd) (mkdir pd))
+    (unless (file-exists-p bd) (mkdir bd))
+    (message (concat "PD: " pd "; BD " bd))
     (unless (file-exists-p (concat bd "/project.clj"))
-      (mk-lein-new-project name dir)
+      (mk-lein-new-project name bd)
       (message "Created lein project"))
     (project-def name `((basedir ,bd)
                         (src-patterns ("*.clj"))
@@ -136,10 +157,6 @@
                         (vcs git)))
     (message (concat "Created project " name " in " dir))))
 
-(defun mk-lein-new-project (name dir)
-  (interactive "sProject Name: \nDDirectory: ")
-  (let ((default-directory dir))
-    (shell-command (concat "lein new " name " ."))))
 
 ;;; Elisp Setup --------------------------------------------------------
 
