@@ -21,10 +21,12 @@
 (require 'mk-utils)
 (require 'org-init)
 (require 'java)
-(require 'lisp)
+;(require 'lisp)
+(require 'clojure)
 (require 'lang)
 (require 'www)
 (require 'projects)
+(require 'mk-tags)
 
 ;;; Various libs and autoloads -----------------------------------------
 
