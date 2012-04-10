@@ -61,4 +61,10 @@
 (autoload 'caml-mode "ocaml" "ocaml" "Major mode for editing Caml code." t)
 (autoload 'camldebug "camldebug" "camldebug" "Debug caml mode")
 
+;;; Protocol Buffers ---------------------------------------------------
+
+(add-to-list 'auto-mode-alist '("\\.proto$" .  protobuf-mode))
+(autoload 'protobuf-mode "protobuf-mode" "protobuf-mode" t)
+
+
 (provide 'lang)
