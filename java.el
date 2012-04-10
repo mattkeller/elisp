@@ -27,11 +27,13 @@
 
 (add-hook 'java-mode-hook '(lambda ()
                              (c-set-style "java")
-                             (setq c-basic-offset 3)
+                             (setq c-basic-offset 4)
+                             (c-set-offset 'substatement-open 0)
                              (setq-default indent-tabs-mode nil
                                            tab-width 4)
-                             (linum-mode)
                              (mk-maybe-hide-imports)
+                             (subword-mode)
+                             (mk-coding-hook)
                              (local-set-key (kbd "C-.") 'javadoc-lookup)))
 
 (defun mk-maybe-hide-imports ()
