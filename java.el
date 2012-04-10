@@ -85,4 +85,17 @@
     (switch-to-buffer-other-window curbuf)
     (call-process "ant" nil outbuf t "-emacs" "-f" buildfile target)))
 
+(defun file-search-upward (directory file)
+  "search a file upward"
+  (let* ((updir (file-truename (concat (file-name-directory directory) "../")))
+         (curfd (if (not (string= (substring directory (- (length directory) 1)) "/"))
+                    (concat directory "/" file)
+                  (concat directory file))))
+    (if (file-exists-p curfd)
+        curfd
+      (if (and (not (string= (file-truename directory) updir))
+               (< (length updir) (length (file-truename directory))))
+          (file-search-upward updir file)
+        nil))))
+
 (provide 'java)
