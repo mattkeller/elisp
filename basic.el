@@ -17,6 +17,7 @@
 (tool-bar-mode 0)                        ; no tool bar
 (which-func-mode t)                      ; show current fn in mode-line
 (global-hl-line-mode 1)                  ; highlight current line
+(set-face-background 'hl-line "#222222") ; gray 
 (setq-default indent-tabs-mode nil)      ; by default, insert spaces, not a full tab
 (setq visible-bell t)                    ; no beeping!
 (fset 'yes-or-no-p 'y-or-n-p)            ; query with y or n always
@@ -46,6 +47,19 @@
 
 (when window-system (set-background-color "gray97"))
 
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+;; backwards compatibility as default-buffer-file-coding-system
+;; is deprecated in 23.2.
+(if (boundp 'buffer-file-coding-system)
+    (setq-default buffer-file-coding-system 'utf-8)
+  (setq default-buffer-file-coding-system 'utf-8))
+ 
+;; Treat clipboard input as UTF-8 string first; compound text next, etc.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+
 ;;; Global keybindings -------------------------------------------------
 
 ;; these are overridden smex config
@@ -61,6 +75,7 @@
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)  ; use regexp version
 (global-set-key (kbd "C-r") 'isearch-backward-regexp) ; use regexp version
 (global-set-key (kbd "M-%") 'query-replace-regexp)    ; use regexp version
+(global-set-key (kbd "C-c v") 'revert-buffer)
 
 (global-set-key [f1]  'ibuffer)
 (global-set-key [f2]  'mk-shell-dwim)                        ; C-u F2 => start new shell TODO: customization
@@ -173,6 +188,5 @@
 ;;; Autoloads ----------------------------------------------------------
 
 (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
-
 
 (provide 'basic)
