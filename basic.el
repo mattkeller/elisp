@@ -104,6 +104,8 @@
 (global-set-key (kbd "M-<down>") (lambda () (interactive) (scroll-up 1)))
 (global-set-key (kbd "M-<up>") (lambda () (interactive) (scroll-down 1)))
 
+(global-set-key (kbd "M-j") (lambda () (interactive) (join-line -1)))
+
 ;;;; Aliases ------------------------------------------------------------
 
 (defalias 'qrr 'query-replace-regexp)
@@ -171,6 +173,24 @@
              (setq c-basic-offset 4)
              (setq indent-tabs-mode nil)
              (linum-mode)))
+
+;;; EDiff --------------------------------------------------------------
+
+(if (locate-library "ediff")
+    (progn
+      (autoload 'ediff-files "ediff")
+      (autoload 'ediff-buffers "ediff")
+
+      (eval-after-load "ediff" '(progn
+                                  (message "doing ediff customisation")
+                                  (setq diff-switches  "-u"
+                                        ediff-custom-diff-options  "-U3"
+                                        ediff-split-window-function 'split-window-horizontally
+                                        ediff-window-setup-function 'ediff-setup-windows-plain)
+
+                                  (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+                                  (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+                                  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))))
 
 ;;; hippie-expand fun --------------------------------------------------
 
