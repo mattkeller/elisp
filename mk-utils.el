@@ -327,4 +327,14 @@ by using nxml's indentation rules."
           ((string-match "[\]})>]" prev-char) (backward-sexp 1))
           (t (error "%s" "Not on a paren, brace, or bracket")))))
 
+(defun local-comment-auto-fill ()
+  (set (make-local-variable 'comment-auto-fill-only-comments) t)
+  (auto-fill-mode t))
+
+(defun save-buffer-always ()
+  "Save the buffer even if it is not modified."
+  (interactive)
+  (set-buffer-modified-p t)
+  (save-buffer))
+
 (provide 'mk-utils)
