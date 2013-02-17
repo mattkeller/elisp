@@ -2,7 +2,7 @@
 
 (require 'mk-project)
 (require 'cl)
-;(require 'clearcase)
+(require 'clearcase)
 
 (when (file-exists-p "~/.emacs.d/emacs-color-theme-solarized")
   (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
