@@ -185,6 +185,11 @@
 (setq uniquify-buffer-name-style 'post-forward ;; unique buffer names using 
       uniquify-separator         ":")          ;; part of file's path
 
+;;;; A saner ediff ------------------------------------------------------
+(setq ediff-diff-options "-w")
+(setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
 ;;; Host and System specific config -------------------------------------
 
 (let ((hostname (downcase system-name))
