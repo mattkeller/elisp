@@ -1,6 +1,7 @@
 ;;;; org-mode.el
 
 ; emacs-24 (add-to-list 'load-path (concat dotfiles-dir "lib/org-mode/lisp"))
+(add-to-list 'load-path (expand-file-name "~/code/org-7.9.3elisp"))
 (require 'org)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
@@ -12,7 +13,7 @@
 
 (setq org-directory                     (expand-file-name "~/proj/org")
       org-default-notes-file            (concat org-directory "/todo.org")
-      org-agenda-files                  (file-expand-wildcards (concat org-directory "/*.org"))
+      org-agenda-files                  (list org-directory)
       org-startup-folded                nil
       org-log-done                      'time
       org-return-follows-link           t
