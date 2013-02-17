@@ -1,5 +1,6 @@
 ;;; org-mtags.el --- Muse-like tags in Org-mode
-;; Copyright (C) 2008, 2009 Free Software Foundation, Inc.
+
+;; Copyright (C) 2008-2013 Free Software Foundation, Inc.
 ;;
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -105,7 +106,7 @@
   :group 'org-faces)
 
 (defcustom org-mtags-prefer-muse-templates t
-  "Non-nil means, prefere Muse tags for structure elements.
+  "Non-nil means prefere Muse tags for structure elements.
 This is relevane when expanding the templates defined in the variable
 `org-structure-templates'."
   :group 'org-mtags
@@ -254,4 +255,3 @@ with string values.  In addition, it reutnrs the following properties:
 (provide 'org-mtags)
 
 ;;; org-mtags.el ends here
-

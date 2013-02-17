@@ -1,11 +1,10 @@
 ;;; org-mac-message.el --- Links to Apple Mail.app messages from within Org-mode
 
-;; Copyright (C) 2008, 2009 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
-;; Author: John Wiegley <johnw@gnu.org>
-;;         Christopher Suckling <suckling at gmail dot com>
+;; Authors: John Wiegley <johnw@gnu.org>
+;;       Christopher Suckling <suckling at gmail dot com>
 
-;; Version: 6.34b
 ;; Keywords: outlines, hypermedia, calendar, wp
 
 ;; This file is part of GNU Emacs.
@@ -39,7 +38,7 @@
 ;; messages selected in Mail.app.
 
 ;; (org-mac-message-insert-flagged) searches within an org-mode buffer
-;; for a specific heading, creating it if it doesn't exist. Any
+;; for a specific heading, creating it if it doesn't exist.  Any
 ;; message:// links within the first level of the heading are deleted
 ;; and replaced with links to flagged messages.
 
@@ -48,12 +47,12 @@
 (require 'org)
 
 (defgroup org-mac-flagged-mail nil
-  "Options concerning linking to flagged Mail.app messages"
+  "Options concerning linking to flagged Mail.app messages."
   :tag "Org Mail.app"
   :group 'org-link)
 
 (defcustom org-mac-mail-account "customize"
-  "The Mail.app account in which to search for flagged messages"
+  "The Mail.app account in which to search for flagged messages."
   :group 'org-mac-flagged-mail
   :type 'string)
 
@@ -81,68 +80,68 @@ This will use the command `open' with the message URL."
 		 "open" (concat "message://<" (substring message-id 2) ">")))
 
 (defun as-get-selected-mail ()
-  "AppleScript to create links to selected messages in Mail.app"
+  "AppleScript to create links to selected messages in Mail.app."
   (do-applescript
    (concat
     "tell application \"Mail\"\n"
-          "set theLinkList to {}\n"
-          "set theSelection to selection\n"
-          "repeat with theMessage in theSelection\n"
-                  "set theID to message id of theMessage\n"
-                  "set theSubject to subject of theMessage\n"
-                  "set theLink to \"message://\" & theID & \"::split::\" & theSubject & \"\n\"\n"
-                  "copy theLink to end of theLinkList\n"
-          "end repeat\n"
-          "return theLinkList as string\n"
+    "set theLinkList to {}\n"
+    "set theSelection to selection\n"
+    "repeat with theMessage in theSelection\n"
+    "set theID to message id of theMessage\n"
+    "set theSubject to subject of theMessage\n"
+    "set theLink to \"message://\" & theID & \"::split::\" & theSubject & \"\n\"\n"
+    "copy theLink to end of theLinkList\n"
+    "end repeat\n"
+    "return theLinkList as string\n"
     "end tell")))
 
 (defun as-get-flagged-mail ()
-  "AppleScript to create links to flagged messages in Mail.app"
+  "AppleScript to create links to flagged messages in Mail.app."
   (do-applescript
    (concat
     ;; Is Growl installed?
     "tell application \"System Events\"\n"
-	  "set growlHelpers to the name of every process whose creator type contains \"GRRR\"\n"
-	  "if (count of growlHelpers) > 0 then\n"
-	      "set growlHelperApp to item 1 of growlHelpers\n"
-	      "else\n"
-	      "set growlHelperApp to \"\"\n"
-	  "end if\n"
+    "set growlHelpers to the name of every process whose creator type contains \"GRRR\"\n"
+    "if (count of growlHelpers) > 0 then\n"
+    "set growlHelperApp to item 1 of growlHelpers\n"
+    "else\n"
+    "set growlHelperApp to \"\"\n"
+    "end if\n"
     "end tell\n"
 
     ;; Get links
     "tell application \"Mail\"\n"
-	  "set theMailboxes to every mailbox of account \"" org-mac-mail-account "\"\n"
-	  "set theLinkList to {}\n"
-	  "repeat with aMailbox in theMailboxes\n"
-	          "set theSelection to (every message in aMailbox whose flagged status = true)\n"
-	          "repeat with theMessage in theSelection\n"
-	                  "set theID to message id of theMessage\n"
-			  "set theSubject to subject of theMessage\n"
-			  "set theLink to \"message://\" & theID & \"::split::\" & theSubject & \"\n\"\n"
-			  "copy theLink to end of theLinkList\n"
+    "set theMailboxes to every mailbox of account \"" org-mac-mail-account "\"\n"
+    "set theLinkList to {}\n"
+    "repeat with aMailbox in theMailboxes\n"
+    "set theSelection to (every message in aMailbox whose flagged status = true)\n"
+    "repeat with theMessage in theSelection\n"
+    "set theID to message id of theMessage\n"
+    "set theSubject to subject of theMessage\n"
+    "set theLink to \"message://\" & theID & \"::split::\" & theSubject & \"\n\"\n"
+    "copy theLink to end of theLinkList\n"
 
-			  ;; Report progress through Growl
-			  ;; This "double tell" idiom is described in detail at
-			  ;; http://macscripter.net/viewtopic.php?id=24570 The
-			  ;; script compiler needs static knowledge of the
-			  ;; growlHelperApp.  Hmm, since we're compiling
-			  ;; on-the-fly here, this is likely to be way less
-			  ;; portable than I'd hoped.  It'll work when the name
-			  ;; is still "GrowlHelperApp", though.
-			  "if growlHelperApp is not \"\" then\n"
-			      "tell application \"GrowlHelperApp\"\n"
-			            "tell application growlHelperApp\n"
-				          "set the allNotificationsList to {\"FlaggedMail\"}\n"
-					  "set the enabledNotificationsList to allNotificationsList\n"
-					  "register as application \"FlaggedMail\" all notifications allNotificationsList default notifications enabledNotificationsList icon of application \"Mail\"\n"
-					  "notify with name \"FlaggedMail\" title \"Importing flagged message\" description theSubject application name \"FlaggedMail\"\n"
-				    "end tell\n"
-			      "end tell\n"
-			  "end if\n"
-	          "end repeat\n"
-	  "end repeat\n"
-	  "return theLinkList as string\n"
+    ;; Report progress through Growl
+    ;; This "double tell" idiom is described in detail at
+    ;; http://macscripter.net/viewtopic.php?id=24570 The
+    ;; script compiler needs static knowledge of the
+    ;; growlHelperApp.  Hmm, since we're compiling
+    ;; on-the-fly here, this is likely to be way less
+    ;; portable than I'd hoped.  It'll work when the name
+    ;; is still "GrowlHelperApp", though.
+    "if growlHelperApp is not \"\" then\n"
+    "tell application \"GrowlHelperApp\"\n"
+    "tell application growlHelperApp\n"
+    "set the allNotificationsList to {\"FlaggedMail\"}\n"
+    "set the enabledNotificationsList to allNotificationsList\n"
+    "register as application \"FlaggedMail\" all notifications allNotificationsList default notifications enabledNotificationsList icon of application \"Mail\"\n"
+    "notify with name \"FlaggedMail\" title \"Importing flagged message\" description theSubject application name \"FlaggedMail\"\n"
+    "end tell\n"
+    "end tell\n"
+    "end if\n"
+    "end repeat\n"
+    "end repeat\n"
+    "return theLinkList as string\n"
     "end tell")))
 
 (defun org-mac-message-get-links (&optional select-or-flag)
@@ -179,7 +178,7 @@ The Org-syntax text will be pushed to the kill ring, and also returned."
 
 (defun org-mac-message-insert-selected ()
   "Insert a link to the messages currently selected in Mail.app.
-This will use applescript to get the message-id and the subject of the
+This will use AppleScript to get the message-id and the subject of the
 active mail in Mail.app and make a link out of it."
   (interactive)
   (insert (org-mac-message-get-links "s")))
@@ -209,11 +208,9 @@ list of message:// links to flagged mail after heading."
 	    (insert "\n" (org-mac-message-get-links "f")))
 	(goto-char (point-max))
 	(insert "\n")
-	(org-insert-heading)
+	(org-insert-heading nil t)
 	(insert org-heading "\n" (org-mac-message-get-links "f"))))))
 
 (provide 'org-mac-message)
-
-;; arch-tag: 3806d0c1-abe1-4db6-9c31-f3ed7d4a9b32
 
 ;;; org-mac-message.el ends here

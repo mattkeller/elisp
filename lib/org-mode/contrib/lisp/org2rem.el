@@ -1,6 +1,6 @@
 ;;; org2rem.el --- Convert org appointments into reminders
 
-;; Copyright (C) 2006, 2007, 2008 Free Software Foundation, Inc.
+;; Copyright (C) 2006-2013 Free Software Foundation, Inc.
 
 ;; Author: Bastien Guerry and Shatad Pratap
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -115,7 +115,7 @@ all-tags    All tags, including inherited ones."
 	   (const :tag "All tags, including inherited ones" all-tags))))
 
 (defcustom org-remind-include-todo nil
-  "Non-nil means, export to remind files should also cover TODO items."
+  "Non-nil means export to remind files should also cover TODO items."
   :group 'org2rem
   :type '(choice
 	  (const :tag "None" nil)
@@ -123,19 +123,19 @@ all-tags    All tags, including inherited ones."
 	  (const :tag "All" all)))
 
 (defcustom org-remind-include-sexps t
-  "Non-nil means, export to Remind files should also cover sexp entries.
+  "Non-nil means export to Remind files should also cover sexp entries.
 These are entries like in the diary, but directly in an Org-mode file."
   :group 'org2rem
   :type 'boolean)
 
 (defcustom org-remind-deadline-over-scheduled t
-  "Non-nil means, use deadline as target when both deadline and
+  "Non-nil means use deadline as target when both deadline and
 scheduled present, vice-versa. Default is Non-nil."
   :group 'org2rem
   :type 'boolean)
 
 (defcustom org-remind-escape-percentage t
-  "Non-nil means, % will be escaped, vice-versa. Default is Non-nil."
+  "Non-nil means % will be escaped, vice-versa. Default is Non-nil."
   :group 'org2rem
   :type 'boolean)
 
@@ -150,7 +150,7 @@ scheduled present, vice-versa. Default is Non-nil."
   :type 'number)
 
 (defcustom org-remind-suppress-last-newline nil
-  "Non-nil means, suppress last newline REM body. Default is nil."
+  "Non-nil means suppress last newline REM body. Default is nil."
   :group 'org2rem
   :type 'boolean)
 
@@ -166,7 +166,7 @@ The text will be inserted into the DESCRIPTION field."
 	  (integer :tag "Max characters")))
 
 (defcustom org-remind-store-UID nil
-  "Non-nil means, store any created UIDs in properties.
+  "Non-nil means store any created UIDs in properties.
 The Remind standard requires that all entries have a unique identifyer.
 Org will create these identifiers as needed.  When this variable is non-nil,
 the created UIDs will be stored in the ID property of the entry.  Then the
@@ -211,7 +211,7 @@ The file is stored under the name `org-combined-agenda-remind-file'."
 If COMBINE is non-nil, combine all calendar entries into a single large
 file and store it under the name `org-combined-agenda-remind-file'."
   (save-excursion
-    (org-prepare-agenda-buffers files)
+    (org-agenda-prepare-buffers files)
     (let* ((dir (org-export-directory
 		 :ical (list :publishing-directory
 			     org-export-publishing-directory)))
@@ -402,7 +402,7 @@ REM %s %s MSG EVENT:%s%s %s%s%%
 	      (insert sexp "\n"))))
 	;; (princ (org-diary-to-rem-string sexp-buffer))
 	(kill-buffer sexp-buffer))
-      
+
       (when org-remind-include-todo
 	(setq prefix "TODO-")
 	(goto-char (point-min))
@@ -450,7 +450,7 @@ REM %s %s MSG EVENT:%s%s %s%s%%
                                 (if dos diff-days 0)
                               (if dos 0 diff-days))
                           1000)))
-              
+
               (if (and (numberp org-rem-aw) (> org-rem-aw 0))
                   (setq remind-aw (+ (or remind-aw 0) org-rem-aw)))
 
@@ -470,7 +470,7 @@ REM %s %s MSG EVENT:%s%s %s%s%%
               (and due (setq due (org-rem-ts-to-remind-date-type due)))
               (and start (setq start (org-rem-ts-to-remind-date-type start)))
               (and remind-ew (setq remind-ew (org-rem-ts-to-remind-date-type remind-ew)))
-               
+
 	      (if (string-match org-bracket-link-regexp hd)
 		  (setq hd (replace-match (if (match-end 3) (match-string 3 hd)
 					    (match-string 1 hd))
@@ -647,7 +647,5 @@ a time), or the day by one (if it does not contain a time)."
              (list end start))) (* 24 60 60))))
 
 (provide 'org2rem)
-
-;; arch-tag: 65985fe9-095c-49c7-a7b6-cb4ee15c0a95
 
 ;;; org-exp.el ends here

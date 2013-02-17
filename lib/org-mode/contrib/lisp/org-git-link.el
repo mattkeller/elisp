@@ -1,6 +1,6 @@
 ;;; org-git-link.el --- Provide org links to specific file version
 
-;; Copyright (C) 2009  Reimar Finken
+;; Copyright (C) 2009-2013  Reimar Finken
 
 ;; Author: Reimar Finken <reimar.finken@gmx.de>
 ;; Keywords: files, calendar, hypermedia
@@ -96,7 +96,7 @@
   (let* ((strlist (org-git-split-string str))
          (filepath (first strlist))
          (commit (second strlist))
-         (dirlist (org-git-find-gitdir filepath))
+         (dirlist (org-git-find-gitdir (file-truename filepath)))
          (gitdir (first dirlist))
          (relpath (second dirlist)))
     (org-git-open-file-internal gitdir (concat commit ":" relpath))))
@@ -168,24 +168,25 @@
 (defun org-git-create-git-link (file)
   "Create git link part to file at specific time"
   (interactive "FFile: ")
-  (let* ((gitdir (first (org-git-find-gitdir file)))
+  (let* ((gitdir (first (org-git-find-gitdir (file-truename file))))
          (branchname (org-git-get-current-branch gitdir))
          (timestring (format-time-string "%Y-%m-%d" (current-time))))
-    (org-make-link "git:" file "::" (org-git-create-searchstring branchname timestring))))
+    (concat "git:" file "::" (org-git-create-searchstring branchname timestring))))
 
 (defun org-git-store-link ()
   "Store git link to current file."
-  (let ((file (abbreviate-file-name (buffer-file-name))))
-    (when (org-git-gitrepos-p file)
-      (org-store-link-props
-       :type "git"
-       :link (org-git-create-git-link file)))))
+  (when (buffer-file-name)
+    (let ((file (abbreviate-file-name (buffer-file-name))))
+      (when (org-git-gitrepos-p file)
+	(org-store-link-props
+	 :type "git"
+	 :link (org-git-create-git-link file))))))
 
 (add-hook 'org-store-link-functions 'org-git-store-link)
 
 (defun org-git-insert-link-interactively (file searchstring &optional description)
   (interactive "FFile: \nsSearch string: \nsDescription: ")
-  (insert (org-make-link-string (org-make-link "git:" file "::" searchstring) description)))
+  (insert (org-make-link-string (concat "git:" file "::" searchstring) description)))
 
 ;; Calling git
 (defun org-git-show (gitdir object buffer)
@@ -215,4 +216,5 @@
           (buffer-substring 12 (1- (point-max))))))) ; to strip off final newline
 
 (provide 'org-git-link)
+
 ;;; org-git-link.el ends here

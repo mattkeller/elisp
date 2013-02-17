@@ -1,29 +1,26 @@
 ;;; org-colview-xemacs.el --- Column View in Org-mode, XEmacs-specific version
 
-;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
-;;   Free Software Foundation, Inc.
+;; Copyright (C) 2004-2013
+;;   Carsten Dominik
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
 ;; Homepage: http://orgmode.org
-;; Version: 6.34b
 ;;
-;; This file is part of GNU Emacs.
+;; This file is part of Org mode, it is not part of GNU Emacs.
 ;;
-;; GNU Emacs is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; You can redistribute it and/or modify it under the terms of the
+;; GNU General Public License as published by the Free Software
+;; Foundation; either version 3, or (at your option) any later
+;; version.
 
-;; GNU Emacs is distributed in the hope that it will be useful,
+;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with this file; see the file COPYING.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;; Commentary:
@@ -184,10 +181,10 @@
 This is the compiled version of the format.")
 (make-variable-buffer-local 'org-columns-current-fmt-compiled)
 (defvar org-columns-current-widths nil
-  "Loval variable, holds the currently widths of fields.")
+  "Local variable, holds the currently widths of fields.")
 (make-variable-buffer-local 'org-columns-current-widths)
 (defvar org-columns-current-maxwidths nil
-  "Loval variable, holds the currently active maximum column widths.")
+  "Local variable, holds the currently active maximum column widths.")
 (make-variable-buffer-local 'org-columns-current-maxwidths)
 (defvar org-columns-begin-marker (make-marker)
   "Points to the position where last a column creation command was called.")
@@ -284,14 +281,14 @@ This is the compiled version of the format.")
 
 (defun org-columns-new-overlay (beg end &optional string face)
   "Create a new column overlay and add it to the list."
-  (let ((ov (org-make-overlay beg end)))
+  (let ((ov (make-overlay beg end)))
     (if (featurep 'xemacs)
         (progn
-          (org-overlay-put ov 'face (or face 'org-columns-space1))
-          (org-overlay-put ov 'start-open t)
+          (overlay-put ov 'face (or face 'org-columns-space1))
+          (overlay-put ov 'start-open t)
           (if string
               (org-overlay-display ov string (or face 'org-columns-space1))))
-      (org-overlay-put ov 'face (or face 'secondary-selection))
+      (overlay-put ov 'face (or face 'secondary-selection))
       (org-overlay-display ov string face))
     (push ov org-columns-overlays)
     ov))
@@ -306,10 +303,9 @@ This is the compiled version of the format.")
 		       (and (looking-at "\\(\\**\\)\\(\\* \\)")
 			    (org-get-level-face 2))))
          (item (save-match-data
-                 (org-no-properties
-                  (org-remove-tabs
-                   (buffer-substring-no-properties
-                    (point-at-bol) (point-at-eol))))))
+		 (org-remove-tabs
+		  (buffer-substring-no-properties
+		   (point-at-bol) (point-at-eol)))))
 	 (color (if (featurep 'xemacs)
                     (save-excursion
                       (beginning-of-line 1)
@@ -322,7 +318,9 @@ This is the compiled version of the format.")
 				  (get-text-property (point-at-bol) 'face))
 			     'default) :foreground))))
 	 (face (if (featurep 'xemacs) color (list color 'org-column)))
-	 (pl (or (get-text-property (point-at-bol) 'prefix-length) 0))
+	 (pl (- (point)
+		(or (text-property-any (point-at-bol) (point-at-eol) 'org-heading t)
+		    (point))))
 	 (cphr (get-text-property (point-at-bol) 'org-complex-heading-regexp))
 	 pom property ass width f string ov column val modval s2 title calc)
     ;; Check if the entry is in another buffer.
@@ -352,11 +350,9 @@ This is the compiled version of the format.")
 			  (funcall org-columns-modify-value-for-display-function
 				   title val))
 			 ((equal property "ITEM")
-			  (if (org-mode-p)
+			  (if (derived-mode-p 'org-mode)
 			      (org-columns-cleanup-item
-			       val org-columns-current-fmt-compiled)
-			    (org-agenda-columns-cleanup-item
-			     val pl cphr org-columns-current-fmt-compiled)))
+			       val org-columns-current-fmt-compiled)))
 			 ((and calc (functionp calc)
 			       (not (string= val ""))
 			       (not (get-text-property 0 'org-computed val)))
@@ -370,12 +366,12 @@ This is the compiled version of the format.")
       (org-unmodified
        (setq ov (org-columns-new-overlay
 		 beg (setq beg (1+ beg)) string face))
-       (org-overlay-put ov 'keymap org-columns-map)
-       (org-overlay-put ov 'org-columns-key property)
-       (org-overlay-put ov 'org-columns-value (cdr ass))
-       (org-overlay-put ov 'org-columns-value-modified modval)
-       (org-overlay-put ov 'org-columns-pom pom)
-       (org-overlay-put ov 'org-columns-format f)
+       (overlay-put ov 'keymap org-columns-map)
+       (overlay-put ov 'org-columns-key property)
+       (overlay-put ov 'org-columns-value (cdr ass))
+       (overlay-put ov 'org-columns-value-modified modval)
+       (overlay-put ov 'org-columns-pom pom)
+       (overlay-put ov 'org-columns-format f)
        (when (featurep 'xemacs)
 	 (if (or (not (char-after beg))
 		 (equal (char-after beg) ?\n))
@@ -400,12 +396,12 @@ This is the compiled version of the format.")
     ;; Make the rest of the line disappear.
     (org-unmodified
      (setq ov (org-columns-new-overlay beg (point-at-eol)))
-     (org-overlay-put ov 'invisible t)
-     (org-overlay-put ov 'keymap org-columns-map)
-     (org-overlay-put ov 'intangible t)
+     (overlay-put ov 'invisible t)
+     (overlay-put ov 'keymap org-columns-map)
+     (overlay-put ov 'intangible t)
      (push ov org-columns-overlays)
-     (setq ov (org-make-overlay (1- (point-at-eol)) (1+ (point-at-eol))))
-     (org-overlay-put ov 'keymap org-columns-map)
+     (setq ov (make-overlay (1- (point-at-eol)) (1+ (point-at-eol))))
+     (overlay-put ov 'keymap org-columns-map)
      (push ov org-columns-overlays)
      (let ((inhibit-read-only t))
        (put-text-property (max (point-min) (1- (point-at-bol)))
@@ -467,7 +463,7 @@ This is the compiled version of the format.")
       (org-add-hook 'post-command-hook 'org-columns-hscoll-title nil 'local))))
 
 (defun org-columns-hscoll-title ()
-  "Set the header-line-format so that it scrolls along with the table."
+  "Set the `header-line-format' so that it scrolls along with the table."
   (sit-for .0001) ; need to force a redisplay to update window-hscroll
   (when (not (= (window-hscroll) org-columns-previous-hscroll))
     (setq header-line-format
@@ -497,7 +493,7 @@ This is the compiled version of the format.")
       (move-marker org-columns-begin-marker nil)
       (move-marker org-columns-top-level-marker nil)
       (org-unmodified
-       (mapc 'org-delete-overlay org-columns-overlays)
+       (mapc 'delete-overlay org-columns-overlays)
        (setq org-columns-overlays nil)
        (let ((inhibit-read-only t))
 	 (remove-text-properties (point-min) (point-max) '(read-only t))))
@@ -517,7 +513,7 @@ This is the compiled version of the format.")
 	       'org-whitespace (* 2 (1- (org-reduced-level (- (match-end 1) (match-beginning 1))))))
 	     (and (match-end 2) (not (assoc "TODO" fmt)) (concat " " (match-string 2 item)))
 	     (and (match-end 3) (not (assoc "PRIORITY" fmt)) (concat " " (match-string 3 item)))
-	     " " (save-match-data (org-columns-compact-links (match-string 4 item)))
+	     " " (save-match-data (org-columns-compact-links (or (match-string 4 item) "")))
 	     (and (match-end 5) (not (assoc "TAGS" fmt)) (concat " " (match-string 5 item)))))
       (add-text-properties
        0 (1+ (match-end 1))
@@ -532,20 +528,6 @@ This is the compiled version of the format.")
 	     (concat "[" (match-string (if (match-end 3) 3 1) s) "]")
 	     t t s)))
   s)
-
-(defvar org-agenda-columns-remove-prefix-from-item)
-
-(defun org-agenda-columns-cleanup-item (item pl cphr fmt)
-  "Cleanup the time property for agenda column view.
-See also the variable `org-agenda-columns-remove-prefix-from-item'."
-  (let* ((org-complex-heading-regexp cphr)
-	 (prefix (substring item 0 pl))
-	 (rest (substring item pl))
-	 (fake (concat "* " rest))
-	 (cleaned (org-trim (substring (org-columns-cleanup-item fake fmt) 1))))
-    (if org-agenda-columns-remove-prefix-from-item
-	cleaned
-      (concat prefix cleaned))))
 
 (defun org-columns-show-value ()
   "Show the full value of the property."
@@ -601,9 +583,9 @@ Where possible, use the standard interface for changing this line."
 		  (point))) ; keep despite of compiler warning
 	 (line-overlays
 	  (delq nil (mapcar (lambda (x)
-			      (and (eq (org-overlay-buffer x) (current-buffer))
-				   (>= (org-overlay-start x) bol)
-				   (<= (org-overlay-start x) eol)
+			      (and (eq (overlay-buffer x) (current-buffer))
+				   (>= (overlay-start x) bol)
+				   (<= (overlay-start x) eol)
 				   x))
 			    org-columns-overlays)))
 	 (org-columns-time (time-to-number-of-days (current-time)))
@@ -615,26 +597,26 @@ Where possible, use the standard interface for changing this line."
       (setq eval '(org-with-point-at pom (org-edit-headline))))
      ((equal key "TODO")
       (setq eval '(org-with-point-at
-		   pom
-		   (call-interactively 'org-todo))))
+		      pom
+		    (call-interactively 'org-todo))))
      ((equal key "PRIORITY")
       (setq eval '(org-with-point-at pom
-				     (call-interactively 'org-priority))))
+		    (call-interactively 'org-priority))))
      ((equal key "TAGS")
       (setq eval '(org-with-point-at
-		   pom
-		   (let ((org-fast-tag-selection-single-key
-			  (if (eq org-fast-tag-selection-single-key 'expert)
-			      t org-fast-tag-selection-single-key)))
-		     (call-interactively 'org-set-tags)))))
+		      pom
+		    (let ((org-fast-tag-selection-single-key
+			   (if (eq org-fast-tag-selection-single-key 'expert)
+			       t org-fast-tag-selection-single-key)))
+		      (call-interactively 'org-set-tags)))))
      ((equal key "DEADLINE")
       (setq eval '(org-with-point-at
-		   pom
-		   (call-interactively 'org-deadline))))
+		      pom
+		    (call-interactively 'org-deadline))))
      ((equal key "SCHEDULED")
       (setq eval '(org-with-point-at
-		   pom
-		   (call-interactively 'org-schedule))))
+		      pom
+		    (call-interactively 'org-schedule))))
      (t
       (setq allowed (org-property-get-allowed-values pom key 'table))
       (if allowed
@@ -668,11 +650,11 @@ Where possible, use the standard interface for changing this line."
 	      (progn
 		(setq org-columns-overlays
 		      (org-delete-all line-overlays org-columns-overlays))
-		(mapc 'org-delete-overlay line-overlays)
+		(mapc 'delete-overlay line-overlays)
 		(org-columns-eval eval))
 	    (org-columns-display-here)))
 	(org-move-to-column col)
-	(if (and (org-mode-p)
+	(if (and (derived-mode-p 'org-mode)
 		 (nth 3 (assoc key org-columns-current-fmt-compiled)))
 	    (org-columns-update key)))))))
 
@@ -685,7 +667,7 @@ Where possible, use the standard interface for changing this line."
 	  (txt (match-string 3))
 	  (post "")
 	  txt2)
-      (if (string-match (org-re "[ \t]+:[[:alnum:]:_@]+:[ \t]*$") txt)
+      (if (string-match (org-re "[ \t]+:[[:alnum:]:_@#%]+:[ \t]*$") txt)
 	  (setq post (match-string 0 txt)
 		txt (substring txt 0 (match-beginning 0))))
       (setq txt2 (read-string "Edit: " txt))
@@ -722,7 +704,7 @@ Where possible, use the standard interface for changing this line."
       (beginning-of-line 1)
       ;; `next-line' is needed here, because it skips invisible line.
       (condition-case nil (org-no-warnings (next-line 1)) (error nil))
-      (setq hidep (org-on-heading-p 1)))
+      (setq hidep (org-at-heading-p 1)))
     (eval form)
     (and hidep (hide-entry))))
 
@@ -745,9 +727,9 @@ an integer, select that value."
 		  (point))) ; keep despite of compiler waring
 	 (line-overlays
 	  (delq nil (mapcar (lambda (x)
-			      (and (eq (org-overlay-buffer x) (current-buffer))
-				   (>= (org-overlay-start x) bol)
-				   (<= (org-overlay-start x) eol)
+			      (and (eq (overlay-buffer x) (current-buffer))
+				   (>= (overlay-start x) bol)
+				   (<= (overlay-start x) eol)
 				   x))
 			    org-columns-overlays)))
 	 (allowed (or (org-property-get-allowed-values pom key)
@@ -797,7 +779,7 @@ an integer, select that value."
 	    (progn
 	      (setq org-columns-overlays
 		    (org-delete-all line-overlays org-columns-overlays))
-	      (mapc 'org-delete-overlay line-overlays)
+	      (mapc 'delete-overlay line-overlays)
 	      (org-columns-eval '(org-entry-put pom key nval)))
 	  (org-columns-display-here)))
       (org-move-to-column col)
@@ -876,7 +858,7 @@ around it."
 	  (save-restriction
 	    (narrow-to-region beg end)
 	    (org-clock-sum))))
-      (while (re-search-forward (concat "^" outline-regexp) end t)
+      (while (re-search-forward org-outline-regexp-bol end t)
 	(if (and org-columns-skip-archived-trees
 		 (looking-at (concat ".*:" org-archive-tag ":")))
 	    (org-end-of-subtree t)
@@ -917,20 +899,21 @@ around it."
     ("@max" max_age max (lambda (x) (- org-columns-time x)))
     ("@mean" mean_age
      (lambda (&rest x) (/ (apply '+ x) (float (length x))))
-     (lambda (x) (- org-columns-time x))))
+     (lambda (x) (- org-columns-time x)))
+    ("est+" estimate org-estimate-combine))
   "Operator <-> format,function,calc  map.
- Used to compile/uncompile columns format and completing read in
- interactive function org-columns-new.
+Used to compile/uncompile columns format and completing read in
+interactive function `org-columns-new'.
 
  operator    string used in #+COLUMNS definition describing the
 	     summary type
  format      symbol describing summary type selected interactively in
-	     org-columns-new and internally in
-	     org-columns-number-to-string and
-	     org-columns-string-to-number
+	     `org-columns-new' and internally in
+	     `org-columns-number-to-string' and
+	     `org-columns-string-to-number'
  function    called with a list of values as argument to calculate
 	     the summary value
- calc        function called on every element before summarizing. This is
+ calc        function called on every element before summarizing.  This is
 	     optional and should only be specified if needed")
 
 
@@ -949,8 +932,8 @@ around it."
 	(setq width (string-to-number width))
       (setq width nil))
     (setq fmt (org-icompleting-read "Summary [none]: "
-				       (mapcar (lambda (x) (list (symbol-name (cadr x)))) org-columns-compile-map)
-				       nil t))
+				    (mapcar (lambda (x) (list (symbol-name (cadr x)))) org-columns-compile-map)
+				    nil t))
     (setq fmt (intern fmt)
 	  fun (cdr (assoc fmt (mapcar 'cdr org-columns-compile-map))))
     (if (eq fmt 'none) (setq fmt nil))
@@ -1050,7 +1033,7 @@ display, or in the #+COLUMNS line of the current buffer."
 	      (replace-match (concat "#+COLUMNS: " fmt) t t))
 	    (unless (> cnt 0)
 	      (goto-char (point-min))
-	      (or (org-on-heading-p t) (outline-next-heading))
+	      (or (org-at-heading-p t) (outline-next-heading))
 	      (let ((inhibit-read-only t))
 		(insert-before-markers "#+COLUMNS: " fmt "\n")))
 	    (org-set-local 'org-columns-default-format fmt))))))
@@ -1092,14 +1075,14 @@ Don't set this, this is meant for dynamic scoping.")
   (let (fmt val pos face)
     (save-excursion
       (mapc (lambda (ov)
-	      (when (equal (org-overlay-get ov 'org-columns-key) property)
-		(setq pos (org-overlay-start ov))
+	      (when (equal (overlay-get ov 'org-columns-key) property)
+		(setq pos (overlay-start ov))
 		(goto-char pos)
 		(when (setq val (cdr (assoc property
 					    (get-text-property
 					     (point-at-bol) 'org-summaries))))
-		  (setq fmt (org-overlay-get ov 'org-columns-format))
-		  (org-overlay-put ov 'org-columns-value val)
+		  (setq fmt (overlay-get ov 'org-columns-format))
+		  (overlay-put ov 'org-columns-value val)
                   (if (featurep 'xemacs)
                       (progn
                         (setq face (glyph-face (extent-end-glyph ov)))
@@ -1110,7 +1093,7 @@ Don't set this, this is meant for dynamic scoping.")
 (defun org-columns-compute (property)
   "Sum the values of property PROPERTY hierarchically, for the entire buffer."
   (interactive)
-  (let* ((re (concat "^" outline-regexp))
+  (let* ((re org-outline-regexp-bol)
 	 (lmax 30) ; Does anyone use deeper levels???
 	 (lvals (make-vector lmax nil))
 	 (lflag (make-vector lmax nil))
@@ -1180,7 +1163,7 @@ Don't set this, this is meant for dynamic scoping.")
     (if (marker-position org-columns-begin-marker)
 	(goto-char org-columns-begin-marker))
     (org-columns-remove-overlays)
-    (if (org-mode-p)
+    (if (derived-mode-p 'org-mode)
 	(call-interactively 'org-columns)
       (org-agenda-redo)
       (call-interactively 'org-agenda-columns)))
@@ -1206,6 +1189,7 @@ Don't set this, this is meant for dynamic scoping.")
 (defun org-columns-number-to-string (n fmt &optional printf)
   "Convert a computed column number to a string value, according to FMT."
   (cond
+   ((memq fmt '(estimate)) (org-estimate-print n printf))
    ((not (numberp n)) "")
    ((memq fmt '(add_times max_times min_times mean_times))
     (let* ((h (floor n)) (m (floor (+ 0.5 (* 60 (- n h))))))
@@ -1250,9 +1234,9 @@ Don't set this, this is meant for dynamic scoping.")
 	    (setq sum (+ (string-to-number (pop l)) (/ sum 60))))
 	  sum))
        ((memq fmt '(checkbox checkbox-n-of-m checkbox-percent))
-	(if (equal s "[X]") 1. 0.000001))
-       (t (string-to-number s)))
-    0))
+        (if (equal s "[X]") 1. 0.000001))
+       ((memq fmt '(estimate)) (org-string-to-estimate s))
+       (t (string-to-number s)))))
 
 (defun org-columns-uncompile-format (cfmt)
   "Turn the compiled columns format back into a string representation."
@@ -1288,8 +1272,7 @@ operator     the operator if any
 format       the output format for computed results, derived from operator
 printf       a printf format for computed values
 fun          the lisp function to compute summary values, derived from operator
-calc         function to get values from base elements
-"
+calc         function to get values from base elements"
   (let ((start 0) width prop title op op-match f printf fun calc)
     (setq org-columns-current-fmt-compiled nil)
     (while (string-match
@@ -1331,12 +1314,13 @@ of fields."
   (if (featurep 'xemacs)
       (save-excursion
         (let* ((title (mapcar 'cadr org-columns-current-fmt-compiled))
-	       (re-comment (concat "\\*+[ \t]+" org-comment-string "\\>"))
+	       (re-comment (format org-heading-keyword-regexp-format
+				   org-comment-string))
 	       (re-archive (concat ".*:" org-archive-tag ":"))
                (n (length title)) row tbl)
           (goto-char (point-min))
 
-	  (while (re-search-forward "^\\(\\*+\\) " nil t)
+	  (while (re-search-forward org-heading-regexp nil t)
 	    (catch 'next
 	      (when (and (or (null maxlevel)
 			     (>= maxlevel
@@ -1409,12 +1393,13 @@ PARAMS is a property list of parameters:
 :maxlevel When set to a number, don't capture headlines below this level.
 :skip-empty-rows
           When t, skip rows where all specifiers other than ITEM are empty."
-  (let ((pos (move-marker (make-marker) (point)))
+  (let ((pos (point-marker))
 	(hlines (plist-get params :hlines))
 	(vlines (plist-get params :vlines))
 	(maxlevel (plist-get params :maxlevel))
 	(content-lines (org-split-string (plist-get params :content) "\n"))
 	(skip-empty-rows (plist-get params :skip-empty-rows))
+	(case-fold-search t)
 	tbl id idpos nfields tmp recalc line
 	id-as-string view-file view-pos)
     (when (setq id (plist-get params :id))
@@ -1480,7 +1465,7 @@ PARAMS is a property list of parameters:
       (while (setq line (pop content-lines))
 	(when (string-match "^#" line)
 	  (insert "\n" line)
-	  (when (string-match "^[ \t]*#\\+TBLFM" line)
+	  (when (string-match "^[ \t]*#\\+tblfm" line)
 	    (setq recalc t))))
       (if recalc
 	  (progn (goto-char pos) (org-table-recalculate 'all))
@@ -1531,7 +1516,7 @@ and tailing newline characters."
   (org-columns-remove-overlays)
   (move-marker org-columns-begin-marker (point))
   (let ((org-columns-time (time-to-number-of-days (current-time)))
-	 cache maxwidths m p a d fmt)
+	cache maxwidths m p a d fmt)
     (cond
      ((and (boundp 'org-agenda-overriding-columns-format)
 	   org-agenda-overriding-columns-format)
@@ -1564,7 +1549,7 @@ and tailing newline characters."
 	  (setq p (org-entry-properties m))
 
 	  (when (or (not (setq a (assoc org-effort-property p)))
-			 (not (string-match "\\S-" (or (cdr a) ""))))
+		    (not (string-match "\\S-" (or (cdr a) ""))))
 	    ;; OK, the property is not defined.  Use appointment duration?
 	    (when (and org-agenda-columns-add-appointments-to-effort-sum
 		       (setq d (get-text-property (point) 'duration)))
@@ -1648,7 +1633,7 @@ This will add overlays to the date lines, to show the summary for each day."
 				     (t "")))
 			 (put-text-property 0 (length lsum) 'face 'bold lsum)
 			 (unless (eq calc 'identity)
-			     (put-text-property 0 (length lsum) 'org-computed t lsum))
+			   (put-text-property 0 (length lsum) 'org-computed t lsum))
 			 (cons prop lsum))))
 		     fmt))
 	      (org-columns-display-here props)
@@ -1683,16 +1668,51 @@ This will add overlays to the date lines, to show the summary for each day."
 		  (org-columns-compute (car fm)))))))))))
 
 (defun org-format-time-period (interval)
-  "Convert time in fractional days to days/hours/minutes/seconds"
+  "Convert time in fractional days to days/hours/minutes/seconds."
   (if (numberp interval)
-    (let* ((days (floor interval))
-	   (frac-hours (* 24 (- interval days)))
-	   (hours (floor frac-hours))
-	   (minutes (floor (* 60 (- frac-hours hours))))
-	   (seconds (floor (* 60 (- (* 60 (- frac-hours hours)) minutes)))))
-      (format "%dd %02dh %02dm %02ds" days hours minutes seconds))
+      (let* ((days (floor interval))
+	     (frac-hours (* 24 (- interval days)))
+	     (hours (floor frac-hours))
+	     (minutes (floor (* 60 (- frac-hours hours))))
+	     (seconds (floor (* 60 (- (* 60 (- frac-hours hours)) minutes)))))
+	(format "%dd %02dh %02dm %02ds" days hours minutes seconds))
     ""))
 
+(defun org-estimate-mean-and-var (v)
+  "Return the mean and variance of an estimate."
+  (let* ((low (float (car v)))
+         (high (float (cadr v)))
+         (mean (/ (+ low high) 2.0))
+         (var (/ (+ (expt (- mean low) 2.0) (expt (- high mean) 2.0)) 2.0)))
+    (list  mean var)))
+
+(defun org-estimate-combine (&rest el)
+  "Combine a list of estimates, using mean and variance.
+The mean and variance of the result will be the sum of the means
+and variances (respectively) of the individual estimates."
+  (let ((mean 0)
+        (var 0))
+    (mapc (lambda (e)
+	    (let ((stats (org-estimate-mean-and-var e)))
+	      (setq mean (+ mean (car stats)))
+	      (setq var (+ var (cadr stats)))))
+	  el)
+    (let ((stdev (sqrt var)))
+      (list (- mean stdev) (+ mean stdev)))))
+
+(defun org-estimate-print (e &optional fmt)
+  "Prepare a string representation of an estimate.
+This formats these numbers as two numbers with a \"-\" between them."
+  (if (null fmt) (set 'fmt "%.0f"))
+  (format "%s" (mapconcat (lambda (n) (format fmt n))  e "-")))
+
+(defun org-string-to-estimate (s)
+  "Convert a string to an estimate.
+The string should be two numbers joined with a \"-\"."
+  (if (string-match "\\(.*\\)-\\(.*\\)" s)
+      (list (string-to-number (match-string 1 s))
+	    (string-to-number(match-string 2 s)))
+    (list (string-to-number s) (string-to-number s))))
 
 (provide 'org-colview)
 (provide 'org-colview-xemacs)

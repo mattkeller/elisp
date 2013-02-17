@@ -1,10 +1,9 @@
 ;;; org-attach.el --- Manage file attachments to org-mode tasks
 
-;; Copyright (C) 2008, 2009 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
 ;; Author: John Wiegley <johnw@newartisans.com>
 ;; Keywords: org data task
-;; Version: 6.34b
 
 ;; This file is part of GNU Emacs.
 ;;
@@ -79,12 +78,15 @@ Allowed values are:
 mv    rename the file to move it into the attachment directory
 cp    copy the file
 ln    create a hard link.  Note that this is not supported
+      on all systems, and then the result is not defined.
+lns   create a symbol link.  Note that this is not supported
       on all systems, and then the result is not defined."
   :group 'org-attach
   :type '(choice
 	  (const :tag "Copy" cp)
 	  (const :tag "Move/Rename" mv)
-	  (const :tag "Link" ln)))
+	  (const :tag "Hard Link" ln)
+	  (const :tag "Symbol Link" lns)))
 
 (defcustom org-attach-expert nil
   "Non-nil means do not show the splash buffer with the attach dispatcher."
@@ -92,13 +94,21 @@ ln    create a hard link.  Note that this is not supported
   :type 'boolean)
 
 (defcustom org-attach-allow-inheritance t
-  "Non-nil means, allow attachment directories be inherited."
+  "Non-nil means allow attachment directories be inherited."
   :group 'org-attach
   :type 'boolean)
 
-
 (defvar org-attach-inherited nil
   "Indicates if the last access to the attachment directory was inherited.")
+
+(defcustom org-attach-store-link-p nil
+  "Non-nil means store a link to a file when attaching it."
+  :group 'org-attach
+  :version "24.1"
+  :type '(choice
+	  (const :tag "Don't store link" nil)
+	  (const :tag "Link to origin location" t)
+	  (const :tag "Link to the attach-dir location" attached)))
 
 ;;;###autoload
 (defun org-attach ()
@@ -123,7 +133,7 @@ Shows a list of commands and prompts for another key to execute a command."
 	      (princ "Select an Attachment Command:
 
 a       Select a file and attach it to the task, using `org-attach-method'.
-c/m/l   Attach a file using copy/move/link method.
+c/m/l/y Attach a file using copy/move/link/symbolic-link method.
 n       Create a new attachment, as an Emacs buffer.
 z       Synchronize the current task with its attachment
         directory, in case you added attachments yourself.
@@ -151,6 +161,8 @@ i       Make children of the current entry inherit its attachment directory.")))
 	(let ((org-attach-method 'mv)) (call-interactively 'org-attach-attach)))
        ((memq c '(?l ?\C-l))
 	(let ((org-attach-method 'ln)) (call-interactively 'org-attach-attach)))
+       ((memq c '(?y ?\C-y))
+	(let ((org-attach-method 'lns)) (call-interactively 'org-attach-attach)))
        ((memq c '(?n ?\C-n)) (call-interactively 'org-attach-new))
        ((memq c '(?z ?\C-z)) (call-interactively 'org-attach-sync))
        ((memq c '(?o ?\C-o)) (call-interactively 'org-attach-open))
@@ -241,12 +253,17 @@ the ATTACH_DIR property) their own attachment directory."
   "Commit changes to git if `org-attach-directory' is properly initialized.
 This checks for the existence of a \".git\" directory in that directory."
   (let ((dir (expand-file-name org-attach-directory)))
-    (if (file-exists-p (expand-file-name ".git" dir))
-	(shell-command
-	 (concat "(cd " dir "; "
-		 " git add .; "
-		 " git ls-files --deleted -z | xargs -0 git rm; "
-		 " git commit -m 'Synchronized attachments')")))))
+    (when (file-exists-p (expand-file-name ".git" dir))
+      (with-temp-buffer
+	(cd dir)
+	(shell-command "git add .")
+	(shell-command "git ls-files --deleted" t)
+	(mapc #'(lambda (file)
+		  (unless (string= file "")
+		    (shell-command
+		     (concat "git rm \"" file "\""))))
+	      (split-string (buffer-string) "\n"))
+	(shell-command "git commit -m 'Synchronized attachments'")))))
 
 (defun org-attach-tag (&optional off)
   "Turn the autotag on or (if OFF is set) off."
@@ -259,10 +276,19 @@ This checks for the existence of a \".git\" directory in that directory."
   "Turn the autotag off."
   (org-attach-tag 'off))
 
+(defun org-attach-store-link (file)
+  "Add a link to `org-stored-link' when attaching a file.
+Only do this when `org-attach-store-link-p' is non-nil."
+  (setq org-stored-links
+	(cons (list (org-attach-expand-link file)
+		    (file-name-nondirectory file))
+	      org-stored-links)))
+
 (defun org-attach-attach (file &optional visit-dir method)
   "Move/copy/link FILE into the attachment directory of the current task.
 If VISIT-DIR is non-nil, visit the directory with dired.
-METHOD may be `cp', `mv', or `ln', default taken from `org-attach-method'."
+METHOD may be `cp', `mv', `ln', or `lns' default taken from
+`org-attach-method'."
   (interactive "fFile to keep as an attachment: \nP")
   (setq method (or method org-attach-method))
   (let ((basename (file-name-nondirectory file)))
@@ -274,9 +300,14 @@ METHOD may be `cp', `mv', or `ln', default taken from `org-attach-method'."
       (cond
        ((eq method 'mv)	(rename-file file fname))
        ((eq method 'cp)	(copy-file file fname))
-       ((eq method 'ln) (add-name-to-file file fname)))
+       ((eq method 'ln) (add-name-to-file file fname))
+       ((eq method 'lns) (make-symbolic-link file fname)))
       (org-attach-commit)
       (org-attach-tag)
+      (cond ((eq org-attach-store-link-p 'attached)
+	     (org-attach-store-link fname))
+	    ((eq org-attach-store-link-p t)
+	     (org-attach-store-link file)))
       (if visit-dir
 	  (dired attach-dir)
 	(message "File \"%s\" is now a task attachment." basename)))))
@@ -295,6 +326,13 @@ Beware that this does not work on systems that do not support hard links.
 On some systems, this apparently does copy the file instead."
   (interactive)
   (let ((org-attach-method 'ln)) (call-interactively 'org-attach-attach)))
+(defun org-attach-attach-lns ()
+  "Attach a file by creating a symbolic link to it.
+
+Beware that this does not work on systems that do not support symbolic links.
+On some systems, this apparently does copy the file instead."
+  (interactive)
+  (let ((org-attach-method 'lns)) (call-interactively 'org-attach-attach)))
 
 (defun org-attach-new (file)
   "Create a new attachment FILE for the current task.
@@ -322,7 +360,8 @@ The attachment is created as an Emacs buffer."
     (setq file (expand-file-name file attach-dir))
     (unless (file-exists-p file)
       (error "No such attachment: %s" file))
-    (delete-file file)))
+    (delete-file file)
+    (org-attach-commit)))
 
 (defun org-attach-delete-all (&optional force)
   "Delete all attachments from the current task.
@@ -390,7 +429,7 @@ If IN-EMACS is non-nil, force opening in Emacs."
 	 (file (if (= (length files) 1)
 		   (car files)
 		 (org-icompleting-read "Open attachment: "
-				  (mapcar 'list files) nil t))))
+				       (mapcar 'list files) nil t))))
     (org-open-file (expand-file-name file attach-dir) in-emacs)))
 
 (defun org-attach-open-in-emacs ()
@@ -412,5 +451,8 @@ prefix."
 
 (provide 'org-attach)
 
-;; arch-tag: fce93c2e-fe07-4fa3-a905-e10dcc7a6248
+;; Local variables:
+;; generated-autoload-file: "org-loaddefs.el"
+;; End:
+
 ;;; org-attach.el ends here
