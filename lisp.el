@@ -47,14 +47,14 @@
 
 ; do slime mode for all lisp files
 (add-hook 'lisp-mode-hook (lambda ()
-                            (cond ((not (featurep 'slime))
-                                   (require 'slime)
-                                   (normal-mode)))
+                            ;; (cond ((not (featurep 'slime))
+                            ;;        (require 'slime)
+                            ;;      (normal-mode)))
 			    (modify-syntax-entry ?- "w")))
 
 ;;; Clojure ------------------------------------------------------------
 
-;(add-to-list 'load-path (concat dotfiles-dir "lib/swank-clojure"))
+(add-to-list 'load-path (concat dotfiles-dir "lib/clojure-mode"))
 (require 'clojure-mode)
 ;(require 'swank-clojure) ; start swank from lein or whatever, not emacs
 
