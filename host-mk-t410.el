@@ -95,6 +95,10 @@
                (vcs git)
                (compile-cmd "ant")))
 
+;;; soalib -------------------------------------------------------------
+
+(mk-clojure-mk-project "soalib" "~/code/soalib")
+
 ;;; org-mode -----------------------------------------------------------
 
 (add-to-list 'org-agenda-files (concat dotfiles-dir "TODO-elisp.org"))
@@ -118,3 +122,6 @@
 
 (mk-clojure-mk-project "newlrb" "~/code/newlrb")
 
+(mk-clojure-mk-project "newlrb" "~/code/myalbum")
+
+(mk-clojure-mk-project "jaxws" "~/code/clojure/jaxws/jaxws")
