@@ -77,6 +77,8 @@
 (global-set-key (kbd "M-%") 'query-replace-regexp)    ; use regexp version
 (global-set-key (kbd "C-c v") 'revert-buffer)
 
+(global-set-key (kbd "C-x m")   (lambda () (interactive) (message "Mail? No thanks.")))
+
 (global-set-key [f1]  'ibuffer)
 (global-set-key [f2]  'mk-shell-dwim)                        ; C-u F2 => start new shell TODO: customization
 (global-set-key [f3]  'kmacro-start-macro-or-insert-counter) ; emacs std
@@ -88,7 +90,7 @@
 (global-set-key [f9]  'split-window-vertically)
 (global-set-key [f10] 'split-window-horizontally)
 (global-set-key [f11] 'global-hl-line-mode)
-(global-set-key [f12] 'mk-ecb-toggle)
+(global-set-key [f12] 'revert-buffer)
 
 (global-set-key (kbd "C-x <down>")  'windmove-down)
 (global-set-key (kbd "C-x <up>")    'windmove-up)

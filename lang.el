@@ -5,17 +5,18 @@
   (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)"
                                   1 font-lock-warning-face prepend))))
 
-(defun add-watchwords ()
-  (interactive)
-  (font-lock-add-keywords
-   nil '(("\\<\\(XXX\\|FIX\\|TODO\\|FIXME\\|HACK\\|REFACTOR\\):"
-          1 font-lock-warning-face t))))
+;;; C, C++ setup ------------------------------------------------------
 
-(defun coding-hook ()
-  (linum-mode)
-  (flyspell-prog-mode)
-  (local-comment-auto-fill)
-  (add-watchwords))
+(add-hook 'c-mode-common-hook '(lambda () (mk-coding-hook)))
+
+(defun mk-c++-mode-hook ()
+  (c-set-style "bsd")
+  (setq-default c-basic-offset 4
+                indent-tabs-mode nil
+                tab-width 4)
+  (c-toggle-auto-hungry-state 0))
+
+(add-hook 'c++-mode-hook 'mk-c++-mode-hook)
 
 ;;; Perl setup ---------------------------------------------------------
 
@@ -28,7 +29,7 @@
   (add-hook 'cperl-mode-hook
             '(lambda ()
                (local-set-nkey [f5] 'perl-compile)
-               (linum-mode))))
+               (mk-coding-hook))))
 
 (defun perl-compile ()
   "Run perl -c against the current file"
@@ -54,7 +55,7 @@
           '(lambda ()
              (inf-ruby-keys)
              (local-set-key [f5] 'ruby-lint)
-             (linum-mode)))
+             (mk-coding-hook)))
 
 ;;; Javascript ---------------------------------------------------------
 
@@ -64,7 +65,9 @@
 (setq js2-use-font-lock-faces t)
 
 (require 'flymake-jslint)
-(add-hook 'javascript-mode-hook (lambda () (flymake-mode t)))
+(add-hook 'javascript-mode-hook (lambda ()
+                                  (mk-coding-hook)
+                                  (flymake-mode t)))
 
 ;;; OCaml --------------------------------------------------------------
 
@@ -72,6 +75,11 @@
 (add-to-list 'auto-mode-alist '("\\.ml[iyl]?$" .  caml-mode))
 (autoload 'caml-mode "ocaml" "ocaml" "Major mode for editing Caml code." t)
 (autoload 'camldebug "camldebug" "camldebug" "Debug caml mode")
+
+;;; Protocol Buffers ---------------------------------------------------
+
+(add-to-list 'auto-mode-alist '("\\.proto$" .  protobuf-mode))
+(autoload 'protobuf-mode "protobuf-mode" "protobuf-mode" t)
 
 ;;; Haskell ------------------------------------------------------------
 

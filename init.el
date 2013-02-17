@@ -111,10 +111,13 @@
 
 ;;; Git VC backend setup -----------------------------------------------
 
-(require 'vc-git)
-(when (featurep 'vc-git) (add-to-list 'vc-handled-backends 'git))
-(require 'git)
-(autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t)
+(if nil
+    (progn
+      (require 'vc-git)
+      (when (featurep 'vc-git) (add-to-list 'vc-handled-backends 'git))
+      (require 'git)
+      (autoload 'git-blame-mode "git-blame" "Minor mode for incremental blame for Git." t))
+  (setq vc-handled-backends nil))
 
 ;;; Browse Kill Ring ---------------------------------------------------
 
@@ -160,7 +163,9 @@
 (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
 (define-key ctl-x-4-map "s" 'mk-swap-windows)
 (defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")
+(global-set-key (kbd "C-c TAB") 'imenu)
 (global-set-key (kbd "C-x C-r") 'find-file-root)
+(global-set-key (kbd "C-c C-f") 'mk-recentf-ido-find-file)
 
 (autoload 'etags-update-mode "etags-update" "sweet!" t)
 
@@ -183,11 +188,6 @@
 (require 'uniquify) 
 (setq uniquify-buffer-name-style 'post-forward ;; unique buffer names using 
       uniquify-separator         ":")          ;; part of file's path
-
-;;;; A saner ediff ------------------------------------------------------
-(setq ediff-diff-options "-w")
-(setq ediff-split-window-function 'split-window-horizontally)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;;; Host and System specific config -------------------------------------
 

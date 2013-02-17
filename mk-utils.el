@@ -79,7 +79,8 @@
           (buffer (if create
                       (generate-new-buffer-name "*shell*")
                     next-shell-buffer)))
-     (shell buffer)))
+     (shell buffer)
+     buffer))
 
 (defun grep-kill ()
   "Alias for kill-grep"
@@ -205,6 +206,10 @@
          (t
           (goto-char position))))))
 
+(defun mk-align= ()
+  (interactive)
+  (align-regexp (region-beginning) (region-end) "= "))
+
 ;; From http://www.emacswiki.org/emacs/TrampMode -----------------------
 
 (defvar find-file-root-prefix (if (featurep 'xemacs) "/[sudo/root@localhost]" "/sudo:root@localhost:" )
@@ -317,6 +322,10 @@ by using nxml's indentation rules."
                (not (= e -1)))
       (hs-make-overlay b e 'code))))
 
+(defun mk-show-java-imports ()
+  (interactive)
+  (hs-show-all))
+
 ;; from https://github.com/nakkaya/emacs/blob/master/prog.el
 (defun mk-bounce-sexp ()
   "Will bounce between matching parens just like % in vi"
@@ -327,7 +336,8 @@ by using nxml's indentation rules."
           ((string-match "[\]})>]" prev-char) (backward-sexp 1))
           (t (error "%s" "Not on a paren, brace, or bracket")))))
 
-(defun local-comment-auto-fill ()
+(defun mk-local-comment-auto-fill ()
+  (interactive)
   (set (make-local-variable 'comment-auto-fill-only-comments) t)
   (auto-fill-mode t))
 
@@ -336,5 +346,28 @@ by using nxml's indentation rules."
   (interactive)
   (set-buffer-modified-p t)
   (save-buffer))
+
+(defun mk-add-watchwords ()
+  (interactive)
+  (font-lock-add-keywords
+   nil '(("\\<\\(FIX\\|TODO\\|FIXME\\|HACK\\|REFACTOR\\):"
+          1 font-lock-warning-face t))))
+
+(autoload 'idle-highlight-mode "idle-highlight-mode" "Highlight current symbol" t)
+
+(defun mk-coding-hook ()
+  (interactive)
+  (flyspell-prog-mode)
+  ;(mk-local-comment-auto-fill)
+  (mk-add-watchwords)
+  (linum-mode 1)
+  (idle-highlight-mode 1))
+
+(defun mk-recentf-ido-find-file ()
+  "Find a recent file using ido."
+  (interactive)
+  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+    (when file
+      (find-file file))))
 
 (provide 'mk-utils)
