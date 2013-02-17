@@ -4,8 +4,10 @@
 (require 'cl)
 ;(require 'clearcase)
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
-(load-theme 'solarized-dark)
+(when (file-exists-p "~/.emacs.d/emacs-color-theme-solarized")
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
+  (load-theme 'solarized-dark))
+
 (set-face-attribute 'default nil :font "Bitstream Vera Sans Mono-9")
 
 (add-to-list 'auto-mode-alist '("Makefile\\..*$" . makefile-mode))
