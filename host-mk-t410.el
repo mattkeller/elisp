@@ -3,6 +3,7 @@
 (require 'mk-project)
 (require 'cl)
 (require 'lisp)
+(require 'clojure)
 
 ;;; cl-sip -------------------------------------------------------------
 

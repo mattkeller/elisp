@@ -1,13 +1,40 @@
 ;;;; lisp.el 
 
+;;; Clojure via inferior-lisp
+
+
+(defun mk-inferior-clojure-12 ()
+  (interactive)
+  (mk-inferior-clojure (concat (getenv "HOME") "/.m2/repository/org/clojure/clojure/1.2.0/clojure-1.2.0.jar")))
+
+(defun mk-inferior-clojure-13 ()
+  (interactive)
+  (mk-inferior-clojure (concat (getenv "HOME") "/.m2/repository/org/clojure/clojure/1.3.0-beta1/clojure-1.3.0-beta1.jar")))
+
+(defun mk-inferior-clojure (clojure-jar)
+  (interactive "fClojure jar file: ")
+  (let* ((repl-cmd (concat "java -server -cp " clojure-jar " clojure.main")))
+    (message repl-cmd)
+    (inferior-lisp repl-cmd)))
+
+(concat "java -server -cp " (concat (getenv "HOME") "/.m2/repository/org/clojure/clojure/1.2.0/clojure-1.2.0.jar") " clojure.main")
+
+;(setq *inferior-lisp* "java -server -cp /home/mk/.m2/repository/org/clojure/clojure/1.2.0/clojure-1.2.0.jar clojure.main")
+(setq *inferior-lisp* "inferior-lisp-clj")
+
 ;;; SBCL/Slime Setup --------------------------------------------------------
 
-(setq slime-base (expand-file-name "~/tmp/slime-2010-11-28"))
-(add-to-list 'load-path slime-base)
-(add-to-list 'load-path (concat slime-base "contrib"))
-(require 'slime-autoloads)
-(eval-after-load "slime"
-  (slime-setup '(slime-repl)))
+;(setq slime-base (expand-file-name "~/tmp/slime-2010-11-28"))
+;; (setq slime-base (expand-file-name "~/.emacs.d/elpa/slime-20100404"))
+;; (add-to-list 'load-path slime-base)
+;; (add-to-list 'load-path (concat slime-base "contrib"))
+;; (require 'slime-autoloads)
+
+;; (add-to-list 'load-path "/home/mk/elisp/lib/swank-clojure")
+;; (require 'swank-clojure-autoload)
+
+;; (eval-after-load "slime"
+;;  (slime-setup '(slime-repl)))
 
 ;; (when (string-equal (symbol-name system-type) "gnu/linux")
 ;;   (setq inferior-lisp-program "/opt/bin/sbcl --noinform")

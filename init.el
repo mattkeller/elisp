@@ -21,8 +21,6 @@
 (require 'mk-utils)
 (require 'org-init)
 (require 'java)
-;(require 'lisp)
-(require 'clojure)
 (require 'lang)
 (require 'www)
 (require 'projects)
