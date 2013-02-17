@@ -5,6 +5,8 @@
   (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)"
                                   1 font-lock-warning-face prepend))))
 
+(add-hook 'emacs-lisp-mode-hook '(lambda () (mk-coding-hook)))
+
 ;;; C, C++ setup ------------------------------------------------------
 
 (add-hook 'c-mode-common-hook '(lambda () (mk-coding-hook)))
@@ -86,6 +88,5 @@
 (add-to-list 'load-path (concat dotfiles-dir "lib/haskell-mode-2.8.0"))
 (autoload 'haskell-mode "haskell-site-file" "haskell-site-file" t)
 (add-to-list 'auto-mode-alist '("\\.hs$" .  haskell-mode))
-
 
 (provide 'lang)
