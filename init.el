@@ -38,9 +38,6 @@
 (add-to-list 'load-path (concat dotfiles-dir "lib/magit-1.2.0"))
 (autoload 'magit-status "magit" "Magit git helper" t)
 
-(add-to-list 'load-path (concat dotfiles-dir "lib/egg"))
-(autoload 'egg-minor-mode "egg" "" t)
-
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 
