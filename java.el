@@ -32,4 +32,21 @@
     (message "Lotsa import statements, let's hide them")
     (mk-hide-java-imports))))
 
+;;; Groovy -------------------------------------------------------------
+
+(autoload 'groovy-mode "groovy-mode" "Groovy editing mode." t)
+(add-to-list 'auto-mode-alist '("\.groovy$" . groovy-mode))
+(add-to-list 'interpreter-mode-alist '("groovy" . groovy-mode))
+
+(defun groovy-run ()
+  "Run this groovy script"
+  (interactive)
+  (shell-command (concat "groovy \"" (buffer-file-name) "\"")))
+
+(add-hook 'groovy-mode-hook
+          '(lambda ()
+             (local-set-key [f5] 'groovy-run)
+             (linum-mode)))
+
+
 (provide 'java)
