@@ -87,4 +87,5 @@
 (autoload 'haskell-mode "haskell-site-file" "haskell-site-file" t)
 (add-to-list 'auto-mode-alist '("\\.hs$" .  haskell-mode))
 
+
 (provide 'lang)

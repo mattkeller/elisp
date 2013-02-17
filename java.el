@@ -33,6 +33,8 @@
                              (setq-default indent-tabs-mode nil
                                            tab-width 4)
                              (mk-maybe-hide-imports)
+                             (subword-mode)
+                             (mk-coding-hook)
                              (local-set-key (kbd "C-.") 'javadoc-lookup)))
 
 (defun mk-maybe-hide-imports ()
@@ -64,7 +66,6 @@
     (start-process-shell-command proc-name buf find-cmd)
     (set-process-sentinel (get-process proc-name) 'find-class-in-jars-cb)))
 
-
 (defun find-class-in-jars-cb (process event)
   (with-current-buffer (get-buffer "*jars*")
     (insert "\nDone.\n\n"))
@@ -75,14 +76,14 @@
   (interactive "MAnt Target: ")
   (let ((oldbuf (get-buffer "*ant-compilation*")))
     (if (not (null oldbuf))
-	(kill-buffer "*ant-compilation*")))
+        (kill-buffer "*ant-compilation*")))
   (let* ((buildfile (file-search-upward (file-name-directory (buffer-file-name)) "build.xml"))
 	 (outbuf (get-buffer-create "*ant-compilation*"))
 	 (curbuf (current-buffer)))
     (switch-to-buffer-other-window outbuf)
     (insert "#> ant -emacs -f " buildfile " " target "\n")
     (switch-to-buffer-other-window curbuf)
-    (call-process "C:/Program Files/ant-1.8.3/bin/ant" nil outbuf t "-emacs" "-f" buildfile target)))
+    (call-process "ant" nil outbuf t "-emacs" "-f" buildfile target)))
 
 (defun file-search-upward (directory file)
   "search a file upward"
@@ -166,6 +167,5 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
           '(lambda ()
              (local-set-key [f5] 'groovy-run)
              (linum-mode)))
-
 
 (provide 'java)

@@ -326,26 +326,10 @@ by using nxml's indentation rules."
   (interactive)
   (hs-show-all))
 
-;; from https://github.com/nakkaya/emacs/blob/master/prog.el
-(defun mk-bounce-sexp ()
-  "Will bounce between matching parens just like % in vi"
-  (interactive)
-  (let ((prev-char (char-to-string (preceding-char)))
-        (next-char (char-to-string (following-char))))
-    (cond ((string-match "[[{(<]" next-char) (forward-sexp 1))
-          ((string-match "[\]})>]" prev-char) (backward-sexp 1))
-          (t (error "%s" "Not on a paren, brace, or bracket")))))
-
 (defun mk-local-comment-auto-fill ()
   (interactive)
   (set (make-local-variable 'comment-auto-fill-only-comments) t)
   (auto-fill-mode t))
-
-(defun save-buffer-always ()
-  "Save the buffer even if it is not modified."
-  (interactive)
-  (set-buffer-modified-p t)
-  (save-buffer))
 
 (defun mk-add-watchwords ()
   (interactive)
@@ -362,6 +346,23 @@ by using nxml's indentation rules."
   (mk-add-watchwords)
   (linum-mode 1)
   (idle-highlight-mode 1))
+
+(defun mk-recentf-ido-find-file ()
+  "Find a recent file using ido."
+  (interactive)
+  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+    (when file
+      (find-file file))))
+
+;; from https://github.com/nakkaya/emacs/blob/master/prog.el
+(defun mk-bounce-sexp ()
+  "Will bounce between matching parens just like % in vi"
+  (interactive)
+  (let ((prev-char (char-to-string (preceding-char)))
+        (next-char (char-to-string (following-char))))
+    (cond ((string-match "[[{(<]" next-char) (forward-sexp 1))
+          ((string-match "[\]})>]" prev-char) (backward-sexp 1))
+          (t (error "%s" "Not on a paren, brace, or bracket")))))
 
 (defun mk-recentf-ido-find-file ()
   "Find a recent file using ido."
