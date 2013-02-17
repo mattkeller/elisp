@@ -5,6 +5,18 @@
   (font-lock-add-keywords mode '(("\\(XXX\\|FIXME\\|TODO\\)"
                                   1 font-lock-warning-face prepend))))
 
+(defun add-watchwords ()
+  (interactive)
+  (font-lock-add-keywords
+   nil '(("\\<\\(XXX\\|FIX\\|TODO\\|FIXME\\|HACK\\|REFACTOR\\):"
+          1 font-lock-warning-face t))))
+
+(defun coding-hook ()
+  (linum-mode)
+  (flyspell-prog-mode)
+  (local-comment-auto-fill)
+  (add-watchwords))
+
 ;;; Perl setup ---------------------------------------------------------
 
 (when (maybe-load "cperl-mode")
@@ -60,5 +72,11 @@
 (add-to-list 'auto-mode-alist '("\\.ml[iyl]?$" .  caml-mode))
 (autoload 'caml-mode "ocaml" "ocaml" "Major mode for editing Caml code." t)
 (autoload 'camldebug "camldebug" "camldebug" "Debug caml mode")
+
+;;; Haskell ------------------------------------------------------------
+
+(add-to-list 'load-path (concat dotfiles-dir "lib/haskell-mode-2.8.0"))
+(autoload 'haskell-mode "haskell-site-file" "haskell-site-file" t)
+(add-to-list 'auto-mode-alist '("\\.hs$" .  haskell-mode))
 
 (provide 'lang)

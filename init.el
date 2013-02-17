@@ -34,6 +34,8 @@
 (autoload 'light-symbol-mode "light-symbol" "" t)
 (autoload 'htmlize-buffer "htmlize" "" t)
 (autoload 'typing-of-emacs "typing" "The Typing-Of-Emacs, a game" t)
+
+(add-to-list 'load-path (concat dotfiles-dir "lib/magit-1.2.0"))
 (autoload 'magit-status "magit" "Magit git helper" t)
 
 (add-to-list 'load-path (concat dotfiles-dir "lib/egg"))
