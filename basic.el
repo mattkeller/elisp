@@ -17,7 +17,6 @@
 (tool-bar-mode 0)                        ; no tool bar
 (which-func-mode t)                      ; show current fn in mode-line
 (global-hl-line-mode 1)                  ; highlight current line
-(set-face-background 'hl-line "#222222") ; gray 
 (setq-default indent-tabs-mode nil)      ; by default, insert spaces, not a full tab
 (setq visible-bell t)                    ; no beeping!
 (fset 'yes-or-no-p 'y-or-n-p)            ; query with y or n always

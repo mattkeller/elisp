@@ -192,7 +192,7 @@
 (let ((hostname (downcase system-name))
       (systype  (downcase (symbol-name system-type))))
 
-  (cond ((string= "windowsnt" systype)
+  (cond ((string= "windows-nt" systype)
          (maybe-load (concat "system-windows")))
         ((string= "gnu/linux" systype)
          (maybe-load (concat "system-linux")))
