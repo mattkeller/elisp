@@ -1,15 +1,14 @@
 ;;;; org-mode.el
 
-; emacs-24 (add-to-list 'load-path (concat dotfiles-dir "lib/org-mode/lisp"))
 (add-to-list 'load-path (expand-file-name "~/code/org-7.9.3elisp"))
 (require 'org)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
-;(org-remember-insinuate)
+
 
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cr" 'org-remember)
+(global-set-key "\C-cr" 'org-capture)
 
 (setq org-directory                     (expand-file-name "~/proj/org")
       org-default-notes-file            (concat org-directory "/todo.org")
@@ -20,11 +19,13 @@
       org-agenda-skip-scheduled-if-done t
       org-agenda-skip-deadline-if-done  t)
 
-(setq org-remember-templates
-      `(("Todo"    ?t "* TODO %?\n  %i\n" ,(concat org-directory "/todo.org")    "Inbox")
-        ("Maybe"   ?m "* %?\n  %i\n"      ,(concat org-directory "/maybe.org")   "Misc")
-        ("Journal" ?j "* %T %?\n\n  %i\n" ,(concat org-directory "/journal.org") bottom)
-        ("Idea"    ?i "* %?\n  %i\n"      ,(concat org-directory "/maybe.org")   "Ideas")))
+(setq org-capture-templates
+      `(("t" "Todo" entry (file+headline ,(concat org-directory "/todo.org") "Inbox")
+             "* TODO %?\n %i\n")
+        ("m" "Maybe" entry (file+headline ,(concat org-directory "/maybe.org") "Misc")
+              "* %?\n %i\n")
+        ("i" "Idea" entry (file+headline ,(concat org-directory "/maybe.org") "Ideas")
+             "* %?\n %i\n")))
 
 (add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
 
