@@ -65,7 +65,10 @@
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; = meta-x
 (global-set-key (kbd "C-c C-m") 'execute-extended-command) ; = meta-x
 
-(global-set-key (kbd "C-x C-b") 'ibuffer-bs-show)
+(require 'ibuf-ext)
+(when (fboundp 'ibuffer-bs-show)
+  (global-set-key (kbd "C-x C-b") 'ibuffer-bs-show))
+
 (global-set-key (kbd "M-g")     'goto-line)
 (global-set-key (kbd "C-x C-f") 'ido-find-file)
 (global-set-key (kbd "C-x C-p") 'ffap)
