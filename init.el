@@ -22,6 +22,7 @@
 (require 'org-init)
 (require 'java)
 (require 'lang)
+(require 'clojure)
 (require 'www)
 (require 'projects)
 (require 'mk-tags)
@@ -55,6 +56,7 @@
 (recentf-mode 1)
 (require 'recentf-ext)
 (setq recentf-max-menu-items 25)
+(defalias 'rct 'recentf-ido-find-file) ; overwrite setting in basic.el
 
 ;;; Emacs server -------------------------------------------------------
 
