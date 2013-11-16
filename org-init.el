@@ -1,6 +1,6 @@
 ;;;; org-mode.el
 
-(add-to-list 'load-path (expand-file-name "~/code/org-7.9.3elisp"))
+(add-to-list 'load-path (expand-file-name "~/elisp/lib/org-mode-8.2.3c/lisp"))
 (require 'org)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
@@ -10,9 +10,11 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cr" 'org-capture)
 
-(setq org-directory                     (expand-file-name "~/proj/org")
+(setq org-for-home                      (expand-file-name "~/gtd/home")
+      org-for-work                      (expand-file-name "~/gtd/work")
+      org-directory                     org-for-home
       org-default-notes-file            (concat org-directory "/todo.org")
-      org-agenda-files                  (list org-directory)
+      org-agenda-files                  (list org-for-home org-for-work)
       org-startup-folded                nil
       org-log-done                      'time
       org-return-follows-link           t
