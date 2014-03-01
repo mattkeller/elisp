@@ -1,7 +1,9 @@
 ;;;; org-mode.el
 
-(add-to-list 'load-path (expand-file-name "~/elisp/lib/org-mode-8.2.3c/lisp"))
+(add-to-list 'load-path (expand-file-name "~/elisp/lib/org-8.2.5h/lisp"))
+(add-to-list 'load-path (expand-file-name "~/elisp/lib/org-8.2.5h/contrib/lisp"))
 (require 'org)
+(require 'org-loaddefs)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
 
