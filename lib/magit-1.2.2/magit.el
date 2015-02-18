@@ -46,7 +46,7 @@
 ;;   - Peter J Weisberg
 ;;   - Yann Hodique
 ;;   - Rémi Vanicat
-;; Version: 1.2.0
+;; Version: 1.2.2
 ;; Keywords: tools
 
 ;;
@@ -86,13 +86,20 @@
 
 ;; Silences byte-compiler warnings
 (eval-and-compile
-  (unless (fboundp 'declare-function) (defmacro declare-function (&rest args))))
+  (unless (fboundp 'declare-function)
+    (defmacro declare-function (&rest args))))
 
 (eval-when-compile  (require 'view))
 (declare-function view-mode 'view)
 (eval-when-compile (require 'iswitchb))
+(declare-function iswitchb-read-buffer 'iswitchb)
 (eval-when-compile (require 'ido))
 (eval-when-compile (require 'ediff))
+(declare-function ediff-cleanup-mess 'ediff-utils)
+(eval-when-compile  (require 'eshell))
+(declare-function eshell-parse-arguments 'esh-arg)
+(eval-when-compile  (require 'dired-x))
+(declare-function dired-jump 'dired-x)
 
 ;; Dummy to be used by the defcustoms when first loading the file.
 (eval-when (load eval)
@@ -649,10 +656,8 @@ operation after commit).")
     (define-key map (kbd "C") 'magit-add-log)
     (define-key map (kbd "X") 'magit-reset-working-tree)
     (define-key map (kbd "z") 'magit-key-mode-popup-stashing)
+    (define-key map [remap dired-jump] 'magit-dired-jump)
     map))
-
-(eval-after-load 'dired-x
-  '(define-key magit-status-mode-map [remap dired-jump] 'magit-dired-jump))
 
 (defvar magit-log-mode-map
   (let ((map (make-sparse-keymap)))
@@ -680,7 +685,7 @@ operation after commit).")
 (defvar magit-bug-report-url
   "http://github.com/magit/magit/issues")
 
-(defconst magit-version "1.2.0"
+(defconst magit-version "1.2.2"
   "The version of Magit that you're using.")
 
 (defun magit-bug-report (str)
@@ -734,24 +739,6 @@ operation after commit).")
 ;;; Compatibilities
 
 (eval-and-compile
-  (defun magit-max-args-internal (function)
-    "Returns the maximum number of arguments accepted by FUNCTION."
-    (if (symbolp function)
-        (setq function (symbol-function function)))
-    (if (subrp function)
-        (let ((max (cdr (subr-arity function))))
-          (if (eq 'many max)
-              most-positive-fixnum
-            max))
-      (if (eq 'macro (car-safe function))
-          (setq function (cdr function)))
-      (let ((arglist (if (byte-code-function-p function)
-                         (aref function 0)
-                       (second function))))
-        (if (memq '&rest arglist)
-            most-positive-fixnum
-          (length (remq '&optional arglist))))))
-
   (if (functionp 'start-file-process)
       (defalias 'magit-start-process 'start-file-process)
     (defalias 'magit-start-process 'start-process))
@@ -774,22 +761,28 @@ record undo information."
                 before-change-functions
                 after-change-functions)
             ,@body)))))
+  )
 
-  (if (>= (magit-max-args-internal 'delete-directory) 2)
-      (defalias 'magit-delete-directory 'delete-directory)
-    (defun magit-delete-directory (directory &optional recursive)
-      "Deletes a directory named DIRECTORY.  If RECURSIVE is non-nil,
-recursively delete all of DIRECTORY's contents as well.
-
-Does not follow symlinks."
-      (if (or (file-symlink-p directory)
-              (not (file-directory-p directory)))
-          (delete-file directory)
-        (if recursive
-            ;; `directory-files-no-dot-files-regex' borrowed from Emacs 23
-            (dolist (file (directory-files directory 'full "\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*"))
-              (magit-delete-directory file recursive)))
-        (delete-directory directory)))))
+;; RECURSIVE has been introduced with Emacs 23.2, XEmacs still lacks it.
+;; This is copied and adapted from `tramp-compat-delete-directory'
+(defun magit-delete-directory (directory &optional recursive)
+  "Compatibility function for `delete-directory'."
+  (if (null recursive)
+      (delete-directory directory)
+    (condition-case nil
+        (funcall 'delete-directory directory recursive)
+      (wrong-number-of-arguments
+       ;; This Emacs version does not support the RECURSIVE flag.
+       ;; We use the implementation from Emacs 23.2.
+       (setq directory (directory-file-name (expand-file-name directory)))
+       (if (not (file-symlink-p directory))
+           (mapc (lambda (file)
+                   (if (eq t (car (file-attributes file)))
+                       (magit-delete-directory file recursive)
+                     (delete-file file)))
+                 (directory-files
+                  directory 'full "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
+       (delete-directory directory)))))
 
 ;;; Utilities
 
@@ -5259,18 +5252,21 @@ for the file whose log must be displayed."
 (defun magit-show-file-revision ()
   "Open a new buffer showing the current file in the revision at point."
   (interactive)
-  (flet ((magit-show-file-from-diff (item)
-                                    (switch-to-buffer-other-window
-                                     (magit-show (cdr (magit-diff-item-range item))
-                                                 (magit-diff-item-file item)))))
-    (magit-section-action (item info "show")
-      ((commit)
-       (let ((current-file (or magit-file-log-file
-                               (magit-read-file-from-rev info))))
-         (switch-to-buffer-other-window
-          (magit-show info current-file))))
-      ((hunk) (magit-show-file-from-diff (magit-hunk-item-diff item)))
-      ((diff) (magit-show-file-from-diff item)))))
+  (magit-section-action (item info "show")
+    ((commit)
+     (let ((current-file (or magit-file-log-file
+                             (magit-read-file-from-rev info))))
+       (switch-to-buffer-other-window
+        (magit-show info current-file))))
+    ((hunk)
+     (setq item (magit-hunk-item-diff item))
+     (switch-to-buffer-other-window
+      (magit-show (cdr (magit-diff-item-range item))
+                  (magit-diff-item-file item))))
+    ((diff)
+     (switch-to-buffer-other-window
+      (magit-show (cdr (magit-diff-item-range item))
+                  (magit-diff-item-file item))))))
 
 ;;; Miscellaneous
 
@@ -5454,21 +5450,20 @@ The name of the change log file is set by variable change-log-default-name."
   (interactive)
   (magit-visiting-file-item (call-interactively 'add-change-log-entry-other-window)))
 
-(eval-after-load 'dired-x
-  '(defun magit-dired-jump (&optional other-window)
-    "Visit current item.
+(defun magit-dired-jump (&optional other-window)
+  "Visit current item.
 With a prefix argument, visit in other window."
-    (interactive "P")
-    (require 'dired-x)
-    (magit-section-action (item info "dired-jump")
-      ((untracked file)
-       (dired-jump other-window (file-truename info)))
-      ((diff)
-       (dired-jump other-window (file-truename (magit-diff-item-file item))))
-      ((hunk)
-       (dired-jump other-window
-                   (file-truename (magit-diff-item-file
-                                   (magit-hunk-item-diff item))))))))
+  (interactive "P")
+  (require 'dired-x)
+  (magit-section-action (item info "dired-jump")
+    ((untracked file)
+     (dired-jump other-window (file-truename info)))
+    ((diff)
+     (dired-jump other-window (file-truename (magit-diff-item-file item))))
+    ((hunk)
+     (dired-jump other-window
+                 (file-truename (magit-diff-item-file
+                                 (magit-hunk-item-diff item)))))))
 
 (defun magit-visit-file-item (&optional other-window)
   "Visit current file associated with item.

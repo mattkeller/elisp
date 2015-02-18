@@ -33,7 +33,7 @@
 (autoload 'htmlize-buffer "htmlize" "" t)
 (autoload 'typing-of-emacs "typing" "The Typing-Of-Emacs, a game" t)
 
-(add-to-list 'load-path (concat dotfiles-dir "lib/magit-1.2.0"))
+(add-to-list 'load-path (concat dotfiles-dir "lib/magit-1.2.2"))
 (autoload 'magit-status "magit" "Magit git helper" t)
 
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
