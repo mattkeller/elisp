@@ -22,6 +22,7 @@
 (require 'org-init)
 (require 'java)
 (require 'lang)
+(require 'clojure)
 (require 'www)
 (require 'projects)
 (require 'mk-tags)
@@ -161,7 +162,6 @@
 (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
 (define-key ctl-x-4-map "s" 'mk-swap-windows)
 (global-set-key (kbd "C-x C-r") 'find-file-root)
-;(global-set-key (kbd "C-c C-f") 'mk-recentf-ido-find-file)
 
 (autoload 'etags-update-mode "etags-update" "sweet!" t)
 
