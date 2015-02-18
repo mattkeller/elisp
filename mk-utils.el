@@ -62,26 +62,6 @@
 
 (global-set-key (kbd "C-c z") 'mk-line-to-window-top)
 
- (defun mk-shell-dwim (&optional create)
-   "Start or switch to an inferior shell process, in a smart way.
-
- If a buffer with a running shell process exists, simply switch
- to that buffer. If a shell buffer exists, but the shell process
- is not running, restart the shell. If already in an active shell
- buffer, switch to the next one, if any. With prefix argument,
- CREATE a new shell."
-   (interactive "P")
-   (let* ((next-shell-buffer
-           (catch 'found
-             (dolist (buffer (reverse (buffer-list)))
-               (when (string-match "^\\*shell\\*" (buffer-name buffer))
-                 (throw 'found buffer)))))
-          (buffer (if create
-                      (generate-new-buffer-name "*shell*")
-                    next-shell-buffer)))
-     (shell buffer)
-     buffer))
-
 (defun grep-kill ()
   "Alias for kill-grep"
   (interactive)

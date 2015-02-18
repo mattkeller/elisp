@@ -65,10 +65,7 @@
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; = meta-x
 (global-set-key (kbd "C-c C-m") 'execute-extended-command) ; = meta-x
 
-(require 'ibuf-ext)
-(when (fboundp 'ibuffer-bs-show)
-  (global-set-key (kbd "C-x C-b") 'ibuffer-bs-show))
-
+(global-set-key (kbd "C-x C-b") 'ibuffer-bs-show)
 (global-set-key (kbd "M-g")     'goto-line)
 (global-set-key (kbd "C-x C-f") 'ido-find-file)
 (global-set-key (kbd "C-x C-p") 'ffap)
@@ -94,10 +91,10 @@
 (global-set-key [f11] 'global-hl-line-mode)
 (global-set-key [f12] 'revert-buffer)
 
-(global-set-key (kbd "C-x <down>")  'windmove-down)
-(global-set-key (kbd "C-x <up>")    'windmove-up)
-(global-set-key (kbd "C-x <right>") 'windmove-right)
-(global-set-key (kbd "C-x <left>")  'windmove-left)
+;; (global-set-key (kbd "C-x C-n") 'windmove-down)
+;; (global-set-key (kbd "C-x C-p") 'windmove-up)
+;; (global-set-key (kbd "C-x C-l") 'windmove-right)
+;; (global-set-key (kbd "C-x C-h") 'windmove-left)
 
 (global-set-key (kbd "M-_") 'shrink-window)
 (global-set-key (kbd "M-+") 'enlarge-window)
@@ -212,5 +209,28 @@
 ;;; Autoloads ----------------------------------------------------------
 
 (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
+
+
+;;; Utils --------------------------------------------------------------
+
+(defun mk-shell-dwim (&optional create)
+  "Start or switch to an inferior shell process, in a smart way.
+
+ If a buffer with a running shell process exists, simply switch
+ to that buffer. If a shell buffer exists, but the shell process
+ is not running, restart the shell. If already in an active shell
+ buffer, switch to the next one, if any. With prefix argument,
+ CREATE a new shell."
+  (interactive "P")
+  (let* ((next-shell-buffer
+          (catch 'found
+            (dolist (buffer (reverse (buffer-list)))
+              (when (string-match "^\\*shell\\*" (buffer-name buffer))
+                (throw 'found buffer)))))
+         (buffer (if create
+                     (generate-new-buffer-name "*shell*")
+                   next-shell-buffer)))
+    (shell buffer)
+    buffer))
 
 (provide 'basic)
