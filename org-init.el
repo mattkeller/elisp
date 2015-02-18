@@ -1,7 +1,8 @@
 ;;;; org-mode.el
 
-(add-to-list 'load-path (expand-file-name "~/code/org-7.9.3elisp"))
+;; Use stock version of org. Its is reasonably up-to-date in emacs 24.4.
 (require 'org)
+(require 'org-loaddefs)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
 
@@ -10,9 +11,12 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cr" 'org-capture)
 
-(setq org-directory                     (expand-file-name "~/proj/org")
+(setq base-org                          (expand-file-name "~/gtd")
+      home-org                          (expand-file-name (concat base-org "/home/"))
+      work-org                          (expand-file-name (concat base-org "/work/"))
+      org-directory                     work-org
       org-default-notes-file            (concat org-directory "/todo.org")
-      org-agenda-files                  (list org-directory)
+      org-agenda-files                  (list home-org work-org)
       org-startup-folded                nil
       org-log-done                      'time
       org-return-follows-link           t
@@ -27,7 +31,8 @@
         ("i" "Idea" entry (file+headline ,(concat org-directory "/maybe.org") "Ideas")
              "* %?\n %i\n")))
 
-(add-hook 'org-mode-hook (lambda () (flyspell-mode 1)))
+(when (not noninteractive)
+  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1))))
 
 (setq org-todo-keywords
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)"
