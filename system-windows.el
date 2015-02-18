@@ -12,7 +12,7 @@
 
 ;;; Cygwin as our shell -----------------------------------------------
 
-(let* ((cygwin-root "c:/cygwin")
+(let* ((cygwin-root "c:/cygwin64")
        (cygwin-bin (concat cygwin-root "/bin")))
   (when (file-readable-p cygwin-root)
     (setq exec-path (cons cygwin-bin exec-path))
