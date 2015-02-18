@@ -89,4 +89,10 @@
 (autoload 'haskell-mode "haskell-site-file" "haskell-site-file" t)
 (add-to-list 'auto-mode-alist '("\\.hs$" .  haskell-mode))
 
+;;; Groovy/Gradle ------------------------------------------------------
+
+(autoload 'groovy-mode "groovy-mode" "comment" t)
+(add-to-list 'auto-mode-alist '("\\.groovy$" . groovy-mode))
+(add-to-list 'auto-mode-alist '("\\.gradle$" . groovy-mode))
+
 (provide 'lang)

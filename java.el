@@ -33,7 +33,6 @@
                              (setq-default indent-tabs-mode nil
                                            tab-width 4)
                              (mk-maybe-hide-imports)
-                             (subword-mode)
                              (mk-coding-hook)
                              (local-set-key (kbd "C-.") 'javadoc-lookup)))
 
