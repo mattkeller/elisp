@@ -22,7 +22,7 @@
 (require 'org-init)
 (require 'java)
 (require 'lang)
-;(require 'clojure)
+(require 'clojure)
 (require 'www)
 (require 'projects)
 (require 'mk-tags)
