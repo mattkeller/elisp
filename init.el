@@ -158,10 +158,13 @@
 ;;;; Utils --------------------------------------------------------------
 
 ;; using mk-utils
-(mk-arrow-keys-off)
+(mk-arrow-keys-on)
+(defalias 'imenu 'mk-ido-goto-symbol "imenu using ido")
+(global-set-key (kbd "C-c TAB") 'imenu)
 (define-key ctl-x-4-map "t" 'mk-toggle-window-split)
 (define-key ctl-x-4-map "s" 'mk-swap-windows)
 (global-set-key (kbd "C-x C-r") 'find-file-root)
+(global-set-key (kbd "C-c C-f") 'mk-recentf-ido-find-file)
 
 (autoload 'etags-update-mode "etags-update" "sweet!" t)
 
@@ -205,36 +208,12 @@
 
 (maybe-load "~/.emacs-local.el")
 
-;;;; Helm --------------------------------------------------------------
-(add-to-list 'load-path (concat dotfiles-dir "lib/helm-1.6.7"))
+;;;; smex (keep at bottom of .emacs) ------------------------------------
 
-(require 'helm)
-(require 'helm-config)
-
-(setq helm-split-window-in-side-p           t
-      helm-move-to-line-cycle-in-source     t
-      helm-ff-search-library-in-sexp        t
-      helm-scroll-amount                    8
-      helm-ff-file-name-history-use-recentf t)
-
-; only using keybinds below, not all set via (helm-mode 1)
-(global-set-key (kbd "M-x")     'helm-M-x)
-(global-set-key (kbd "C-x C-m") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x C-b") 'helm-mini)
-(global-set-key (kbd "C-x b")   'helm-buffers-list)
-(global-set-key (kbd "M-y")     'helm-show-kill-ring)
-(global-set-key (kbd "C-c h")   'helm-mini)
-(global-set-key (kbd "C-c o")   'helm-occur)
-(global-set-key (kbd "C-c TAB") 'helm-imenu)
-(global-set-key (kbd "C-h a")   'helm-apropos)
-
-; really don't like the default arrow keys to move between sources
-(eval-after-load 'helm
-  '(progn
-     (define-key helm-map (kbd "M-n") 'helm-next-source)
-     (define-key helm-map (kbd "M-p") 'helm-previous-source)))
-
+(require 'smex)
+(setq smex-save-file "~/.smex.save"
+ ido-enable-flex-matching t) ;; see also ido-enable-regexp
+(smex-initialize)
 
 (message "Emacs took %s seconds to start" (- (float-time) emacs-start-time))
 

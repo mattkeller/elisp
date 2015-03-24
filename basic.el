@@ -9,6 +9,7 @@
 
 ;;; Miscellaneous customizations ---------------------------------------------
 
+(ido-mode t)                             ; more informative buffer switching
 (line-number-mode 1)                     ; show line number in mode-line
 (show-paren-mode t)                      ; flash matching paren
 (column-number-mode 1)                   ; lines and columns, duh
@@ -60,7 +61,7 @@
 
 ;;; Global keybindings -------------------------------------------------
 
-;; these are overridden in helm config
+;; these are overridden in smex config
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; = meta-x
 (global-set-key (kbd "C-c C-m") 'execute-extended-command) ; = meta-x
 
