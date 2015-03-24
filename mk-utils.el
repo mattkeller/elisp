@@ -321,7 +321,7 @@ by using nxml's indentation rules."
 
 (defun mk-coding-hook ()
   (interactive)
-  (flyspell-prog-mode)
+  ;(flyspell-prog-mode)
   ;(mk-local-comment-auto-fill)
   (mk-add-watchwords)
   (linum-mode 1)
