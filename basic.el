@@ -116,6 +116,7 @@
 (defalias 'ptr 'point-to-register)
 (defalias 'jtr 'jump-to-register)
 (defalias 'rct 'recentf-open-files)
+(defalias 'ttl 'toggle-truncate-lines)
 
 ;;; Scroll settings ----------------------------------------------------
 
