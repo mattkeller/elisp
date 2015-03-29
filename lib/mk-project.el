@@ -84,6 +84,9 @@ is set -- or in grepping when `mk-proj-grep-find-cmd' is set.")
   "Path to the TAGS file for this project. Optional. Use an absolute path,
 not one relative to basedir. Value is expanded with expand-file-name.")
 
+(defvar mk-proj-tags-args nil
+  "Extra arguments to pass to etags")
+
 (defvar mk-proj-compile-cmd nil
   "Command to build the entire project. Can be either a string specifying 
 a shell command or the name of a function. Optional. Example: make -k.")
@@ -175,6 +178,7 @@ value is not used if a custom find command is set in
                               mk-proj-ack-args
                               mk-proj-vcs
                               mk-proj-tags-file
+                              mk-proj-tags-args
                               mk-proj-compile-cmd
                               mk-proj-startup-hook
                               mk-proj-shutdown-hook
@@ -302,7 +306,7 @@ load time. See also `project-menu-remove'."
     ;; optional vars
     (dolist (v '(src-patterns ignore-patterns ack-args vcs
                  tags-file compile-cmd src-find-cmd grep-find-cmd
-                 index-find-cmd startup-hook shutdown-hook))
+                 index-find-cmd startup-hook shutdown-hook tags-args))
       (maybe-set-var v))
     (maybe-set-var 'tags-file #'expand-file-name)
     (maybe-set-var 'file-list-cache #'expand-file-name)
@@ -497,7 +501,9 @@ load time. See also `project-menu-remove'."
                                        "' -type f "
                                        (mk-proj-find-cmd-src-args mk-proj-src-patterns)))
              (etags-cmd (concat (or (mk-proj-find-cmd-val 'src) default-find-cmd)
-                                " | etags -o '" tags-file-name "' - "))
+                                (concat " | etags -o '" tags-file-name "' "
+                                        mk-proj-tags-args
+                                        " - ")))
              (proc-name "etags-process"))
         (message "project-tags default-dir %s" default-directory)
         (message "project-tags cmd \"%s\"" etags-cmd)
@@ -552,7 +558,7 @@ C-u prefix, start from the current directory."
       (setq find-cmd (concat find-cmd " -not -path " (mk-proj-get-vcs-path))))
     (let* ((whole-cmd (concat (or (mk-proj-find-cmd-val 'grep)
                                   (concat find-cmd " -print0"))
-                              " | xargs -0 -e " grep-cmd))
+                              " | xargs -0 " grep-cmd))
            (confirmed-cmd (read-string "Grep command: " whole-cmd nil whole-cmd)))
       (message "project-grep cmd: \"%s\"" confirmed-cmd)
       (grep-find confirmed-cmd))))
