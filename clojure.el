@@ -1,14 +1,38 @@
-;; cider require specific versions of clojure-mode
-(add-to-list 'load-path (expand-file-name (concat dotfiles-dir "lib/clojure-mode")))
-(add-to-list 'load-path (expand-file-name (concat dotfiles-dir "lib/cider-0.8.2")))
+(use-package clojure-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+  (add-hook 'clojure-mode-hook #'mk-coding-hook)
+  (add-hook 'clojure-mode-hook #'rainbow-paren-mode)
 
-(autoload 'clojure-mode "clojure-mode" "Mode for editing clojure source files" t)
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+  ;; todo rainbow-parent-mode
 
-(require 'clojure-mode)
-(require 'cider)
+  ;; via ahinz
+  (defun fix-clojure-indent ()
+    (interactive)
+    (put-clojure-indent 'nextTuple 'defun)
+    (put-clojure-indent 'table 'defun)
+    (put-clojure-indent 'tr 'defun)
+    (put-clojure-indent 'td 'defun)
+    (put-clojure-indent 'div 'defun)
+    (put-clojure-indent 'header 'defun)
+    (put-clojure-indent 'button 'defun)
+    (put-clojure-indent 'span 'defun)
+    (put-clojure-indent 'nav 'defun)
+    (put-clojure-indent 'ul 'defun)
+    (put-clojure-indent 'li 'defun)
+    (put-clojure-indent 'GET 'defun)
+    (put-clojure-indent 'POST 'defun)
+    (put-clojure-indent 'fact 'defun)
+    (put-clojure-indent 'routes 'defun)
+    (put-clojure-indent 'emit-bolt! 'defun)
+    (put-clojure-indent 'execute 'defun)))
 
-(add-hook 'clojure-mode-hook #'mk-coding-hook)
- 
+(use-package cider
+  :config
+  (require 'cider-macroexpansion)) ; C-C RET
+
+(use-package slamhound
+  :defer t
+  :commands slamhound)
+
 (provide 'clojure)
-

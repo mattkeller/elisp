@@ -17,6 +17,17 @@
 (add-to-list 'load-path dotfiles-dir)
 (require 'basic)
 
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (package-initialize)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(require 'use-package)
+
 (add-to-list 'load-path (concat dotfiles-dir "lib"))
 (require 'mk-utils)
 (require 'org-init)
@@ -207,6 +218,11 @@
     (maybe-load "work")))
 
 (maybe-load "~/.emacs-local.el")
+
+
+;;;; expand-region -----------------------------------------------------
+(use-package expand-region
+  :bind (("C-c e" . er/expand-region)))
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
