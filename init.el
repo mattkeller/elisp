@@ -20,7 +20,8 @@
 (when (>= emacs-major-version 24)
   (require 'package)
   (package-initialize)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -128,13 +129,16 @@
 
 ;;; Browse Kill Ring ---------------------------------------------------
 
-(require 'browse-kill-ring)
-(defadvice yank-pop (around kill-ring-browse-maybe (arg))
-  "If last action was not a yank, run `browse-kill-ring' instead."
-  (if (not (eq last-command 'yank))
-      (browse-kill-ring)
-    ad-do-it))
-(ad-activate 'yank-pop)
+(use-package browse-kill-ring
+  :ensure t
+  :commands browse-kill-ring
+  :config
+  (defadvice yank-pop (around kill-ring-browse-maybe (arg))
+    "If last action was not a yank, run `browse-kill-ring' instead."
+    (if (not (eq last-command 'yank))
+        (browse-kill-ring)
+      ad-do-it))
+  (ad-activate 'yank-pop))
 
 ;;; twitter.el ---------------------------------------------------------
 
