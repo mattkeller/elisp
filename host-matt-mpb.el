@@ -1,9 +1,27 @@
 (require 'cider)
 
+(set-face-attribute 'default nil :font "Bitstream Vera Sans Mono-14")
+
+;; for lein for cider-jack-in
+(add-to-list 'exec-path "/usr/local/bin")
+
+;; 3-finger swipe produces annoying messages
+;; TODO Put this in a OSX file
+(dolist (multiple '("" "double-" "triple-"))
+  (dolist (direction '("right" "left"))
+    (global-set-key (kbd (concat "<" multiple "wheel-" direction ">")) 'ignore)))
+
 (defun zs-cider ()
   (interactive)
   (cider-connect "192.168.59.103" 44553))
 
+(defun ido-switch-magit-buffer ()
+  "Switch to a magit status buffer via `ido'."
+  (interactive)
+  (ido-buffer-internal ido-default-buffer-method
+                       nil "magit status: " nil "*magit: "))
+
+(global-set-key (kbd "C-M-g") 'ido-switch-magit-buffer)
 
 ;; grep can't take -e ?
 ;; no ack cmd
@@ -12,7 +30,7 @@
 ;; etags regex's probably not finding certain legal clojure symbol names
 
 (let ((pd "/Users/matt/.project/zensight/")
-      (bd "/Users/matt/Documents/zensight"))
+      (bd "/Users/matt/zensight"))
   (project-def "zensight"
                `((basedir          ,bd)
                  (src-patterns     ("*.clj" ".rb" ".py"))
