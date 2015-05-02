@@ -153,19 +153,7 @@
        (daemonp)))
 
 (when (or window-system (is-daemonized))
-  (add-to-list 'load-path (concat dotfiles-dir "lib/color-theme"))
-  (require 'color-theme)
-  (color-theme-initialize)
-
-  (defun my-color-theme () 
-    (interactive)
-    (ecase (intern (completing-read "Theme: " '("light" "dark" "gray" "reset")))
-      (light (color-theme-emacs-21))
-      (dark  (color-theme-dark-laptop))
-      (gray  (color-theme-jedit-grey))
-      (reset (color-theme-snapshot))))
-
-  (color-theme-dark-laptop))
+  (load-theme 'solarized-dark))
 
 ;;;; Utils --------------------------------------------------------------
 
