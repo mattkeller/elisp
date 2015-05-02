@@ -33,6 +33,7 @@
 
 (use-package slamhound
   :defer t
+  :ensure t
   :commands slamhound)
 
 (provide 'clojure)
