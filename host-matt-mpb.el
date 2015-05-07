@@ -23,6 +23,10 @@
 
 (global-set-key (kbd "C-M-g") 'ido-switch-magit-buffer)
 
+(setq mk-proj-ack-cmd "/usr/local/bin/ag")
+(setq mk-proj-ack-default-args "--nocolor --nogroup")
+(setq mk-proj-ack-respect-case-fold nil)
+
 ;; grep can't take -e ?
 ;; no ack cmd
 ;; ignore .m2 dir
