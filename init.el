@@ -218,7 +218,9 @@
 
 (use-package magit
   :ensure t
-  :commands magit-status magit-blame-mode)
+  :commands magit-status magit-blame-mode
+  :config
+  (setq magit-last-seen-setup-instructions "1.4.0"))
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
