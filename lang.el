@@ -95,4 +95,12 @@
 (add-to-list 'auto-mode-alist '("\\.groovy$" . groovy-mode))
 (add-to-list 'auto-mode-alist '("\\.gradle$" . groovy-mode))
 
+;;; SCSS ---------------------------------------------------------------
+
+(use-package scss-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.scss$" . scss-mode))
+  (add-hook 'scss-mode-hook 'mk-coding-hook))
+
 (provide 'lang)
