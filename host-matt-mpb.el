@@ -45,3 +45,28 @@
                  (tags-file        ,(concat pd "TAGS"))
                  (open-files-cache ,(concat pd "open-files"))
                  (file-list-cache  ,(concat pd "file-list-cache") nil))))
+
+(defun mk-open-file-system (file)
+  (interactive "F")
+  (let ((abs-file (expand-file-name file)))
+    (message "Opening '%s'..." abs-file)
+    (start-process-shell-command "open" "mk-open-file-system" (concat "open '" abs-file "'"))
+    (message "Opening '%s'... done" abs-file)))
+
+(defun mk-open-collateral ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (when (re-search-forward "," nil t 1)
+      (backward-char 1)
+      (copy-region-as-kill (line-beginning-position) (point))
+      (mk-open-file-system (car kill-ring-yank-pointer))))
+  (end-of-line))
+
+
+(global-set-key (kbd "C-c C-o") 'mk-open-collateral)
+
+(global-set-key [F9] (lambda () (jump-to-register 49)))
+(global-set-key [F10] (lambda () (jump-to-register 50)))
+
+(setq visible-bell nil)
