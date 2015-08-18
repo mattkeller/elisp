@@ -89,13 +89,6 @@
   (unless (is-server-running name)
     (server-start)))
 
-;;; Emacs Code Browser -------------------------------------------------
-
-(add-to-list 'load-path  (concat dotfiles-dir "lib/ecb-2.40"))
-(require 'ecb-autoloads)
-(setq ecb-layout-name "left10")
-(add-hook 'ecb-before-activate-hook '(lambda () (require 'cedet)))
-
 ;;; NXML Setup ---------------------------------------------------------
 
 (autoload 'nxml-mode "nxml-mode" "" t)

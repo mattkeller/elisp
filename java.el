@@ -8,15 +8,6 @@
 (require 'javadoc-lookup)
 (global-set-key (kbd "C-h j") 'javadoc-lookup)
 
-;;; cedet -----------------------------------------------------------------
-
-(add-to-list 'load-path (concat dotfiles-dir "lib/elib-1.0"))
-(add-to-list 'load-path (concat dotfiles-dir "lib/cedet-1.0pre6/common/"))
-
-(setq semantic-load-turn-useful-things-on t
-      semanticdb-default-save-directory   "~/.semantic.cache"
-      semanticdb-persistent-path          nil)
-
 (add-to-list 'auto-mode-alist '("\\.java$" . java-mode))
 
 (when (getenv "JAVA_HOME")
