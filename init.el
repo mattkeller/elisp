@@ -53,7 +53,7 @@
 (autoload 'mcp-hl-mode "mcp-hl" "" t)
 (use-package list-register :ensure t :commands list-register)
 (autoload 'rainbow-paren-mode "rainbow-parens" "" t)
-(autoload 'log4j-mode "log4j-mode" "Major mode for viewing log files." t)
+(use-package log4j-mode :ensure t :commands log4j-mode)
 (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
 
 (when (< emacs-major-version 23) 
