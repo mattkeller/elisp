@@ -98,9 +98,6 @@
 
 ;;; NXML Setup ---------------------------------------------------------
 
-;; emacs 23.2 has a fresh nxml-version
-(unless (and (>= emacs-major-version 23) (>= emacs-minor-version 2))
-  (add-to-list 'load-path (concat dotfiles-dir "lib/nxml-mode")))
 (autoload 'nxml-mode "nxml-mode" "" t)
 (add-to-list 'auto-mode-alist '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\|pom\\)\\'" . nxml-mode))
 
