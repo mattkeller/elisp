@@ -78,9 +78,11 @@
 
 ;;; Haskell ------------------------------------------------------------
 
-(add-to-list 'load-path (concat dotfiles-dir "lib/haskell-mode-2.8.0"))
-(autoload 'haskell-mode "haskell-site-file" "haskell-site-file" t)
-(add-to-list 'auto-mode-alist '("\\.hs$" .  haskell-mode))
+(use-package haskell-mode
+  :ensure f
+  :commands haskell-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.hs$" .  haskell-mode)))
 
 ;;; Groovy/Gradle ------------------------------------------------------
 
