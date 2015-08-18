@@ -34,14 +34,15 @@
 ;; etags regex's probably not finding certain legal clojure symbol names
 
 (let ((pd "/Users/matt/.project/zensight/")
-      (bd "/Users/matt/zensight"))
+      (bd "/Users/matt/work/zensight"))
   (project-def "zensight"
                `((basedir          ,bd)
                  (src-patterns     ("*.clj" ".rb" ".py"))
-                 (ignore-patterns  ("*.class" ".jar"))
+                 (ignore-patterns  ("*.class" ".jar" "*.js"))
                  (vcs              git)
                  (tags-args        "--regex='/[ \\t\\(]*def[a-z]*-? \\([0-9a-z-!<>\?]+\\)/\\1/' --regex='/[ \\t\\(]*ns \\([a-z.]+\\)/\\1/'")
-                 (grep-find-cmd    ,(concat "find . -type f -not -path '*/.git/*' -not -path '*/.m2/*' -not -path '*/log/*' -not -name '*.jar' -print0"))
+                 (grep-find-cmd    "find . -type f -not -path '*/.git/*' -not -path '*/.m2/*' -not -path '*/log/*' -not -name '*.jar' -not -path '*s3data*' -print0")
+                 (index-find-cmd   "find . -type f -not -path '*/.git/*' -not -path '*/.m2/*' -not -path '*s3data*' -not -name '*.class' -not -name '*#'")
                  (tags-file        ,(concat pd "TAGS"))
                  (open-files-cache ,(concat pd "open-files"))
                  (file-list-cache  ,(concat pd "file-list-cache") nil))))
