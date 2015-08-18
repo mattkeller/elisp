@@ -86,9 +86,12 @@
 
 ;;; Groovy/Gradle ------------------------------------------------------
 
-(autoload 'groovy-mode "groovy-mode" "comment" t)
-(add-to-list 'auto-mode-alist '("\\.groovy$" . groovy-mode))
-(add-to-list 'auto-mode-alist '("\\.gradle$" . groovy-mode))
+(use-package groovy-mode
+  :ensure f
+  :commands groovy-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.groovy$" . groovy-mode))
+  (add-to-list 'auto-mode-alist '("\\.gradle$" . groovy-mode)))
 
 ;;; SCSS ---------------------------------------------------------------
 
