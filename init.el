@@ -43,7 +43,7 @@
 
 (autoload 'find-file-recursively "find-recursive" "" t)
 (autoload 'light-symbol-mode "light-symbol" "" t)
-(autoload 'htmlize-buffer "htmlize" "" t)
+(use-package htmlize :commands htmlize-buffer :ensure t)
 (autoload 'typing-of-emacs "typing" "The Typing-Of-Emacs, a game" t)
 
 (autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
