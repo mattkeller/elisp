@@ -71,13 +71,6 @@
                                   (mk-coding-hook)
                                   (flymake-mode t)))
 
-;;; OCaml --------------------------------------------------------------
-
-(add-to-list 'load-path (concat "lib/ocaml"))
-(add-to-list 'auto-mode-alist '("\\.ml[iyl]?$" .  caml-mode))
-(autoload 'caml-mode "ocaml" "ocaml" "Major mode for editing Caml code." t)
-(autoload 'camldebug "camldebug" "camldebug" "Debug caml mode")
-
 ;;; Protocol Buffers ---------------------------------------------------
 
 (add-to-list 'auto-mode-alist '("\\.proto$" .  protobuf-mode))
