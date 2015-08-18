@@ -81,8 +81,8 @@
 
 ;;; Clojure ------------------------------------------------------------
 
-(add-to-list 'load-path (concat dotfiles-dir "lib/clojure-mode"))
-(require 'clojure-mode)
+;;(add-to-list 'load-path (concat dotfiles-dir "lib/clojure-mode"))
+;;(require 'clojure-mode)
 ;(require 'swank-clojure) ; start swank from lein or whatever, not emacs
 
 ;; (autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)

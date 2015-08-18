@@ -1,4 +1,5 @@
 (use-package clojure-mode
+  :ensure t
   :init
   (use-package rainbow-delimiters
     :ensure t)
