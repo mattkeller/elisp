@@ -4,9 +4,10 @@
 
 ;;; Javadoc-Lookup --------------------------------------------------------
 
-(add-to-list 'load-path (concat dotfiles-dir "lib/javadoc-lookup"))
-(require 'javadoc-lookup)
-(global-set-key (kbd "C-h j") 'javadoc-lookup)
+(use-package javadoc-lookup
+  :ensure t
+  :bind ("C-h j" . javadoc-lookup)
+  :commands javadoc-lookup)
 
 (add-to-list 'auto-mode-alist '("\\.java$" . java-mode))
 
