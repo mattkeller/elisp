@@ -51,7 +51,7 @@
 
 (autoload 'ack "ack" "Ack is better than grep" t)
 (autoload 'mcp-hl-mode "mcp-hl" "" t)
-(autoload 'list-register "list-register" "" t)
+(use-package list-register :ensure t :commands list-register)
 (autoload 'rainbow-paren-mode "rainbow-parens" "" t)
 (autoload 'log4j-mode "log4j-mode" "Major mode for viewing log files." t)
 (autoload 'markdown-mode "markdown-mode.el" "Major mode for editing Markdown files" t)
