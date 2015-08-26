@@ -54,7 +54,11 @@
 (use-package list-register :ensure t :commands list-register)
 (autoload 'rainbow-paren-mode "rainbow-parens" "" t)
 (use-package log4j-mode :ensure t :commands log4j-mode)
-(use-package markdown-mode :ensure t :commands markdown-mode)
+
+(use-package markdown-mode
+  :ensure t
+  :commands markdown-mode
+  :config (add-hook 'markdown-mode-hook (lambda () (visual-line-mode 1))))
 
 (when (< emacs-major-version 23) 
   (autoload 'linum-mode "linum" "" t))
