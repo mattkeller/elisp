@@ -207,8 +207,10 @@
 (use-package magit
   :ensure t
   :commands magit-status magit-blame-mode
+  :bind (("C-x g" . magit-status))
   :config
-  (setq magit-last-seen-setup-instructions "1.4.0"))
+  (setq magit-save-repository-buffers nil
+        magit-last-seen-setup-instructions "1.4.0"))
 
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
