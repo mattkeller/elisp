@@ -28,7 +28,14 @@
 
   (require 'cider-macroexpansion) ; C-C RET
   (require 'cider-grimoire) ; C-c C-d C-g => cider-grimoire-web
-  (require 'cider-classpath))
+  (require 'cider-classpath)
+
+  (defun mk-cider-require (ns alias)
+    (interactive "sNamespace: \nsAlias: ")
+    (cider-interactive-eval
+     (concat "(require '[" ns " :as " alias "])")))
+
+  (global-set-key (kbd "C-c R") 'mk-cider-require))
 
 (use-package slamhound
   :defer t
