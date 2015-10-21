@@ -212,6 +212,9 @@
   (setq magit-save-repository-buffers nil
         magit-last-seen-setup-instructions "1.4.0"))
 
+(use-package git-timemachine
+  :ensure t)
+
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
 (require 'smex)
