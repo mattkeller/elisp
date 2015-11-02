@@ -15,6 +15,7 @@
 (column-number-mode 1)                   ; lines and columns, duh
 (menu-bar-mode 0)                        ; keyboard only, please
 (tool-bar-mode 0)                        ; no tool bar
+(scroll-bar-mode -1)
 (which-func-mode t)                      ; show current fn in mode-line
 (global-hl-line-mode 1)                  ; highlight current line
 (setq-default indent-tabs-mode nil)      ; by default, insert spaces, not a full tab
@@ -124,7 +125,7 @@
 (setq scroll-margin 2)                     ; start scrolling when 2 rows from top/bottom
 (setq scroll-conservatively 1)             ; smooth scrolling
 (setq next-line-add-newlines nil)          ; don't add newlines just by scrolling
-(set-scroll-bar-mode 'right)               ; scroll bar on right of buffer
+;(set-scroll-bar-mode 'right)               ; scroll bar on right of buffer
 
 (defadvice scroll-up (around scroll-up first act)
   "Keep cursor in the same column."
