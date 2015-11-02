@@ -207,7 +207,7 @@
 (use-package ace-window
   :ensure t
   :bind (("M-o" . ace-window))
-  :config (setq aw-keys '(?j ?k ?d ?l ?i ?m ?a ?s ?f)))
+  :config (setq aw-keys '(?a ?s ?d ?f ?h ?j ?k ?l)))
 
 (use-package magit
   :ensure t
