@@ -204,6 +204,11 @@
   :ensure t
   :bind (("C-c e" . er/expand-region)))
 
+(use-package ace-window
+  :ensure t
+  :bind (("M-o" . ace-window))
+  :config (setq aw-keys '(?j ?k ?d ?l ?i ?m ?a ?s ?f)))
+
 (use-package magit
   :ensure t
   :commands magit-status magit-blame-mode
