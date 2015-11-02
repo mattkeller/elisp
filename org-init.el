@@ -32,7 +32,9 @@
              "* %?\n %i\n")))
 
 (when (not noninteractive)
-  (add-hook 'org-mode-hook (lambda () (flyspell-mode 1))))
+  (add-hook 'org-mode-hook (lambda ()
+                             (flyspell-mode 1)
+                             (org-indent-mode 1))))
 
 (setq org-todo-keywords
            '((sequence "TODO(t)" "STARTED(s)" "WAITING(w)" "VERIFY(v)"
