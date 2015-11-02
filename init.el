@@ -220,6 +220,11 @@
 (use-package git-timemachine
   :ensure t)
 
+(require 'smart-mode-line-obvious-theme)
+(use-package smart-mode-line
+  :ensure t
+  :config (setq sml/theme 'obvious))
+
 ;;;; smex (keep at bottom of .emacs) ------------------------------------
 
 (require 'smex)
