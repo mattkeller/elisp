@@ -232,4 +232,9 @@
     (shell buffer)
     buffer))
 
+(defun mk-whitespace-cleanup ()
+  (interactive)
+  (untabify (point-min) (point-max))
+  (delete-trailing-whitespace (point-min) (point-max)))
+
 (provide 'basic)

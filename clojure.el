@@ -7,7 +7,10 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
   (add-hook 'clojure-mode-hook #'mk-coding-hook)
-  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
+  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'clojure-mode-hook
+            (lambda()
+              (add-hook 'write-contents-functions #'mk-whitespace-cleanup))))
 
 (use-package cider
   :init
