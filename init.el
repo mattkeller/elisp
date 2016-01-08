@@ -172,6 +172,17 @@
 
      (setq etu/append-file-prompt 'mk-etags-update-append-file-p)))
 
+;;; ido ----------------------------------------------------------------
+
+(defvar mk-dont-ignore-buffer-names '("*grep*" "*Messages*" "*scratch*"))
+
+(defun mk-ido-ignore-most-star-buffers (name)
+  (and
+   (string-match-p "^*" name)
+   (not (member name mk-dont-ignore-buffer-names))))
+
+(setq ido-ignore-buffers (list "\\` " #'mk-ido-ignore-most-star-buffers))
+
 ;;;; Uniqify ------------------------------------------------------------
 
 (require 'uniquify) 
@@ -209,13 +220,20 @@
   :bind (("M-o" . ace-window))
   :config (setq aw-keys '(?a ?s ?d ?f ?h ?j ?k ?l)))
 
+(use-package ace-jump-mode
+  :ensure t
+  :bind (("M-SPC" . ace-jump-mode)))
+
 (use-package magit
   :ensure t
   :commands magit-status magit-blame-mode
-  :bind (("C-x g" . magit-status))
+  :bind (("C-c C-g" . mk-magit-for-project)
+         ("C-M-g" . ido-switch-magit-buffer))
   :config
   (setq magit-save-repository-buffers nil
-        magit-last-seen-setup-instructions "1.4.0"))
+        magit-last-seen-setup-instructions "1.4.0")
+
+  (add-to-list 'ido-ignore-buffers "*magit")) ;; TODO not working
 
 (use-package git-timemachine
   :ensure t)

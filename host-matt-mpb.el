@@ -13,13 +13,19 @@
 
 (defun zs-cider ()
   (interactive)
-  (cider-connect "192.168.59.103" 44553))
+  (cider-connect "local.zsinternal.com" 44553))
 
-(defun ido-switch-magit-buffer ()
+(defun ido-switch-magit-ibuffer ()
   "Switch to a magit status buffer via `ido'."
   (interactive)
   (ido-buffer-internal ido-default-buffer-method
                        nil "magit status: " nil "*magit: "))
+
+(defun mk-magit-for-project ()
+  (interactive)
+  (if mk-proj-name
+      (magit-status mk-proj-basedir)
+    (message "No project configured")))
 
 (global-set-key (kbd "C-M-g") 'ido-switch-magit-buffer)
 
@@ -43,6 +49,18 @@
                  (tags-args        "--regex='/[ \\t\\(]*def[a-z]*-? \\([0-9a-z-!<>\?]+\\)/\\1/' --regex='/[ \\t\\(]*ns \\([a-z.]+\\)/\\1/'")
                  (grep-find-cmd    "find . -type f -not -path '*/.git/*' -not -path '*/.m2/*' -not -path '*/log/*' -not -name '*.jar' -not -path '*s3data*' -print0")
                  (index-find-cmd   "find . -type f -not -path '*/.git/*' -not -path '*/.m2/*' -not -path '*s3data*' -not -name '*.class' -not -name '*#'")
+                 (tags-file        ,(concat pd "TAGS"))
+                 (open-files-cache ,(concat pd "open-files"))
+                 (file-list-cache  ,(concat pd "file-list-cache") nil))))
+
+(let ((pd "/Users/matt/.project/zstack/")
+      (bd "/Users/matt/work/zstack"))
+  (project-def "zstack"
+               `((basedir          ,bd)
+                 (src-patterns     ("*.rb"))
+                 (vcs              git)
+                 (grep-find-cmd    "find . -type f -not -path '*/.git/*' -print0")
+                 (index-find-cmd   "find . -type f -not -path '*/.git/*' -not -name '*#' -not -path '*/.sass-cache/*'")
                  (tags-file        ,(concat pd "TAGS"))
                  (open-files-cache ,(concat pd "open-files"))
                  (file-list-cache  ,(concat pd "file-list-cache") nil))))
