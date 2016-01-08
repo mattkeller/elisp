@@ -16,6 +16,7 @@
   :init
   (use-package ac-cider
     :ensure t
+    :bind (("C-c C-z" . cider-switch-to-repl-buffer)) ; global!
     :config
     (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
     (add-hook 'cider-mode-hook 'ac-cider-setup)
