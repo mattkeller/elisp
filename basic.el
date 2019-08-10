@@ -158,6 +158,9 @@
       delete-old-versions t            ; Ask to delete excess backup versions?
       backup-by-copying-when-linked t) ; Copy linked files, don't rename.
 
+;; I'm almost always on single-user systems, so we can skip the .# files
+(setq create-lockfiles nil)
+
 ;;; Dired --------------------------------------------------------------
 
 (defun turn-on-auto-revert-mode ()
